@@ -1,18 +1,14 @@
 :root {
-  --teal: #1e6b64;
-  --teal-dark: #143f3c;
-  --ink: #2a2420;
-  --gray-text: #6b6058;
-  --gray-light: #948a80;
-  --border: #e6dccb;
-  --terracotta: #a8632c;
+  --navy: #163a5c;
+  --ink: #111111;
+  --gray-text: #555555;
+  --gray-light: #888888;
+  --border: #dddddd;
   --oos: #8a1f1f;
   --soon: #1f4a8a;
   --new: #1a7a4c;
-  --card-bg: #fffdfa;
-  --bg-top: #fbe9d8;
-  --bg-mid: #f7ede2;
-  --bg-bot: #eef0e2;
+  --back: #b6631d;
+  --bg: #fafaf8;
 }
 
 * { box-sizing: border-box; }
@@ -21,18 +17,18 @@ body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   color: var(--ink);
-  background: linear-gradient(160deg, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bot) 100%);
-  background-attachment: fixed;
+  background: var(--bg);
 }
 
 h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 
-.mono { font-family: 'Courier New', 'Liberation Mono', monospace; }
+.mono {
+  font-family: 'Courier New', 'Liberation Mono', monospace;
+}
 
 /* ---------- HEADER ---------- */
 .site-header {
-  background: rgba(255, 253, 250, 0.9);
-  backdrop-filter: blur(6px);
+  background: #fff;
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -41,47 +37,47 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 .site-header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px 20px 10px;
+  padding: 14px 20px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
 }
 .brand-name {
   font-family: Georgia, 'Liberation Serif', serif;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--teal);
 }
-.brand-name em { font-style: italic; font-weight: 400; color: var(--ink); }
+.brand-name em { font-style: italic; font-weight: 400; }
 .brand-sub {
   display: block;
-  font-family: Georgia, 'Liberation Serif', serif;
-  font-style: italic;
-  font-size: 12.5px;
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   color: var(--gray-text);
   margin-top: 3px;
 }
+.brand-sub b { color: var(--ink); }
 
 .cart-header-group {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-shrink: 0;
 }
 .cart-header-total {
   font-family: 'Courier New', 'Liberation Mono', monospace;
   font-weight: 700;
   font-size: 15px;
-  color: var(--teal-dark);
-  background: #eef2ee;
+  color: var(--navy);
+  background: #eef2f6;
   border-radius: 999px;
   padding: 7px 12px;
   white-space: nowrap;
 }
+
 .cart-toggle {
   position: relative;
-  background: var(--teal);
+  background: var(--navy);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -94,7 +90,7 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 }
 .cart-count {
   background: #fff;
-  color: var(--teal);
+  color: var(--navy);
   font-family: 'Courier New', monospace;
   font-weight: 700;
   font-size: 12px;
@@ -119,9 +115,8 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   border-radius: 6px;
   font-size: 14px;
   font-family: inherit;
-  background: #fff;
 }
-#searchInput:focus { outline: 2px solid var(--teal); outline-offset: -1px; }
+#searchInput:focus { outline: 2px solid var(--navy); outline-offset: -1px; }
 
 .cat-nav {
   max-width: 1200px;
@@ -132,27 +127,26 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   overflow-x: auto;
   white-space: nowrap;
 }
+.cat-nav .nav-section-label {
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+}
 .cat-nav a {
   font-size: 12.5px;
   color: var(--ink);
   text-decoration: none;
-  background: #f2ebe0;
+  background: #f0f0ec;
   border-radius: 999px;
   padding: 6px 12px;
   flex-shrink: 0;
 }
-.cat-nav a:hover { background: #e8dcc8; }
-
-.tier-banner {
-  max-width: 1200px;
-  margin: 14px auto 0;
-  padding: 10px 20px;
-  text-align: center;
-  font-family: Georgia, 'Liberation Serif', serif;
-  font-style: italic;
-  font-size: 13px;
-  color: var(--teal-dark);
-}
+.cat-nav a:hover { background: #e4e4de; }
 
 /* ---------- CATALOG ---------- */
 #catalog {
@@ -161,28 +155,39 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   padding: 10px 20px 80px;
 }
 
-.category-block { margin-top: 34px; scroll-margin-top: 150px; }
+.section-block { margin-top: 34px; }
+.section-heading {
+  font-size: 26px;
+  margin: 0 0 4px;
+}
+.section-sub {
+  color: var(--gray-text);
+  font-size: 13px;
+  margin: 0 0 18px;
+}
+
+.category-block { margin-top: 30px; scroll-margin-top: 150px; }
 .category-title {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  border-bottom: 2px solid var(--terracotta);
+  border-bottom: 2px solid var(--ink);
   padding-bottom: 8px;
   margin-bottom: 16px;
 }
-.category-title h2 { margin: 0; font-size: 22px; color: var(--teal-dark); }
+.category-title h3 { margin: 0; font-size: 18px; }
 .category-title .desc { color: var(--gray-text); font-size: 12.5px; }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
 
 .card {
-  background: var(--card-bg);
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -190,19 +195,31 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 }
 .card.badge-new {
   border-color: var(--new);
-  box-shadow: 0 0 0 1px var(--new), 0 0 10px rgba(26,122,76,0.3);
+  box-shadow: 0 0 0 1px var(--new), 0 0 10px rgba(26,122,76,0.35);
+}
+.card.badge-back {
+  border-color: var(--back);
+  box-shadow: 0 0 0 1px var(--back), 0 0 10px rgba(182,99,29,0.35);
 }
 .card.is-oos .card-img, .card.is-oos .card-body { opacity: 0.55; }
 .card.is-oos img { filter: grayscale(1); }
 
 .card-badge-row {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 8px 8px 0;
   gap: 6px;
   flex-wrap: wrap;
-  min-height: 14px;
+}
+.no-badge {
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  background: var(--ink);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
 }
 .status-badge {
   font-family: 'Courier New', monospace;
@@ -216,32 +233,40 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 .status-badge.oos { background: var(--oos); }
 .status-badge.soon { background: var(--soon); }
 .status-badge.new { background: var(--new); }
+.status-badge.back { background: var(--back); }
 
 .card-img {
-  height: 160px;
-  margin: 8px 14px 0;
+  height: 150px;
+  margin: 8px 12px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #faf6ef;
-  border: 1px solid #f0e6d6;
-  border-radius: 6px;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 4px;
   overflow: hidden;
 }
 .card-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
 .card-body {
-  padding: 14px;
+  padding: 12px;
   flex: 1;
   display: flex;
   flex-direction: column;
 }
+.card-brand {
+  font-family: 'Courier New', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--gray-light);
+  margin-bottom: 2px;
+}
 .card-name {
   font-family: Georgia, 'Liberation Serif', serif;
   font-weight: 700;
-  font-size: 15.5px;
+  font-size: 15px;
   line-height: 1.25;
-  color: var(--teal-dark);
 }
 .card-sub { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
 .card-tags {
@@ -253,93 +278,57 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 .card-tag {
   font-family: 'Courier New', monospace;
   font-size: 10.5px;
-  background: #f2ebe0;
-  color: #5a5045;
+  background: #eee;
+  color: #333;
   padding: 2px 6px;
   border-radius: 3px;
 }
 
-/* The product-details / pricing wrapper is the direct flex child of
-   .card-body (its contents — .unavailable-note or .tier-block — are
-   nested one level deeper), so this is where "push to the bottom" has
-   to be set for it to actually take effect across every card. */
-[data-cart-control] {
-  margin-top: auto;
+.card-price-row {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #ccc;
 }
-
-.unavailable-note {
-  padding-top: 10px;
-  border-top: 1px dashed #ddd0ba;
-  font-size: 11.5px;
-  color: var(--gray-light);
-  font-style: italic;
-}
-
-/* ---------- TIER PRICE BUTTONS ---------- */
-/* Lines up across a row of cards no matter how many lines the product
-   name/tags above take up — see the [data-cart-control] rule above. */
-.tier-block {
-  padding-top: 10px;
-  border-top: 1px dashed #ddd0ba;
-}
-.tier-row {
-  display: flex;
-  gap: 6px;
-}
-.tier-btn {
-  flex: 1;
-  background: #f2ebe0;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  padding: 6px 3px;
-  text-align: center;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-  line-height: 1.5;
-}
-.tier-btn .tier-qty {
-  font-family: 'Courier New', monospace;
-  font-size: 10.5px;
-  color: var(--gray-text);
-  display: block;
-}
-.tier-btn .tier-price {
+.price-piece {
   font-family: Georgia, 'Liberation Serif', serif;
   font-weight: 700;
-  font-size: 13.5px;
-  color: var(--ink);
-  display: block;
+  font-size: 19px;
 }
-.tier-btn:hover { background: #e8dcc8; }
-.tier-btn.tier-best {
-  background: var(--terracotta);
-}
-.tier-btn.tier-best .tier-qty { color: #f6e4d3; }
-.tier-btn.tier-best .tier-price { color: #fff; }
-.tier-btn.tier-best:hover { background: #935528; }
+.price-piece .unit { font-family: Arial, sans-serif; font-weight: 400; font-size: 12px; color: #777; }
+.price-case { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
+.price-pending { font-size: 13px; color: var(--gray-light); font-style: italic; }
 
-/* Currently-selected pack size: keep every tier button visible (so the
-   customer can still compare prices) and ring the active one instead of
-   hiding the others. */
-.tier-btn.tier-active {
-  box-shadow: inset 0 0 0 2px var(--teal-dark);
-}
-.tier-btn.tier-best.tier-active {
-  box-shadow: inset 0 0 0 2px var(--teal-dark), inset 0 0 0 4px #fff;
-}
-
-.qty-panel {
-  margin-top: 10px;
+.card-cart-row {
+  margin-top: auto;
+  padding-top: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
+.card-line-total {
+  font-family: 'Courier New', 'Liberation Mono', monospace;
+  font-weight: 700;
+  font-size: 14.5px;
+  color: var(--navy);
+}
+.add-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+.add-btn:hover { background: #0f2a44; }
 .qty-stepper {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #f2ebe0;
+  background: #f0f0ec;
   border-radius: 6px;
   padding: 2px 4px;
 }
@@ -350,7 +339,7 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   width: 28px;
   height: 28px;
   cursor: pointer;
-  color: var(--teal);
+  color: var(--navy);
   font-weight: 700;
 }
 .qty-stepper .qty-num {
@@ -359,36 +348,17 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   min-width: 18px;
   text-align: center;
 }
-.qty-price-block {
-  text-align: right;
-  line-height: 1.3;
-}
-.was-price {
-  font-family: 'Courier New', 'Liberation Mono', monospace;
-  font-size: 12px;
+.unavailable-note {
+  font-size: 11.5px;
   color: var(--gray-light);
-  text-decoration: line-through;
-  margin-right: 5px;
-}
-.now-price {
-  font-family: 'Courier New', 'Liberation Mono', monospace;
-  font-weight: 700;
-  font-size: 14.5px;
-  color: var(--terracotta);
-}
-.save-note {
-  display: block;
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--new);
-  margin-top: 2px;
+  font-style: italic;
 }
 
 /* ---------- CART DRAWER ---------- */
 .cart-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(30,20,10,0.35);
+  background: rgba(0,0,0,0.35);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
@@ -403,7 +373,7 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   height: 100%;
   width: 380px;
   max-width: 92vw;
-  background: #fffdfa;
+  background: #fff;
   box-shadow: -6px 0 24px rgba(0,0,0,0.15);
   transform: translateX(100%);
   transition: transform 0.25s ease;
@@ -420,7 +390,7 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   justify-content: space-between;
   align-items: center;
 }
-.cart-drawer-head h2 { margin: 0; font-size: 19px; color: var(--teal-dark); }
+.cart-drawer-head h2 { margin: 0; font-size: 19px; }
 .cart-close {
   background: none;
   border: none;
@@ -445,23 +415,23 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   display: flex;
   gap: 10px;
   padding: 12px 0;
-  border-bottom: 1px solid #f0e6d6;
+  border-bottom: 1px solid #eee;
 }
 .cart-line-img {
   width: 46px;
   height: 46px;
-  border: 1px solid #f0e6d6;
+  border: 1px solid #eee;
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #faf6ef;
+  background: #fafafa;
 }
 .cart-line-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .cart-line-body { flex: 1; min-width: 0; }
-.cart-line-name { font-size: 13.5px; font-weight: 700; line-height: 1.25; color: var(--teal-dark); }
+.cart-line-name { font-size: 13.5px; font-weight: 700; line-height: 1.25; }
 .cart-line-sub { font-size: 11.5px; color: var(--gray-text); }
 .cart-line-controls {
   display: flex;
@@ -491,7 +461,6 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   font-size: 17px;
   font-weight: 700;
   margin-bottom: 8px;
-  color: var(--teal-dark);
 }
 .cart-note { font-size: 11.5px; color: var(--gray-light); margin: 0 0 12px; line-height: 1.4; }
 .checkout-btn {
@@ -510,26 +479,18 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 /* ---------- FOOTER ---------- */
 .site-footer {
   text-align: center;
-  font-size: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 11.5px;
   color: var(--gray-text);
-  padding: 30px 20px 44px;
+  padding: 24px 20px 40px;
   border-top: 1px solid var(--border);
 }
-.footer-brand {
-  font-family: Georgia, 'Liberation Serif', serif;
-  font-size: 18px;
-  color: var(--teal);
-  margin-bottom: 6px;
-}
-.footer-brand em { font-style: italic; font-weight: 400; color: var(--ink); }
 .site-footer div { margin: 3px 0; }
 
 @media (max-width: 640px) {
-  .brand-name { font-size: 20px; }
-  .brand-sub { font-size: 11px; }
+  .brand-name { font-size: 18px; }
   .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-  .card-img { height: 120px; }
-  .tier-btn .tier-price { font-size: 12px; }
+  .card-img { height: 110px; }
   .cart-header-total { font-size: 12.5px; padding: 6px 9px; }
   .cart-toggle { padding: 8px 11px; }
 }
