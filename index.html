@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organicopia — Real Food, Clean and Traceable</title>
+<meta name="description" content="Browse the Organicopia catalog and send your order straight to WhatsApp.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header-inner">
+      <div class="brand">
+        <span class="brand-name">Organi<em>copia</em></span>
+        <span class="brand-sub">Real food, clean and traceable, from our family to yours.</span>
+      </div>
+      <div class="cart-header-group">
+        <span class="cart-header-total" id="cartHeaderTotal">$0.00</span>
+        <button class="cart-toggle" id="cartToggle" aria-label="Open cart">
+          <span class="cart-icon">🛒</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+    <div class="search-row">
+      <input type="search" id="searchInput" placeholder="Search products…" autocomplete="off">
+    </div>
+    <nav class="cat-nav" id="catNav" aria-label="Category navigation"></nav>
+  </header>
+
+  <div class="tier-banner">
+    Every product shows three prices — take one, take a few, or stock up and share. The more you take, the less each one costs.
+  </div>
+
+  <main id="catalog"></main>
+
+  <div class="cart-overlay" id="cartOverlay"></div>
+  <aside class="cart-drawer" id="cartDrawer" aria-label="Shopping cart">
+    <div class="cart-drawer-head">
+      <h2>Your Order</h2>
+      <button class="cart-close" id="cartClose" aria-label="Close cart">&times;</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Subtotal</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
+      <p class="cart-note">Checkout opens WhatsApp with your order pre-filled — just hit send to confirm with us.</p>
+      <button class="checkout-btn" id="checkoutBtn" disabled>Checkout via WhatsApp</button>
+    </div>
+  </aside>
+
+  <footer class="site-footer">
+    <div class="footer-brand">Organi<em>copia</em></div>
+    <div>Real food, made in Lebanon, shared with the people we love.</div>
+    <div>+961 78 879 350 &nbsp;·&nbsp; sales@smbfoods-lb.com</div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

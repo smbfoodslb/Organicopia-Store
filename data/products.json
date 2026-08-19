@@ -1,0 +1,1643 @@
+{
+  "generated": "2026-08-19",
+  "categories": [
+    {
+      "title": "Wellness",
+      "desc": "Green powders and gentle support.",
+      "items": [
+        {
+          "num": 1,
+          "name": "Organic Wheatgrass Juice Powder",
+          "sub": null,
+          "tags": [
+            "50 g"
+          ],
+          "img": "organicopia-wheatgrass-powder-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 6.0
+            },
+            {
+              "qty": 3,
+              "price": 5.7
+            },
+            {
+              "qty": 6,
+              "price": 5.25
+            }
+          ]
+        },
+        {
+          "num": 2,
+          "name": "Organic Hemp Protein Powder",
+          "sub": "50% Protein \u00b7 Whole-food plant protein",
+          "tags": [
+            "250 g"
+          ],
+          "img": null,
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 9.75
+            },
+            {
+              "qty": 3,
+              "price": 9.45
+            },
+            {
+              "qty": 6,
+              "price": 9.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Daily Care",
+      "desc": "Cold-pressed oils and simple care for skin and hair.",
+      "items": [
+        {
+          "num": 3,
+          "name": "Organic Castor Oil",
+          "sub": "USP Grade \u00b7 Certified Organic \u00b7 Cold Pressed",
+          "tags": [
+            "240 mL"
+          ],
+          "img": "organicopia-castor-oil.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 12.0
+            },
+            {
+              "qty": 3,
+              "price": 11.75
+            },
+            {
+              "qty": 6,
+              "price": 11.25
+            }
+          ]
+        },
+        {
+          "num": 4,
+          "name": "Organic Black Cumin Seed Oil",
+          "sub": "Cold Pressed",
+          "tags": [
+            "240 mL"
+          ],
+          "img": "organicopia-black-seed-oil-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 15.0
+            },
+            {
+              "qty": 3,
+              "price": 14.6
+            },
+            {
+              "qty": 6,
+              "price": 14.0
+            }
+          ]
+        },
+        {
+          "num": 5,
+          "name": "Organic Coconut Activated Charcoal Powder",
+          "sub": "Food Grade \u00b7 NSF Certified",
+          "tags": [
+            "35 g"
+          ],
+          "img": "organicopia-activated-charcoal-powder.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.55
+            },
+            {
+              "qty": 3,
+              "price": 3.3
+            },
+            {
+              "qty": 6,
+              "price": 3.0
+            }
+          ]
+        },
+        {
+          "num": 6,
+          "name": "Clay Toothpaste",
+          "sub": "Organic Peppermint",
+          "tags": [
+            "60 g"
+          ],
+          "img": "clay-toothpaste-peppermint.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.75
+            },
+            {
+              "qty": 3,
+              "price": 2.55
+            },
+            {
+              "qty": 6,
+              "price": 2.25
+            }
+          ]
+        },
+        {
+          "num": 7,
+          "name": "Clay Toothpaste",
+          "sub": "Organic Cinnamon",
+          "tags": [
+            "60 g"
+          ],
+          "img": "clay-toothpaste-cinnamon.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.75
+            },
+            {
+              "qty": 3,
+              "price": 2.55
+            },
+            {
+              "qty": 6,
+              "price": 2.25
+            }
+          ]
+        },
+        {
+          "num": 8,
+          "name": "100% Raw Batana Oil",
+          "sub": null,
+          "tags": [
+            "72 g"
+          ],
+          "img": "organicopia-batana-oil.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 12.0
+            },
+            {
+              "qty": 3,
+              "price": 11.25
+            },
+            {
+              "qty": 6,
+              "price": 10.25
+            }
+          ]
+        },
+        {
+          "num": 9,
+          "name": "100% African Shea Butter",
+          "sub": null,
+          "tags": [
+            "100 g"
+          ],
+          "img": "organicopia-shea-butter.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.5
+            },
+            {
+              "qty": 3,
+              "price": 4.25
+            },
+            {
+              "qty": 6,
+              "price": 3.75
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Baking",
+      "desc": "Single-origin cacao and the clean baking shelf.",
+      "items": [
+        {
+          "num": 10,
+          "name": "Organic Dark Chocolate Chunks",
+          "sub": "70% Cacao",
+          "tags": [
+            "90 g"
+          ],
+          "img": "organicopia-chocolate-chunks-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.5
+            },
+            {
+              "qty": 3,
+              "price": 4.3
+            },
+            {
+              "qty": 6,
+              "price": 4.0
+            }
+          ]
+        },
+        {
+          "num": 11,
+          "name": "Organic Raw Cacao Powder",
+          "sub": "20\u201322% Cacao",
+          "tags": [
+            "250 g"
+          ],
+          "img": "organicopia-cacao-powder-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 10.0
+            },
+            {
+              "qty": 3,
+              "price": 9.8
+            },
+            {
+              "qty": 6,
+              "price": 9.5
+            }
+          ]
+        },
+        {
+          "num": 12,
+          "name": "Organic Cacao Nibs",
+          "sub": "100% Cacao Beans",
+          "tags": [
+            "200 g"
+          ],
+          "img": "organicopia-cacao-nibs-4.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 12.0
+            },
+            {
+              "qty": 3,
+              "price": 11.65
+            },
+            {
+              "qty": 6,
+              "price": 11.25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Seeds",
+      "desc": "Raw seeds and whole kernels, kept simple.",
+      "items": [
+        {
+          "num": 13,
+          "name": "Organic Raw Poppy Seeds",
+          "sub": null,
+          "tags": [
+            "50 g"
+          ],
+          "img": null,
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.5
+            },
+            {
+              "qty": 3,
+              "price": 2.35
+            },
+            {
+              "qty": 6,
+              "price": 2.15
+            }
+          ]
+        },
+        {
+          "num": 14,
+          "name": "Organic Yellow Popcorn",
+          "sub": "US Grown",
+          "tags": [
+            "500 g"
+          ],
+          "img": "organicopia-yellow-popcorn.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 5.0
+            },
+            {
+              "qty": 3,
+              "price": 4.8
+            },
+            {
+              "qty": 6,
+              "price": 4.5
+            }
+          ]
+        },
+        {
+          "num": 15,
+          "name": "Organic White Popcorn",
+          "sub": null,
+          "tags": [
+            "450 g"
+          ],
+          "img": "organicopia-white-popcorn.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 5.0
+            },
+            {
+              "qty": 3,
+              "price": 4.65
+            },
+            {
+              "qty": 6,
+              "price": 4.25
+            }
+          ]
+        },
+        {
+          "num": 16,
+          "name": "Organic Rainbow Popcorn",
+          "sub": null,
+          "tags": [
+            "450 g"
+          ],
+          "img": "organicopia-rainbow-popcorn.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 5.0
+            },
+            {
+              "qty": 3,
+              "price": 4.65
+            },
+            {
+              "qty": 6,
+              "price": 4.25
+            }
+          ]
+        },
+        {
+          "num": 17,
+          "name": "Organic Raw Coconut Chips",
+          "sub": null,
+          "tags": [
+            "150 g"
+          ],
+          "img": "organicopia-ceylon-coconut-chips-raw.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.8
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 18,
+          "name": "Organic Toasted Coconut Chips",
+          "sub": null,
+          "tags": [
+            "250 g"
+          ],
+          "img": "organicopia-ceylon-coconut-chips-toasted.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.8
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Clean Sweeteners",
+      "desc": "Clean cane sugar and leaf stevia.",
+      "items": [
+        {
+          "num": 19,
+          "name": "Pure Organic Stevia Powder",
+          "sub": null,
+          "tags": [
+            "40 g"
+          ],
+          "img": "organicopia-stevia-powder.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 9.0
+            },
+            {
+              "qty": 3,
+              "price": 8.65
+            },
+            {
+              "qty": 6,
+              "price": 8.25
+            }
+          ]
+        },
+        {
+          "num": 20,
+          "name": "Organic Powdered Cane Sugar",
+          "sub": null,
+          "tags": [
+            "500 g"
+          ],
+          "img": "organicopia-powdered-cane-sugar-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.5
+            },
+            {
+              "qty": 3,
+              "price": 4.3
+            },
+            {
+              "qty": 6,
+              "price": 4.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Non-Refined Oils & Butters",
+      "desc": "Cold-pressed oils and real butters, nothing refined.",
+      "items": [
+        {
+          "num": 21,
+          "name": "Organic Vanilla",
+          "sub": "Non-Alcoholic",
+          "tags": [
+            "60 mL"
+          ],
+          "img": "organicopia-vanilla-extract.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 13.25
+            },
+            {
+              "qty": 3,
+              "price": 13.0
+            },
+            {
+              "qty": 6,
+              "price": 12.5
+            }
+          ]
+        },
+        {
+          "num": 22,
+          "name": "100% Ghee",
+          "sub": "Clarified Butter \u00b7 Freshly Made to Order",
+          "tags": [
+            "500 g"
+          ],
+          "img": "organicopia-ghee.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 18.0
+            },
+            {
+              "qty": 3,
+              "price": 17.5
+            },
+            {
+              "qty": 6,
+              "price": 17.0
+            }
+          ]
+        },
+        {
+          "num": 23,
+          "name": "Organic Coconut Butter",
+          "sub": null,
+          "tags": [
+            "330 g"
+          ],
+          "img": null,
+          "status": "soon",
+          "is_new": false,
+          "tiers": null
+        },
+        {
+          "num": 24,
+          "name": "Organic Peanut Butter",
+          "sub": null,
+          "tags": [
+            "300 g"
+          ],
+          "img": null,
+          "status": "soon",
+          "is_new": false,
+          "tiers": null
+        },
+        {
+          "num": 25,
+          "name": "Organic Coconut Aminos",
+          "sub": null,
+          "tags": [
+            "280 mL"
+          ],
+          "img": "organicopia-coconut-aminos.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 7.0
+            },
+            {
+              "qty": 3,
+              "price": 6.5
+            },
+            {
+              "qty": 6,
+              "price": 6.0
+            }
+          ]
+        },
+        {
+          "num": 26,
+          "name": "Organic Toasted Sesame Oil",
+          "sub": null,
+          "tags": [
+            "280 mL"
+          ],
+          "img": "organicopia-toasted-sesame-oil.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.5
+            },
+            {
+              "qty": 3,
+              "price": 8.25
+            },
+            {
+              "qty": 6,
+              "price": 7.75
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Spices",
+      "desc": "Single-origin spices, ground and whole.",
+      "items": [
+        {
+          "num": 27,
+          "name": "Organic Pumpkin Spice",
+          "sub": null,
+          "tags": [
+            "50 g"
+          ],
+          "img": "organicopia-pumpkin-pie-spice.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.25
+            },
+            {
+              "qty": 3,
+              "price": 4.05
+            },
+            {
+              "qty": 6,
+              "price": 3.75
+            }
+          ]
+        },
+        {
+          "num": 28,
+          "name": "Organic Ceylon Cinnamon Powder",
+          "sub": null,
+          "tags": [
+            "50 g"
+          ],
+          "img": "organicopia-ceylon-cinnamon-powder-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.25
+            },
+            {
+              "qty": 3,
+              "price": 2.1
+            },
+            {
+              "qty": 6,
+              "price": 1.9
+            }
+          ]
+        },
+        {
+          "num": 29,
+          "name": "Organic Blackened Cajun Seasoning",
+          "sub": null,
+          "tags": [
+            "60 g"
+          ],
+          "img": "organicopia-blackened-cajun-seasoning-2.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.25
+            },
+            {
+              "qty": 3,
+              "price": 4.0
+            },
+            {
+              "qty": 6,
+              "price": 3.7
+            }
+          ]
+        },
+        {
+          "num": 30,
+          "name": "Organic Garlic Powder",
+          "sub": null,
+          "tags": [
+            "55 g"
+          ],
+          "img": "organicopia-garlic-powder.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.5
+            },
+            {
+              "qty": 3,
+              "price": 2.3
+            },
+            {
+              "qty": 6,
+              "price": 2.0
+            }
+          ]
+        },
+        {
+          "num": 31,
+          "name": "Organic Cayenne Pepper Powder",
+          "sub": "50,000 SHU",
+          "tags": [
+            "45 g"
+          ],
+          "img": "organicopia-cayenne-pepper-2.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.7
+            },
+            {
+              "qty": 3,
+              "price": 3.5
+            },
+            {
+              "qty": 6,
+              "price": 3.1
+            }
+          ]
+        },
+        {
+          "num": 32,
+          "name": "Organic Smoked Paprika",
+          "sub": null,
+          "tags": [],
+          "img": "organicopia-smoked-paprika.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 5.5
+            },
+            {
+              "qty": 3,
+              "price": 5.2
+            },
+            {
+              "qty": 6,
+              "price": 4.75
+            }
+          ]
+        },
+        {
+          "num": 33,
+          "name": "Organic Ginger Root Powder",
+          "sub": null,
+          "tags": [],
+          "img": "organicopia-ginger-root-powder.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.7
+            },
+            {
+              "qty": 3,
+              "price": 2.5
+            },
+            {
+              "qty": 6,
+              "price": 2.1
+            }
+          ]
+        },
+        {
+          "num": 34,
+          "name": "Organic Turmeric Root Powder",
+          "sub": null,
+          "tags": [
+            "70 g",
+            "India"
+          ],
+          "img": "organicopia-turmeric-root-powder.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.7
+            },
+            {
+              "qty": 3,
+              "price": 2.5
+            },
+            {
+              "qty": 6,
+              "price": 2.2
+            }
+          ]
+        },
+        {
+          "num": 35,
+          "name": "Organic Allspice Berries",
+          "sub": null,
+          "tags": [
+            "50 g"
+          ],
+          "img": null,
+          "status": "oos",
+          "is_new": false,
+          "tiers": null
+        }
+      ]
+    },
+    {
+      "title": "Fresh from the Oven",
+      "desc": "Baked in small batches with organic ingredients. Cookies, brownies, sabl\u00e9s, petit fours.",
+      "items": [
+        {
+          "num": 36,
+          "name": "Cookies",
+          "sub": "Double Chocolate Chunk, 1 Piece",
+          "tags": [
+            "35 g"
+          ],
+          "img": "cookies-double-chocolate-1pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 1.5
+            },
+            {
+              "qty": 3,
+              "price": 1.4
+            },
+            {
+              "qty": 6,
+              "price": 1.25
+            }
+          ]
+        },
+        {
+          "num": 37,
+          "name": "Cookies",
+          "sub": "Double Chocolate Chunk, 6 Pieces (box)",
+          "tags": [
+            "210 g"
+          ],
+          "img": "cookies-double-chocolate-6pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.5
+            },
+            {
+              "qty": 3,
+              "price": 8.0
+            },
+            {
+              "qty": 6,
+              "price": 7.5
+            }
+          ]
+        },
+        {
+          "num": 38,
+          "name": "Cookies",
+          "sub": "Vanilla Chocolate Chip, 1 Piece",
+          "tags": [
+            "40 g"
+          ],
+          "img": "cookies-vanilla-chip-1pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 1.5
+            },
+            {
+              "qty": 3,
+              "price": 1.4
+            },
+            {
+              "qty": 6,
+              "price": 1.25
+            }
+          ]
+        },
+        {
+          "num": 39,
+          "name": "Cookies",
+          "sub": "Vanilla Chocolate Chip, 6 Pieces (box)",
+          "tags": [
+            "240 g"
+          ],
+          "img": "cookies-vanilla-chip-6pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.5
+            },
+            {
+              "qty": 3,
+              "price": 8.0
+            },
+            {
+              "qty": 6,
+              "price": 7.5
+            }
+          ]
+        },
+        {
+          "num": 40,
+          "name": "Double Chocolate Chip Brownie",
+          "sub": "1 Piece",
+          "tags": [
+            "60 g"
+          ],
+          "img": "brownie-double-chocolate-1pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.5
+            },
+            {
+              "qty": 3,
+              "price": 2.35
+            },
+            {
+              "qty": 6,
+              "price": 2.1
+            }
+          ]
+        },
+        {
+          "num": 41,
+          "name": "Double Chocolate Chip Brownie",
+          "sub": "6 Pieces (box)",
+          "tags": [
+            "360 g"
+          ],
+          "img": "brownie-double-chocolate-6pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 13.0
+            },
+            {
+              "qty": 3,
+              "price": 12.0
+            },
+            {
+              "qty": 6,
+              "price": 11.5
+            }
+          ]
+        },
+        {
+          "num": 42,
+          "name": "Double Chocolate Chip Muffin",
+          "sub": "1 Piece",
+          "tags": [
+            "70 g"
+          ],
+          "img": "muffin-double-chocolate-1pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.5
+            },
+            {
+              "qty": 3,
+              "price": 2.35
+            },
+            {
+              "qty": 6,
+              "price": 2.15
+            }
+          ]
+        },
+        {
+          "num": 43,
+          "name": "Double Chocolate Chip Muffin",
+          "sub": "4 Pieces (box)",
+          "tags": [
+            "280 g"
+          ],
+          "img": "muffin-double-chocolate-4pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.5
+            },
+            {
+              "qty": 3,
+              "price": 8.33
+            },
+            {
+              "qty": 6,
+              "price": 8.0
+            }
+          ]
+        },
+        {
+          "num": 44,
+          "name": "Double Chocolate Chip Muffin",
+          "sub": "6 Pieces (box)",
+          "tags": [
+            "420 g"
+          ],
+          "img": "muffin-double-chocolate-6pc.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 12.25
+            },
+            {
+              "qty": 3,
+              "price": 11.75
+            },
+            {
+              "qty": 6,
+              "price": 11.0
+            }
+          ]
+        },
+        {
+          "num": 45,
+          "name": "Petit Four",
+          "sub": "Double Chocolate, 200 g",
+          "tags": [],
+          "img": "petit-four-double-chocolate-200g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.0
+            },
+            {
+              "qty": 3,
+              "price": 7.5
+            },
+            {
+              "qty": 6,
+              "price": 7.0
+            }
+          ]
+        },
+        {
+          "num": 46,
+          "name": "Petit Four",
+          "sub": "Double Chocolate, 300 g",
+          "tags": [],
+          "img": "petit-four-double-chocolate-300g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 11.5
+            },
+            {
+              "qty": 3,
+              "price": 11.0
+            },
+            {
+              "qty": 6,
+              "price": 10.35
+            }
+          ]
+        },
+        {
+          "num": 47,
+          "name": "Petit Four",
+          "sub": "Apricot Jam, 200 g",
+          "tags": [],
+          "img": "petit-four-apricot-jam-200g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.0
+            },
+            {
+              "qty": 3,
+              "price": 7.5
+            },
+            {
+              "qty": 6,
+              "price": 7.0
+            }
+          ]
+        },
+        {
+          "num": 48,
+          "name": "Petit Four",
+          "sub": "Apricot Jam, 300 g",
+          "tags": [],
+          "img": "petit-four-apricot-jam-300g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 11.5
+            },
+            {
+              "qty": 3,
+              "price": 11.0
+            },
+            {
+              "qty": 6,
+              "price": 10.35
+            }
+          ]
+        },
+        {
+          "num": 49,
+          "name": "Petit Four",
+          "sub": "Strawberry Jam, 200 g",
+          "tags": [],
+          "img": "petit-four-strawberry-jam-200g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.0
+            },
+            {
+              "qty": 3,
+              "price": 7.5
+            },
+            {
+              "qty": 6,
+              "price": 7.0
+            }
+          ]
+        },
+        {
+          "num": 50,
+          "name": "Petit Four",
+          "sub": "Strawberry Jam, 300 g",
+          "tags": [],
+          "img": "petit-four-strawberry-jam-300g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 11.5
+            },
+            {
+              "qty": 3,
+              "price": 11.0
+            },
+            {
+              "qty": 6,
+              "price": 10.35
+            }
+          ]
+        },
+        {
+          "num": 51,
+          "name": "Petit Four",
+          "sub": "Vanilla Chocolate, 200 g",
+          "tags": [],
+          "img": "petit-four-vanilla-chocolate-200g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.0
+            },
+            {
+              "qty": 3,
+              "price": 7.5
+            },
+            {
+              "qty": 6,
+              "price": 7.0
+            }
+          ]
+        },
+        {
+          "num": 52,
+          "name": "Petit Four",
+          "sub": "Vanilla Chocolate, 300 g",
+          "tags": [],
+          "img": "petit-four-vanilla-chocolate-300g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 11.5
+            },
+            {
+              "qty": 3,
+              "price": 11.0
+            },
+            {
+              "qty": 6,
+              "price": 10.35
+            }
+          ]
+        },
+        {
+          "num": 53,
+          "name": "Petit Four",
+          "sub": "Variety Chocolate, 200 g",
+          "tags": [],
+          "img": "petit-four-variety-chocolate-200g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.0
+            },
+            {
+              "qty": 3,
+              "price": 7.5
+            },
+            {
+              "qty": 6,
+              "price": 7.0
+            }
+          ]
+        },
+        {
+          "num": 54,
+          "name": "Petit Four",
+          "sub": "Variety Chocolate, 300 g",
+          "tags": [],
+          "img": "petit-four-variety-chocolate-300g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 11.5
+            },
+            {
+              "qty": 3,
+              "price": 11.0
+            },
+            {
+              "qty": 6,
+              "price": 10.35
+            }
+          ]
+        },
+        {
+          "num": 55,
+          "name": "Petit Four",
+          "sub": "Variety Jam, 200 g",
+          "tags": [],
+          "img": "petit-four-variety-jam-200g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.0
+            },
+            {
+              "qty": 3,
+              "price": 7.5
+            },
+            {
+              "qty": 6,
+              "price": 7.0
+            }
+          ]
+        },
+        {
+          "num": 56,
+          "name": "Petit Four",
+          "sub": "Variety Jam, 300 g",
+          "tags": [],
+          "img": "petit-four-variety-jam-300g.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 11.5
+            },
+            {
+              "qty": 3,
+              "price": 11.0
+            },
+            {
+              "qty": 6,
+              "price": 10.35
+            }
+          ]
+        },
+        {
+          "num": 57,
+          "name": "Sabl\u00e9",
+          "sub": "Double Chocolate",
+          "tags": [
+            "60 g"
+          ],
+          "img": "sable-double-chocolate.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.7
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 58,
+          "name": "Sabl\u00e9",
+          "sub": "Vanilla Chocolate",
+          "tags": [
+            "60 g"
+          ],
+          "img": "sable-vanilla-chocolate.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.7
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 59,
+          "name": "Sabl\u00e9",
+          "sub": "Apricot Jam",
+          "tags": [
+            "60 g"
+          ],
+          "img": "sable-apricot-jam.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.7
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 60,
+          "name": "Sabl\u00e9",
+          "sub": "Strawberry Jam",
+          "tags": [
+            "60 g"
+          ],
+          "img": "sable-strawberry-jam.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.7
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sweet Things",
+      "desc": "Berry-bright chews and little treats, made clean.",
+      "items": [
+        {
+          "num": 61,
+          "name": "Berrilicious",
+          "sub": null,
+          "tags": [
+            "60 g"
+          ],
+          "img": "gummies-berrilicious.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.8
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 62,
+          "name": "Berry Noir Chews",
+          "sub": null,
+          "tags": [
+            "60 g"
+          ],
+          "img": "chews-berry-noir.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.8
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 63,
+          "name": "SoulBerry Chews",
+          "sub": null,
+          "tags": [
+            "60 g"
+          ],
+          "img": "chews-soulberry.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.5
+            },
+            {
+              "qty": 3,
+              "price": 2.3
+            },
+            {
+              "qty": 6,
+              "price": 2.0
+            }
+          ]
+        },
+        {
+          "num": 64,
+          "name": "TuttiFrutti Blend",
+          "sub": null,
+          "tags": [
+            "60 g"
+          ],
+          "img": "gummies-tuttifrutti-blend.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.8
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 65,
+          "name": "FruitVine Laces",
+          "sub": null,
+          "tags": [
+            "60 g"
+          ],
+          "img": "gummies-fruitvine-laces.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.0
+            },
+            {
+              "qty": 3,
+              "price": 2.8
+            },
+            {
+              "qty": 6,
+              "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 66,
+          "name": "Lollie Patch",
+          "sub": null,
+          "tags": [
+            "10 pcs"
+          ],
+          "img": "lollipops-lollie-patch.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.75
+            },
+            {
+              "qty": 3,
+              "price": 3.55
+            },
+            {
+              "qty": 6,
+              "price": 3.25
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

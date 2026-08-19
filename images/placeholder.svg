@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#ffffff"/>
+  <rect width="400" height="10" fill="#163a5c"/>
+  <g transform="translate(200,175)" opacity="0.12" fill="none" stroke="#163a5c" stroke-width="4">
+    <g>
+      <ellipse rx="42" ry="78"/>
+      <ellipse rx="42" ry="78" transform="rotate(60)"/>
+      <ellipse rx="42" ry="78" transform="rotate(120)"/>
+    </g>
+  </g>
+  <text x="200" y="270" text-anchor="middle" font-family="'Courier New', monospace" font-weight="700"
+        font-size="15" letter-spacing="1" fill="#163a5c">PHOTO COMING SOON</text>
+</svg>
