@@ -311,18 +311,6 @@
       "items": [
         {
           "num": 13,
-          "name": "Organic Raw Poppy Seeds",
-          "sub": null,
-          "tags": [
-            "50 g"
-          ],
-          "img": null,
-          "status": "oos",
-          "is_new": false,
-          "tiers": null
-        },
-        {
-          "num": 14,
           "name": "Organic Black Sesame Seeds",
           "sub": null,
           "tags": [
@@ -348,7 +336,7 @@
           ]
         },
         {
-          "num": 15,
+          "num": 14,
           "name": "Organic Sesame Seeds",
           "sub": "Hulled",
           "tags": [
@@ -374,7 +362,7 @@
           ]
         },
         {
-          "num": 16,
+          "num": 15,
           "name": "Organic Apricots",
           "sub": "Sun-Dried",
           "tags": [
@@ -400,7 +388,7 @@
           ]
         },
         {
-          "num": 17,
+          "num": 16,
           "name": "Organic Yellow Popcorn",
           "sub": "US Grown",
           "tags": [
@@ -426,7 +414,7 @@
           ]
         },
         {
-          "num": 18,
+          "num": 17,
           "name": "Organic White Popcorn",
           "sub": "Non-GMO",
           "tags": [
@@ -452,7 +440,7 @@
           ]
         },
         {
-          "num": 19,
+          "num": 18,
           "name": "Organic Rainbow Popcorn",
           "sub": "Non-GMO",
           "tags": [
@@ -478,7 +466,7 @@
           ]
         },
         {
-          "num": 20,
+          "num": 19,
           "name": "Organic Raw Coconut Chips",
           "sub": null,
           "tags": [
@@ -504,7 +492,7 @@
           ]
         },
         {
-          "num": 21,
+          "num": 20,
           "name": "Organic Toasted Coconut Chips",
           "sub": null,
           "tags": [
@@ -528,6 +516,18 @@
               "price": 2.5
             }
           ]
+        },
+        {
+          "num": 21,
+          "name": "Organic Raw Poppy Seeds",
+          "sub": null,
+          "tags": [
+            "50 g"
+          ],
+          "img": null,
+          "status": "oos",
+          "is_new": false,
+          "tiers": null
         }
       ]
     },
@@ -633,15 +633,15 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 18.0
+              "price": 16.25
             },
             {
               "qty": 3,
-              "price": 17.5
+              "price": 15.75
             },
             {
               "qty": 6,
-              "price": 17.0
+              "price": 15.0
             }
           ]
         },
