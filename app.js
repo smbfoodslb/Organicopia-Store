@@ -3,7 +3,7 @@
    order — customer taps Send. Pricing is tiered: buy 1, 3, or 6+ and the
    unit price drops at each threshold. */
 
-const WHATSAPP_NUMBER = "96178879350"; // +961 78 879 350, digits only, no leading +
+const WHATSAPP_NUMBER = "96170649386"; // +961 70 649 386, digits only, no leading +
 const CART_KEY = "organicopia-cart-v1";
 const IMG_BASE = "images/";
 const PLACEHOLDER_IMG = "images/placeholder.svg";
