@@ -48,6 +48,17 @@ function unitPriceForQty(p, qty) {
   return price;
 }
 
+// Index of the tier currently "active" for a given quantity — the same
+// tier whose price unitPriceForQty would return — so the UI can ring
+// that tier's button instead of hiding the others.
+function activeTierIndex(p, qty) {
+  let idx = 0;
+  p.tiers.forEach((t, i) => {
+    if (qty >= t.qty) idx = i;
+  });
+  return idx;
+}
+
 function setQty(num, qty) {
   const p = findProduct(num);
   if (!p) return;
@@ -93,31 +104,51 @@ function cartControlHtml(p) {
     return `<div class="unavailable-note">Pricing to follow</div>`;
   }
   const qty = cart[p.num] || 0;
-  if (qty === 0) {
-    return `<div class="tier-row" data-tier-row="${p.num}">${p.tiers
-      .map(
-        (t, i) => `
-      <button class="tier-btn${i === p.tiers.length - 1 ? " tier-best" : ""}" data-set-qty="${p.num}" data-qty="${t.qty}">
+  const activeIdx = qty > 0 ? activeTierIndex(p, qty) : -1;
+
+  // All three pack-size buttons stay visible and clickable at all times —
+  // clicking one sets the cart quantity to that pack size. The active one
+  // (based on current quantity, not just an exact match) gets ringed so
+  // the customer can still compare all three prices at a glance.
+  const tierRow = `<div class="tier-row">${p.tiers
+    .map((t, i) => {
+      const classes = ["tier-btn"];
+      if (i === p.tiers.length - 1) classes.push("tier-best");
+      if (i === activeIdx) classes.push("tier-active");
+      return `
+      <button class="${classes.join(" ")}" data-set-qty="${p.num}" data-qty="${t.qty}">
         <span class="tier-qty">&times;${t.qty}</span>
         <span class="tier-price">$${t.price.toFixed(2)}</span>
-      </button>`
-      )
-      .join("")}</div>`;
+      </button>`;
+    })
+    .join("")}</div>`;
+
+  let qtyPanel = "";
+  if (qty > 0) {
+    const unit = unitPriceForQty(p, qty);
+    const lineTotal = unit * qty;
+    const basePrice = p.tiers[0].price;
+    const wasTotal = basePrice * qty;
+    const savings = wasTotal - lineTotal;
+    const showSavings = savings > 0.001;
+    qtyPanel = `
+      <div class="qty-panel" data-qty-row="${p.num}">
+        <div class="qty-stepper" data-stepper="${p.num}">
+          <button data-dec="${p.num}" aria-label="Decrease quantity">&minus;</button>
+          <span class="qty-num">${qty}</span>
+          <button data-inc="${p.num}" aria-label="Increase quantity">+</button>
+        </div>
+        <div class="qty-price-block">
+          <div>
+            ${showSavings ? `<span class="was-price">$${wasTotal.toFixed(2)}</span>` : ""}
+            <span class="now-price">$${lineTotal.toFixed(2)}</span>
+          </div>
+          ${showSavings ? `<span class="save-note">You save $${savings.toFixed(2)}</span>` : ""}
+        </div>
+      </div>`;
   }
-  const unit = unitPriceForQty(p, qty);
-  const lineTotal = (unit * qty).toFixed(2);
-  return `
-    <div class="qty-adjust-row" data-qty-row="${p.num}">
-      <div class="qty-stepper" data-stepper="${p.num}">
-        <button data-dec="${p.num}" aria-label="Decrease quantity">&minus;</button>
-        <span class="qty-num">${qty}</span>
-        <button data-inc="${p.num}" aria-label="Increase quantity">+</button>
-      </div>
-      <div class="qty-adjust-price">
-        <span class="qty-adjust-unit">$${unit.toFixed(2)} each</span>
-        <span class="qty-adjust-total">$${lineTotal}</span>
-      </div>
-    </div>`;
+
+  return `<div class="tier-block">${tierRow}${qtyPanel}</div>`;
 }
 
 function cardHtml(p) {
