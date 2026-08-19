@@ -203,7 +203,7 @@
           ],
           "img": "organicopia-batana-oil.jpg",
           "status": null,
-          "is_new": true,
+          "is_new": false,
           "tiers": [
             {
               "qty": 1,
@@ -229,7 +229,7 @@
           ],
           "img": "organicopia-shea-butter.jpg",
           "status": null,
-          "is_new": true,
+          "is_new": false,
           "tiers": [
             {
               "qty": 1,
@@ -343,22 +343,9 @@
             "50 g"
           ],
           "img": null,
-          "status": null,
+          "status": "oos",
           "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 2.5
-            },
-            {
-              "qty": 3,
-              "price": 2.35
-            },
-            {
-              "qty": 6,
-              "price": 2.15
-            }
-          ]
+          "tiers": null
         },
         {
           "num": 14,

@@ -4,7 +4,7 @@ A plain HTML/CSS/JavaScript site — no build step, no npm packages required,
 no password gate. Customers browse Organicopia's own product line, pick a
 pack size for each item (×1, ×3, or ×6 — the more they take, the less each
 one costs), and tap **Checkout via WhatsApp**, which opens WhatsApp with
-their order pre-filled to **+961 78 879 350**. They just tap Send to
+their order pre-filled to **+961 70 649 386**. They just tap Send to
 confirm.
 
 This is a separate site from the SMB Foods wholesale catalog — same look
@@ -84,7 +84,7 @@ Checkout builds a plain-text order summary showing each item, its tier
 price, and the total, and opens:
 
 ```
-https://wa.me/96178879350?text=<order summary>
+https://wa.me/96170649386?text=<order summary>
 ```
 
 WhatsApp opens (app or web) with that message pre-filled in a chat to
