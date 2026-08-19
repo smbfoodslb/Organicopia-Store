@@ -312,11 +312,11 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
 }
 .tier-btn:hover { background: #e8dcc8; }
 .tier-btn.tier-best {
-  background: var(--terracotta);
+  background: var(--teal);
 }
-.tier-btn.tier-best .tier-qty { color: #f6e4d3; }
+.tier-btn.tier-best .tier-qty { color: #cfe6e1; }
 .tier-btn.tier-best .tier-price { color: #fff; }
-.tier-btn.tier-best:hover { background: #935528; }
+.tier-btn.tier-best:hover { background: var(--teal-dark); }
 
 /* Currently-selected pack size: keep every tier button visible (so the
    customer can still compare prices) and ring the active one instead of
