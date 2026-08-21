@@ -811,7 +811,7 @@
           "name": "Organic Cayenne Pepper Powder",
           "sub": "50,000 SHU",
           "tags": [
-            "45 g",
+            "55 g",
             "India"
           ],
           "img": "organicopia-cayenne-pepper-2.jpg",
@@ -820,15 +820,15 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 3.7
+              "price": 4.35
             },
             {
               "qty": 3,
-              "price": 3.5
+              "price": 4.15
             },
             {
               "qty": 6,
-              "price": 3.1
+              "price": 3.85
             }
           ]
         },
