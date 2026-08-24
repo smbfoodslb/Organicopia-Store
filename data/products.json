@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-19",
+  "generated": "2026-08-24",
   "categories": [
     {
       "title": "Wellness",
@@ -28,32 +28,6 @@
             {
               "qty": 6,
               "price": 5.25
-            }
-          ]
-        },
-        {
-          "num": 2,
-          "name": "Organic Hemp Protein Powder",
-          "sub": "50% Protein \u00b7 Whole-food plant protein",
-          "tags": [
-            "250 g",
-            "Lithuania"
-          ],
-          "img": null,
-          "status": null,
-          "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 9.75
-            },
-            {
-              "qty": 3,
-              "price": 9.45
-            },
-            {
-              "qty": 6,
-              "price": 9.0
             }
           ]
         }
@@ -516,18 +490,6 @@
               "price": 2.5
             }
           ]
-        },
-        {
-          "num": 21,
-          "name": "Organic Raw Poppy Seeds",
-          "sub": null,
-          "tags": [
-            "50 g"
-          ],
-          "img": null,
-          "status": "oos",
-          "is_new": false,
-          "tiers": null
         }
       ]
     },
@@ -644,31 +606,6 @@
               "price": 15.0
             }
           ]
-        },
-        {
-          "num": 26,
-          "name": "Organic Coconut Butter",
-          "sub": null,
-          "tags": [
-            "330 g"
-          ],
-          "img": null,
-          "status": "soon",
-          "is_new": false,
-          "tiers": null
-        },
-        {
-          "num": 27,
-          "name": "Organic Peanut Butter",
-          "sub": "USA Grown",
-          "tags": [
-            "300 g",
-            "USA"
-          ],
-          "img": null,
-          "status": "soon",
-          "is_new": false,
-          "tiers": null
         },
         {
           "num": 28,
@@ -909,18 +846,6 @@
               "price": 2.2
             }
           ]
-        },
-        {
-          "num": 38,
-          "name": "Organic Allspice Berries",
-          "sub": null,
-          "tags": [
-            "50 g"
-          ],
-          "img": null,
-          "status": "oos",
-          "is_new": false,
-          "tiers": null
         }
       ]
     },
