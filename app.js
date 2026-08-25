@@ -2,15 +2,12 @@
    localStorage. Checkout opens a pre-filled WhatsApp chat (wa.me) with the
    order — customer taps Send. Pricing is tiered: buy 1, 3, or 6+ and the
    unit price drops at each threshold. */
-
 const WHATSAPP_NUMBER = "96170649386"; // +961 70 649 386, digits only, no leading +
 const CART_KEY = "organicopia-cart-v1";
 const IMG_BASE = "images/";
 const PLACEHOLDER_IMG = "images/placeholder.svg";
-
 let CATALOG = null;
 let cart = loadCart();
-
 // ---------------- Cart persistence ----------------
 function loadCart() {
   try {
@@ -23,7 +20,6 @@ function loadCart() {
 function saveCart() {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
-
 function findProduct(num) {
   for (const c of CATALOG.categories) {
     for (const p of c.items) {
@@ -32,11 +28,9 @@ function findProduct(num) {
   }
   return null;
 }
-
 function isPurchasable(p) {
-  return Array.isArray(p.tiers) && p.tiers.length > 0;
+  return Array.isArray(p.tiers) && p.tiers.length > 0 && (p.status == null || p.status === "active");
 }
-
 // Unit price for a given quantity: the price of the highest tier whose
 // qty threshold has been reached (tiers are ordered ascending by qty).
 function unitPriceForQty(p, qty) {
@@ -47,7 +41,6 @@ function unitPriceForQty(p, qty) {
   }
   return price;
 }
-
 // Index of the tier currently "active" for a given quantity — the same
 // tier whose price unitPriceForQty would return — so the UI can ring
 // that tier's button instead of hiding the others.
@@ -58,7 +51,6 @@ function activeTierIndex(p, qty) {
   });
   return idx;
 }
-
 function setQty(num, qty) {
   const p = findProduct(num);
   if (!p) return;
@@ -72,7 +64,6 @@ function setQty(num, qty) {
   renderCartDrawer();
   updateCardQtyUI(num);
 }
-
 function cartTotal() {
   let total = 0;
   let count = 0;
@@ -87,25 +78,22 @@ function cartTotal() {
   }
   return { total, count };
 }
-
 // ---------------- Rendering: catalog ----------------
 function imgSrc(p) {
   return p.img ? IMG_BASE + p.img : PLACEHOLDER_IMG;
 }
-
 function tagHtml(tags) {
   return (tags || []).map((t) => `<span class="card-tag">${escapeHtml(t)}</span>`).join("");
 }
-
 function cartControlHtml(p) {
   if (!isPurchasable(p)) {
     if (p.status === "oos") return `<div class="unavailable-note">Out of stock</div>`;
     if (p.status === "soon") return `<div class="unavailable-note">Coming soon</div>`;
+    if (p.status === "hold") return `<div class="unavailable-note">Temporarily unavailable</div>`;
     return `<div class="unavailable-note">Pricing to follow</div>`;
   }
   const qty = cart[p.num] || 0;
   const activeIdx = qty > 0 ? activeTierIndex(p, qty) : -1;
-
   // All three pack-size buttons stay visible and clickable at all times —
   // clicking one sets the cart quantity to that pack size. The active one
   // (based on current quantity, not just an exact match) gets ringed so
@@ -122,7 +110,6 @@ function cartControlHtml(p) {
       </button>`;
     })
     .join("")}</div>`;
-
   let qtyPanel = "";
   if (qty > 0) {
     const unit = unitPriceForQty(p, qty);
@@ -147,22 +134,18 @@ function cartControlHtml(p) {
         </div>
       </div>`;
   }
-
   return `<div class="tier-block">${tierRow}${qtyPanel}</div>`;
 }
-
 function cardHtml(p) {
   const badges = [];
   if (p.status === "oos") badges.push('<span class="status-badge oos">Out of Stock</span>');
   else if (p.status === "soon") badges.push('<span class="status-badge soon">Coming Soon</span>');
+  else if (p.status === "hold") badges.push('<span class="status-badge hold">Temporarily Unavailable</span>');
   if (p.is_new) badges.push('<span class="status-badge new">New</span>');
-
   let cardCls = "card";
-  if (p.status === "oos") cardCls += " is-oos";
+  if (p.status === "oos" || p.status === "hold") cardCls += " is-oos";
   if (p.is_new) cardCls += " badge-new";
-
   const subHtml = p.sub ? `<div class="card-sub">${escapeHtml(p.sub)}</div>` : "";
-
   return `
   <div class="${cardCls}" data-product="${p.num}" data-search="${escapeHtml(p.name + " " + (p.sub || "")).toLowerCase()}">
     <div class="card-badge-row">${badges.join("")}</div>
@@ -175,7 +158,6 @@ function cardHtml(p) {
     </div>
   </div>`;
 }
-
 function categoryHtml(cat) {
   const catId = `cat-${slug(cat.title)}`;
   return `
@@ -187,7 +169,6 @@ function categoryHtml(cat) {
     <div class="grid">${cat.items.map(cardHtml).join("")}</div>
   </div>`;
 }
-
 function renderCatalog() {
   const root = document.getElementById("catalog");
   const nav = document.getElementById("catNav");
@@ -196,11 +177,9 @@ function renderCatalog() {
     .map((c) => `<a href="#cat-${slug(c.title)}">${escapeHtml(c.title)}</a>`)
     .join("");
 }
-
 function slug(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
-
 function escapeHtml(s) {
   return String(s)
     .replace(/&/g, "&amp;")
@@ -208,7 +187,6 @@ function escapeHtml(s) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
-
 // ---------------- Cart UI updates ----------------
 function updateCardQtyUI(num) {
   const el = document.querySelector(`.card[data-product="${num}"] [data-cart-control]`);
@@ -217,13 +195,11 @@ function updateCardQtyUI(num) {
     el.innerHTML = cartControlHtml(p);
   }
 }
-
 function renderCartCount() {
   const { count, total } = cartTotal();
   document.getElementById("cartCount").textContent = count;
   document.getElementById("cartHeaderTotal").textContent = `$${total.toFixed(2)}`;
 }
-
 function renderCartDrawer() {
   const itemsEl = document.getElementById("cartItems");
   const nums = Object.keys(cart).filter((n) => cart[n] > 0);
@@ -261,7 +237,6 @@ function renderCartDrawer() {
   document.getElementById("cartTotal").textContent = `$${total.toFixed(2)}`;
   document.getElementById("checkoutBtn").disabled = count === 0;
 }
-
 // ---------------- Cart drawer open/close ----------------
 function openCart() {
   document.getElementById("cartDrawer").classList.add("open");
@@ -271,7 +246,6 @@ function closeCart() {
   document.getElementById("cartDrawer").classList.remove("open");
   document.getElementById("cartOverlay").classList.remove("open");
 }
-
 // ---------------- WhatsApp checkout ----------------
 function buildOrderMessage() {
   const nums = Object.keys(cart).filter((n) => cart[n] > 0);
@@ -293,7 +267,6 @@ function buildOrderMessage() {
   lines.push("Please confirm stock and delivery. Thank you!");
   return lines.join("\n");
 }
-
 function checkout() {
   const { count } = cartTotal();
   if (count === 0) return;
@@ -301,7 +274,6 @@ function checkout() {
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
   window.open(url, "_blank", "noopener");
 }
-
 // ---------------- Search ----------------
 function applySearch(query) {
   const q = query.trim().toLowerCase();
@@ -314,7 +286,6 @@ function applySearch(query) {
     block.style.display = anyVisible ? "" : "none";
   });
 }
-
 // ---------------- Event wiring ----------------
 function wireEvents() {
   document.getElementById("cartToggle").addEventListener("click", openCart);
@@ -322,7 +293,6 @@ function wireEvents() {
   document.getElementById("cartOverlay").addEventListener("click", closeCart);
   document.getElementById("checkoutBtn").addEventListener("click", checkout);
   document.getElementById("searchInput").addEventListener("input", (e) => applySearch(e.target.value));
-
   document.body.addEventListener("click", (e) => {
     const tierBtn = e.target.closest("[data-set-qty]");
     if (tierBtn) {
@@ -351,7 +321,6 @@ function wireEvents() {
     }
   });
 }
-
 // ---------------- Init ----------------
 async function init() {
   const res = await fetch("data/products.json");
@@ -361,5 +330,4 @@ async function init() {
   renderCartCount();
   renderCartDrawer();
 }
-
 init();
