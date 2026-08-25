@@ -30,6 +30,32 @@
               "price": 5.25
             }
           ]
+        },
+        {
+          "num": 2,
+          "name": "Organic Hemp Protein Powder",
+          "sub": "50% Protein \u00b7 Whole-food plant protein",
+          "tags": [
+            "300 g",
+            "Lithuania"
+          ],
+          "img": "organicopia-hemp-protein-powder.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 10.0
+            },
+            {
+              "qty": 3,
+              "price": 9.75
+            },
+            {
+              "qty": 6,
+              "price": 9.0
+            }
+          ]
         }
       ]
     },
