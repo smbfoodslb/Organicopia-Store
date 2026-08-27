@@ -778,22 +778,9 @@
             "India"
           ],
           "img": "organicopia-cayenne-pepper-2.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 4.35
-            },
-            {
-              "qty": 3,
-              "price": 4.15
-            },
-            {
-              "qty": 6,
-              "price": 3.85
-            }
-          ]
+          "status": "oos",
+          "is_new": false,
+          "tiers": null
         },
         {
           "num": 35,
