@@ -772,19 +772,6 @@
           ]
         },
         {
-          "num": 34,
-          "name": "Organic Cayenne Pepper Powder",
-          "sub": "50,000 SHU",
-          "tags": [
-            "55 g",
-            "India"
-          ],
-          "img": "organicopia-cayenne-pepper-2.jpg",
-          "status": "oos",
-          "is_new": false,
-          "tiers": null
-        },
-        {
           "num": 35,
           "name": "Organic Smoked Paprika",
           "sub": null,
@@ -861,6 +848,19 @@
               "price": 2.2
             }
           ]
+        },
+        {
+          "num": 34,
+          "name": "Organic Cayenne Pepper Powder",
+          "sub": "50,000 SHU",
+          "tags": [
+            "55 g",
+            "India"
+          ],
+          "img": "organicopia-cayenne-pepper-2.jpg",
+          "status": "oos",
+          "is_new": false,
+          "tiers": null
         }
       ]
     },
