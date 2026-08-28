@@ -227,11 +227,12 @@
       "items": [
         {
           "num": 10,
-          "name": "Organic Dark Chocolate Chunks",
+          "name": "Organic Chocolate Chunks",
           "sub": "70% Cacao",
           "tags": [
             "90 g",
-            "Peru"
+            "Peru",
+            "Dark"
           ],
           "img": "organicopia-chocolate-chunks-2.jpg",
           "status": null,
@@ -253,11 +254,12 @@
         },
         {
           "num": 11,
-          "name": "Organic Raw Cacao Powder",
-          "sub": "20\u201322% Cacao",
+          "name": "Organic Cacao Powder",
+          "sub": "20-22% Cacao",
           "tags": [
             "250 g",
-            "Peru"
+            "Peru",
+            "Raw"
           ],
           "img": "organicopia-cacao-powder-2.jpg",
           "status": null,
