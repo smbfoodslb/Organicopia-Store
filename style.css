@@ -242,8 +242,16 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   font-size: 15.5px;
   line-height: 1.25;
   color: var(--teal-dark);
+  min-height: 2.5em; /* reserves 2 lines so a wrapped title doesn't push this
+                         card's pills/tier row lower than its row-neighbour's */
 }
-.card-sub { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
+.card-sub {
+  font-size: 12px; color: var(--gray-text); margin-top: 2px;
+  line-height: 1.25;
+  min-height: 1.25em; /* reserves 1 line even when this card has no descriptor --
+                          only takes effect once card-sub is always rendered, see
+                          the app.js change below */
+}
 .card-tags {
   margin-top: 8px;
   display: flex;
