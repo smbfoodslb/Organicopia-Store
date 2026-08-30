@@ -145,7 +145,7 @@ function cardHtml(p) {
   let cardCls = "card";
   if (p.status === "oos" || p.status === "hold") cardCls += " is-oos";
   if (p.is_new) cardCls += " badge-new";
-  const subHtml = p.sub ? `<div class="card-sub">${escapeHtml(p.sub)}</div>` : "";
+  const subHtml = `<div class="card-sub">${p.sub ? escapeHtml(p.sub) : ""}</div>`;
   return `
   <div class="${cardCls}" data-product="${p.num}" data-search="${escapeHtml(p.name + " " + (p.sub || "")).toLowerCase()}">
     <div class="card-badge-row">${badges.join("")}</div>
