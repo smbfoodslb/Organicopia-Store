@@ -49,7 +49,7 @@
             },
             {
               "qty": 3,
-              "price": 9.75
+              "price": 9.5
             },
             {
               "qty": 6,
@@ -527,8 +527,8 @@
       "items": [
         {
           "num": 22,
-          "name": "Pure Organic Stevia Powder",
-          "sub": null,
+          "name": "Organic Stevia Powder",
+          "sub": "100% Pure",
           "tags": [
             "40 g",
             "China"
@@ -1060,7 +1060,7 @@
             },
             {
               "qty": 3,
-              "price": 8.33
+              "price": 8.25
             },
             {
               "qty": 6,
