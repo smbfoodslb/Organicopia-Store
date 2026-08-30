@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-29",
+  "generated": "2026-08-30",
   "categories": [
     {
       "title": "Wellness",
@@ -19,7 +19,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 6.0
+              "price": 6.01
             },
             {
               "qty": 3,
@@ -240,15 +240,15 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 4.5
+              "price": 5.25
             },
             {
               "qty": 3,
-              "price": 4.3
+              "price": 5.0
             },
             {
               "qty": 6,
-              "price": 4.0
+              "price": 4.7
             }
           ]
         },
@@ -293,7 +293,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 12.0
+              "price": 12.01
             },
             {
               "qty": 3,
@@ -681,7 +681,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 4.25
+              "price": 4
             },
             {
               "qty": 3,
@@ -707,7 +707,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 2.25
+              "price": 2.75
             },
             {
               "qty": 3,
@@ -733,7 +733,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 4.25
+              "price": 4
             },
             {
               "qty": 3,
@@ -785,15 +785,15 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 5.5
+              "price": 5.25
             },
             {
               "qty": 3,
-              "price": 5.2
+              "price": 5.0
             },
             {
               "qty": 6,
-              "price": 4.75
+              "price": 4.7
             }
           ]
         },
