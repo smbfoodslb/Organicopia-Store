@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-30",
+  "generated": "2026-09-03",
   "categories": [
     {
       "title": "Wellness",
@@ -19,7 +19,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 6.01
+              "price": 6.0
             },
             {
               "qty": 3,
@@ -293,7 +293,7 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 12.01
+              "price": 12.0
             },
             {
               "qty": 3,
