@@ -549,3 +549,42 @@ h1, h2, h3, .serif { font-family: Georgia, 'Liberation Serif', serif; }
   .cart-header-total { font-size: 12.5px; padding: 6px 9px; }
   .cart-toggle { padding: 8px 11px; }
 }
+
+/* ================================================================
+   ROUND 32b -- card-footer clipping fix (qty in cart)
+   Appended 2026-09-03. Verified root cause (re-confirmed against
+   this exact, byte-hashed live fetch -- corrects an earlier,
+   inaccurate claim about white-space:nowrap already being present
+   on .was-price/.now-price/.save-note above; it is NOT -- see the
+   round-32b changelog note for the correction):
+     .qty-panel is display:flex with no flex-wrap set (default:
+     nowrap). .qty-price-block has no flex/min-width set (default
+     flex-shrink behavior still won't shrink below its content's
+     intrinsic width). .card has overflow:hidden. When
+     .qty-stepper + .qty-price-block's combined natural width
+     exceeds the available card width, the row overflows its flex
+     container and .card's overflow:hidden clips the excess --
+     producing exactly the mid-word clipping SMB reported ("You
+     sa", "$30.0"). No text-level nowrap needed to be involved.
+   ================================================================ */
+
+.qty-panel{
+  flex-wrap: wrap;
+}
+
+.qty-price-block{
+  flex: 1 1 100%;
+  min-width: 0;
+  text-align: right;
+}
+
+/* Defensive only -- no white-space:nowrap was found on these three
+   selectors in the live CSS above (verified, not just re-asserted).
+   Kept as a harmless, no-op-today safeguard in case content ever
+   forces a nowrap context here; does not change current behavior. */
+.qty-price-block .was-price,
+.qty-price-block .now-price,
+.qty-price-block .save-note {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
