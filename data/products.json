@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-03",
+  "generated": "2026-09-05",
   "categories": [
     {
       "title": "Wellness",
@@ -632,6 +632,32 @@
             {
               "qty": 6,
               "price": 15.0
+            }
+          ]
+        },
+        {
+          "num": 27,
+          "name": "Organic Peanut Butter",
+          "sub": "Salted",
+          "tags": [
+            "250 g",
+            "USA"
+          ],
+          "img": "organicopia-peanut-butter.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 6.5
+            },
+            {
+              "qty": 3,
+              "price": 6.25
+            },
+            {
+              "qty": 6,
+              "price": 5.9
             }
           ]
         },
