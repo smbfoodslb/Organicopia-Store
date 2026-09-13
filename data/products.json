@@ -934,7 +934,8 @@
           "name": "Cookies",
           "sub": "Double Chocolate Chunk, 1 Piece",
           "tags": [
-            "35 g"
+            "35 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "cookies-double-chocolate-1pc.jpg",
@@ -960,7 +961,8 @@
           "name": "Cookies",
           "sub": "Double Chocolate Chunk, 6 Pieces (box)",
           "tags": [
-            "210 g"
+            "210 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "cookies-double-chocolate-6pc.jpg",
@@ -986,7 +988,8 @@
           "name": "Cookies",
           "sub": "Vanilla Chocolate Chip, 1 Piece",
           "tags": [
-            "40 g"
+            "40 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "cookies-vanilla-chip-1pc.jpg",
@@ -1012,7 +1015,8 @@
           "name": "Cookies",
           "sub": "Vanilla Chocolate Chip, 6 Pieces (box)",
           "tags": [
-            "240 g"
+            "240 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "cookies-vanilla-chip-6pc.jpg",
@@ -1038,7 +1042,8 @@
           "name": "Double Chocolate Chip Brownie",
           "sub": "1 Piece",
           "tags": [
-            "60 g"
+            "60 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "brownie-double-chocolate-1pc.jpg",
@@ -1064,7 +1069,8 @@
           "name": "Double Chocolate Chip Brownie",
           "sub": "6 Pieces (box)",
           "tags": [
-            "360 g"
+            "360 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "brownie-double-chocolate-6pc.jpg",
@@ -1090,7 +1096,8 @@
           "name": "Double Chocolate Chip Muffin",
           "sub": "1 Piece",
           "tags": [
-            "70 g"
+            "70 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "muffin-double-chocolate-1pc.jpg",
@@ -1116,7 +1123,8 @@
           "name": "Double Chocolate Chip Muffin",
           "sub": "4 Pieces (box)",
           "tags": [
-            "280 g"
+            "280 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "muffin-double-chocolate-4pc.jpg",
@@ -1142,7 +1150,8 @@
           "name": "Double Chocolate Chip Muffin",
           "sub": "6 Pieces (box)",
           "tags": [
-            "420 g"
+            "420 g",
+            "Lebanon"
           ],
           "imported_ingredients": true,
           "img": "muffin-double-chocolate-6pc.jpg",
@@ -1166,8 +1175,11 @@
         {
           "num": 48,
           "name": "Petit Four",
-          "sub": "Double Chocolate, 200 g",
-          "tags": [],
+          "sub": "Double Chocolate",
+          "tags": [
+            "200 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-double-chocolate-200g.jpg",
           "status": null,
@@ -1190,8 +1202,11 @@
         {
           "num": 49,
           "name": "Petit Four",
-          "sub": "Double Chocolate, 300 g",
-          "tags": [],
+          "sub": "Double Chocolate",
+          "tags": [
+            "300 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-double-chocolate-300g.jpg",
           "status": null,
@@ -1214,8 +1229,11 @@
         {
           "num": 50,
           "name": "Petit Four",
-          "sub": "Apricot Jam, 200 g",
-          "tags": [],
+          "sub": "Apricot Jam",
+          "tags": [
+            "200 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-apricot-jam-200g.jpg",
           "status": null,
@@ -1238,8 +1256,11 @@
         {
           "num": 51,
           "name": "Petit Four",
-          "sub": "Apricot Jam, 300 g",
-          "tags": [],
+          "sub": "Apricot Jam",
+          "tags": [
+            "300 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-apricot-jam-300g.jpg",
           "status": null,
@@ -1262,8 +1283,11 @@
         {
           "num": 52,
           "name": "Petit Four",
-          "sub": "Strawberry Jam, 200 g",
-          "tags": [],
+          "sub": "Strawberry Jam",
+          "tags": [
+            "200 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-strawberry-jam-200g.jpg",
           "status": null,
@@ -1286,8 +1310,11 @@
         {
           "num": 53,
           "name": "Petit Four",
-          "sub": "Strawberry Jam, 300 g",
-          "tags": [],
+          "sub": "Strawberry Jam",
+          "tags": [
+            "300 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-strawberry-jam-300g.jpg",
           "status": null,
@@ -1310,8 +1337,11 @@
         {
           "num": 54,
           "name": "Petit Four",
-          "sub": "Vanilla Chocolate, 200 g",
-          "tags": [],
+          "sub": "Vanilla Chocolate",
+          "tags": [
+            "200 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-vanilla-chocolate-200g.jpg",
           "status": null,
@@ -1334,8 +1364,11 @@
         {
           "num": 55,
           "name": "Petit Four",
-          "sub": "Vanilla Chocolate, 300 g",
-          "tags": [],
+          "sub": "Vanilla Chocolate",
+          "tags": [
+            "300 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-vanilla-chocolate-300g.jpg",
           "status": null,
@@ -1358,8 +1391,11 @@
         {
           "num": 56,
           "name": "Petit Four",
-          "sub": "Variety Chocolate, 200 g",
-          "tags": [],
+          "sub": "Variety Chocolate",
+          "tags": [
+            "200 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-variety-chocolate-200g.jpg",
           "status": null,
@@ -1382,8 +1418,11 @@
         {
           "num": 57,
           "name": "Petit Four",
-          "sub": "Variety Chocolate, 300 g",
-          "tags": [],
+          "sub": "Variety Chocolate",
+          "tags": [
+            "300 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-variety-chocolate-300g.jpg",
           "status": null,
@@ -1406,8 +1445,11 @@
         {
           "num": 58,
           "name": "Petit Four",
-          "sub": "Variety Jam, 200 g",
-          "tags": [],
+          "sub": "Variety Jam",
+          "tags": [
+            "200 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-variety-jam-200g.jpg",
           "status": null,
@@ -1430,8 +1472,11 @@
         {
           "num": 59,
           "name": "Petit Four",
-          "sub": "Variety Jam, 300 g",
-          "tags": [],
+          "sub": "Variety Jam",
+          "tags": [
+            "300 g",
+            "Lebanon"
+          ],
           "imported_ingredients": true,
           "img": "petit-four-variety-jam-300g.jpg",
           "status": null,
@@ -1459,7 +1504,7 @@
             "60 g",
             "Lebanon"
           ],
-          "imported_ingredients": false,
+          "imported_ingredients": true,
           "img": "sable-double-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1486,7 +1531,7 @@
             "60 g",
             "Lebanon"
           ],
-          "imported_ingredients": false,
+          "imported_ingredients": true,
           "img": "sable-vanilla-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1513,7 +1558,7 @@
             "60 g",
             "Lebanon"
           ],
-          "imported_ingredients": false,
+          "imported_ingredients": true,
           "img": "sable-apricot-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1540,7 +1585,7 @@
             "60 g",
             "Lebanon"
           ],
-          "imported_ingredients": false,
+          "imported_ingredients": true,
           "img": "sable-strawberry-jam.jpg",
           "status": null,
           "is_new": false,
