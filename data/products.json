@@ -13,6 +13,7 @@
             "50 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-wheatgrass-powder-2.jpg",
           "status": null,
           "is_new": false,
@@ -39,6 +40,7 @@
             "300 g",
             "Lithuania"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-hemp-protein-powder.jpg",
           "status": null,
           "is_new": false,
@@ -71,6 +73,7 @@
             "240 mL",
             "India"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-castor-oil.jpg",
           "status": null,
           "is_new": false,
@@ -97,6 +100,7 @@
             "240 mL",
             "India"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-black-seed-oil-2.jpg",
           "status": null,
           "is_new": false,
@@ -123,6 +127,7 @@
             "35 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-activated-charcoal-powder.jpg",
           "status": null,
           "is_new": true,
@@ -149,6 +154,7 @@
             "60 g",
             "Lebanon"
           ],
+          "imported_ingredients": true,
           "img": "clay-toothpaste-peppermint.jpg",
           "status": null,
           "is_new": false,
@@ -175,6 +181,7 @@
             "60 g",
             "Lebanon"
           ],
+          "imported_ingredients": true,
           "img": "clay-toothpaste-cinnamon.jpg",
           "status": null,
           "is_new": false,
@@ -201,6 +208,7 @@
             "72 g",
             "Honduras"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-batana-oil.jpg",
           "status": "hold",
           "is_new": false,
@@ -214,6 +222,7 @@
             "100 g",
             "Ghana"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-shea-butter.jpg",
           "status": "oos",
           "is_new": false,
@@ -234,6 +243,7 @@
             "Lebanon",
             "Dark"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-chocolate-chunks-2.jpg",
           "status": null,
           "is_new": true,
@@ -261,6 +271,7 @@
             "Peru",
             "Raw"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-cacao-powder-2.jpg",
           "status": null,
           "is_new": false,
@@ -287,6 +298,7 @@
             "200 g",
             "Ecuador"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-cacao-nibs-4.jpg",
           "status": null,
           "is_new": false,
@@ -319,6 +331,7 @@
             "65 g",
             "Mexico"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-black-sesame-seeds-2.jpg",
           "status": null,
           "is_new": true,
@@ -345,6 +358,7 @@
             "65 g",
             "Mexico"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-sesame-seeds-hulled-2.jpg",
           "status": null,
           "is_new": true,
@@ -371,6 +385,7 @@
             "100 g",
             "Turkey"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-apricots-sundried.jpg",
           "status": null,
           "is_new": true,
@@ -397,6 +412,7 @@
             "500 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-yellow-popcorn.jpg",
           "status": null,
           "is_new": false,
@@ -423,6 +439,7 @@
             "450 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-white-popcorn.jpg",
           "status": null,
           "is_new": true,
@@ -449,6 +466,7 @@
             "450 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-rainbow-popcorn.jpg",
           "status": null,
           "is_new": true,
@@ -475,6 +493,7 @@
             "100 g",
             "Sri Lanka"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-ceylon-coconut-chips-raw.jpg",
           "status": null,
           "is_new": true,
@@ -501,6 +520,7 @@
             "100 g",
             "Sri Lanka"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-ceylon-coconut-chips-toasted.jpg",
           "status": null,
           "is_new": true,
@@ -533,6 +553,7 @@
             "40 g",
             "China"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-stevia-powder.jpg",
           "status": null,
           "is_new": false,
@@ -559,6 +580,7 @@
             "500 g",
             "Brazil"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-powdered-cane-sugar-2.jpg",
           "status": null,
           "is_new": false,
@@ -591,6 +613,7 @@
             "60 mL",
             "Madagascar"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-vanilla-extract.jpg",
           "status": null,
           "is_new": false,
@@ -615,8 +638,9 @@
           "sub": "Clarified Butter \u00b7 Freshly Made to Order",
           "tags": [
             "500 g",
-            "Argentina"
+            "Lebanon"
           ],
+          "imported_ingredients": true,
           "img": "organicopia-ghee.jpg",
           "status": null,
           "is_new": true,
@@ -643,6 +667,7 @@
             "250 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-peanut-butter.jpg",
           "status": null,
           "is_new": true,
@@ -669,6 +694,7 @@
             "280 mL",
             "Mexico"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-coconut-aminos.jpg",
           "status": "oos",
           "is_new": false,
@@ -682,6 +708,7 @@
             "280 mL",
             "Mexico"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-toasted-sesame-oil.jpg",
           "status": "oos",
           "is_new": false,
@@ -701,6 +728,7 @@
             "50 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-pumpkin-pie-spice.jpg",
           "status": null,
           "is_new": false,
@@ -727,6 +755,7 @@
             "45 g",
             "Sri Lanka"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-ceylon-cinnamon-powder-2.jpg",
           "status": null,
           "is_new": true,
@@ -753,6 +782,7 @@
             "60 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-blackened-cajun-seasoning-2.jpg",
           "status": null,
           "is_new": true,
@@ -779,6 +809,7 @@
             "55 g",
             "India"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-garlic-powder.jpg",
           "status": null,
           "is_new": true,
@@ -805,6 +836,7 @@
             "60 g",
             "Spain"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-smoked-paprika.jpg",
           "status": null,
           "is_new": true,
@@ -831,6 +863,7 @@
             "55 g",
             "India"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-ginger-root-powder.jpg",
           "status": null,
           "is_new": true,
@@ -857,6 +890,7 @@
             "70 g",
             "India"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-turmeric-root-powder.jpg",
           "status": null,
           "is_new": true,
@@ -883,6 +917,7 @@
             "55 g",
             "India"
           ],
+          "imported_ingredients": false,
           "img": "organicopia-cayenne-pepper-2.jpg",
           "status": "oos",
           "is_new": false,
@@ -901,6 +936,7 @@
           "tags": [
             "35 g"
           ],
+          "imported_ingredients": false,
           "img": "cookies-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -926,6 +962,7 @@
           "tags": [
             "210 g"
           ],
+          "imported_ingredients": false,
           "img": "cookies-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -951,6 +988,7 @@
           "tags": [
             "40 g"
           ],
+          "imported_ingredients": false,
           "img": "cookies-vanilla-chip-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -976,6 +1014,7 @@
           "tags": [
             "240 g"
           ],
+          "imported_ingredients": false,
           "img": "cookies-vanilla-chip-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1001,6 +1040,7 @@
           "tags": [
             "60 g"
           ],
+          "imported_ingredients": false,
           "img": "brownie-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1026,6 +1066,7 @@
           "tags": [
             "360 g"
           ],
+          "imported_ingredients": false,
           "img": "brownie-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1051,6 +1092,7 @@
           "tags": [
             "70 g"
           ],
+          "imported_ingredients": false,
           "img": "muffin-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1076,6 +1118,7 @@
           "tags": [
             "280 g"
           ],
+          "imported_ingredients": false,
           "img": "muffin-double-chocolate-4pc.jpg",
           "status": null,
           "is_new": false,
@@ -1101,6 +1144,7 @@
           "tags": [
             "420 g"
           ],
+          "imported_ingredients": false,
           "img": "muffin-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1124,6 +1168,7 @@
           "name": "Petit Four",
           "sub": "Double Chocolate, 200 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-double-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1147,6 +1192,7 @@
           "name": "Petit Four",
           "sub": "Double Chocolate, 300 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-double-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1170,6 +1216,7 @@
           "name": "Petit Four",
           "sub": "Apricot Jam, 200 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-apricot-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1193,6 +1240,7 @@
           "name": "Petit Four",
           "sub": "Apricot Jam, 300 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-apricot-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1216,6 +1264,7 @@
           "name": "Petit Four",
           "sub": "Strawberry Jam, 200 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-strawberry-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1239,6 +1288,7 @@
           "name": "Petit Four",
           "sub": "Strawberry Jam, 300 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-strawberry-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1262,6 +1312,7 @@
           "name": "Petit Four",
           "sub": "Vanilla Chocolate, 200 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-vanilla-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1285,6 +1336,7 @@
           "name": "Petit Four",
           "sub": "Vanilla Chocolate, 300 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-vanilla-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1308,6 +1360,7 @@
           "name": "Petit Four",
           "sub": "Variety Chocolate, 200 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-variety-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1331,6 +1384,7 @@
           "name": "Petit Four",
           "sub": "Variety Chocolate, 300 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-variety-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1354,6 +1408,7 @@
           "name": "Petit Four",
           "sub": "Variety Jam, 200 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-variety-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1377,6 +1432,7 @@
           "name": "Petit Four",
           "sub": "Variety Jam, 300 g",
           "tags": [],
+          "imported_ingredients": false,
           "img": "petit-four-variety-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1403,6 +1459,7 @@
             "60 g",
             "Lebanon"
           ],
+          "imported_ingredients": false,
           "img": "sable-double-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1429,6 +1486,7 @@
             "60 g",
             "Lebanon"
           ],
+          "imported_ingredients": false,
           "img": "sable-vanilla-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1455,6 +1513,7 @@
             "60 g",
             "Lebanon"
           ],
+          "imported_ingredients": false,
           "img": "sable-apricot-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1481,6 +1540,7 @@
             "60 g",
             "Lebanon"
           ],
+          "imported_ingredients": false,
           "img": "sable-strawberry-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1513,6 +1573,7 @@
             "60 g",
             "France"
           ],
+          "imported_ingredients": false,
           "img": "gummies-berrilicious.jpg",
           "status": null,
           "is_new": false,
@@ -1539,6 +1600,7 @@
             "60 g",
             "France"
           ],
+          "imported_ingredients": false,
           "img": "chews-berry-noir.jpg",
           "status": null,
           "is_new": false,
@@ -1565,6 +1627,7 @@
             "60 g",
             "France"
           ],
+          "imported_ingredients": false,
           "img": "chews-soulberry.jpg",
           "status": null,
           "is_new": false,
@@ -1591,6 +1654,7 @@
             "60 g",
             "France"
           ],
+          "imported_ingredients": false,
           "img": "gummies-tuttifrutti-blend.jpg",
           "status": null,
           "is_new": false,
@@ -1617,6 +1681,7 @@
             "60 g",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "gummies-fruitvine-laces.jpg",
           "status": null,
           "is_new": false,
@@ -1643,6 +1708,7 @@
             "10 pcs",
             "USA"
           ],
+          "imported_ingredients": false,
           "img": "lollipops-lollie-patch.jpg",
           "status": null,
           "is_new": false,
