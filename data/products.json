@@ -231,7 +231,7 @@
           "sub": "70% Cacao",
           "tags": [
             "90 g",
-            "Peru",
+            "Lebanon",
             "Dark"
           ],
           "img": "organicopia-chocolate-chunks-2.jpg",
@@ -1400,7 +1400,8 @@
           "name": "Sabl\u00e9",
           "sub": "Double Chocolate",
           "tags": [
-            "60 g"
+            "60 g",
+            "Lebanon"
           ],
           "img": "sable-double-chocolate.jpg",
           "status": null,
@@ -1425,7 +1426,8 @@
           "name": "Sabl\u00e9",
           "sub": "Vanilla Chocolate",
           "tags": [
-            "60 g"
+            "60 g",
+            "Lebanon"
           ],
           "img": "sable-vanilla-chocolate.jpg",
           "status": null,
@@ -1450,7 +1452,8 @@
           "name": "Sabl\u00e9",
           "sub": "Apricot Jam",
           "tags": [
-            "60 g"
+            "60 g",
+            "Lebanon"
           ],
           "img": "sable-apricot-jam.jpg",
           "status": null,
@@ -1475,7 +1478,8 @@
           "name": "Sabl\u00e9",
           "sub": "Strawberry Jam",
           "tags": [
-            "60 g"
+            "60 g",
+            "Lebanon"
           ],
           "img": "sable-strawberry-jam.jpg",
           "status": null,
@@ -1507,7 +1511,7 @@
           "sub": null,
           "tags": [
             "60 g",
-            "USA"
+            "France"
           ],
           "img": "gummies-berrilicious.jpg",
           "status": null,
@@ -1533,7 +1537,7 @@
           "sub": null,
           "tags": [
             "60 g",
-            "USA"
+            "France"
           ],
           "img": "chews-berry-noir.jpg",
           "status": null,
@@ -1559,7 +1563,7 @@
           "sub": null,
           "tags": [
             "60 g",
-            "USA"
+            "France"
           ],
           "img": "chews-soulberry.jpg",
           "status": null,
@@ -1585,7 +1589,7 @@
           "sub": null,
           "tags": [
             "60 g",
-            "USA"
+            "France"
           ],
           "img": "gummies-tuttifrutti-blend.jpg",
           "status": null,
