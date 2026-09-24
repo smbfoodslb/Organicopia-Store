@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-14",
+  "generated": "2026-09-24",
   "categories": [
     {
       "title": "Wellness",
@@ -487,8 +487,8 @@
         },
         {
           "num": 19,
-          "name": "Organic Raw Coconut Chips",
-          "sub": null,
+          "name": "Organic Ceylon Coconut Chips",
+          "sub": "Raw",
           "tags": [
             "100 g",
             "Sri Lanka"
@@ -514,8 +514,8 @@
         },
         {
           "num": 20,
-          "name": "Organic Toasted Coconut Chips",
-          "sub": null,
+          "name": "Organic Ceylon Coconut Chips",
+          "sub": "Toasted",
           "tags": [
             "100 g",
             "Sri Lanka"
@@ -725,7 +725,7 @@
           "name": "Organic Pumpkin Pie Spice",
           "sub": null,
           "tags": [
-            "50 g",
+            "45 g",
             "USA"
           ],
           "imported_ingredients": false,
@@ -860,7 +860,7 @@
           "name": "Organic Ginger Root Powder",
           "sub": "Lab Tested",
           "tags": [
-            "55 g",
+            "60 g",
             "India"
           ],
           "imported_ingredients": false,
