@@ -626,3 +626,31 @@ color: #5a5045;
 padding: 2px 6px;
 border-radius: 3px;
 }
+
+/* ================================================================
+ROUND 33 -- mobile tier-price clipping fix (appended 2026-10-16)
+Reported by SMB (phone screenshot): in the 2-column mobile grid the
+three tier buttons (x1 / x3 / x6) sit side by side inside a card
+body only ~125px wide. Two-digit prices ("$13.25", "$12.50") are
+wider than their slot, the row overflows, the x6 button runs to the
+card edge and .card's overflow:hidden cuts it off; the buttons also
+end up unevenly spaced. Fix, mobile (<=640px) only: stack the tiers
+as three full-width rows (quantity on the left, price on the right)
+so every price has room however many digits it has. Desktop and
+tablet layouts above 640px are untouched.
+================================================================ */
+
+@media (max-width: 640px) {
+.card-body { padding: 10px; }
+.tier-row { flex-direction: column; gap: 4px; }
+.tier-btn {
+display: flex;
+justify-content: space-between;
+align-items: center;
+min-width: 0;
+padding: 6px 10px;
+}
+.tier-btn .tier-qty,
+.tier-btn .tier-price { display: inline; }
+.tier-btn .tier-price { font-size: 13px; white-space: nowrap; }
+}
