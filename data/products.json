@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-24",
+  "generated": "2026-10-16",
   "categories": [
     {
       "title": "Wellness",
@@ -660,7 +660,61 @@
           ]
         },
         {
+          "num": 26,
+          "name": "100% Ghee",
+          "sub": "Clarified Butter \u00b7 Freshly Made to Order",
+          "tags": [
+            "250 g",
+            "Lebanon"
+          ],
+          "imported_ingredients": true,
+          "img": "organicopia-ghee-250g.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 8.7
+            },
+            {
+              "qty": 3,
+              "price": 8.4
+            },
+            {
+              "qty": 6,
+              "price": 8.0
+            }
+          ]
+        },
+        {
           "num": 27,
+          "name": "Organic Coconut Butter",
+          "sub": null,
+          "tags": [
+            "250 g",
+            "Philippines"
+          ],
+          "imported_ingredients": false,
+          "img": "organicopia-coconut-butter.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 6.25
+            },
+            {
+              "qty": 3,
+              "price": 6.0
+            },
+            {
+              "qty": 6,
+              "price": 5.75
+            }
+          ]
+        },
+        {
+          "num": 28,
           "name": "Organic Peanut Butter",
           "sub": "Salted",
           "tags": [
@@ -687,7 +741,7 @@
           ]
         },
         {
-          "num": 28,
+          "num": 29,
           "name": "Organic Coconut Aminos",
           "sub": null,
           "tags": [
@@ -701,7 +755,7 @@
           "tiers": null
         },
         {
-          "num": 29,
+          "num": 30,
           "name": "Organic Toasted Sesame Oil",
           "sub": null,
           "tags": [
@@ -721,7 +775,7 @@
       "desc": "Single-origin spices, ground and whole.",
       "items": [
         {
-          "num": 30,
+          "num": 31,
           "name": "Organic Pumpkin Pie Spice",
           "sub": null,
           "tags": [
@@ -748,7 +802,7 @@
           ]
         },
         {
-          "num": 31,
+          "num": 32,
           "name": "Organic Ceylon Cinnamon Powder",
           "sub": "Lab Tested",
           "tags": [
@@ -775,7 +829,7 @@
           ]
         },
         {
-          "num": 32,
+          "num": 33,
           "name": "Organic Blackened Cajun Seasoning",
           "sub": null,
           "tags": [
@@ -802,7 +856,7 @@
           ]
         },
         {
-          "num": 33,
+          "num": 34,
           "name": "Organic Garlic Powder",
           "sub": null,
           "tags": [
@@ -829,7 +883,7 @@
           ]
         },
         {
-          "num": 35,
+          "num": 36,
           "name": "Organic Smoked Paprika",
           "sub": null,
           "tags": [
@@ -856,7 +910,7 @@
           ]
         },
         {
-          "num": 36,
+          "num": 37,
           "name": "Organic Ginger Root Powder",
           "sub": "Lab Tested",
           "tags": [
@@ -883,7 +937,7 @@
           ]
         },
         {
-          "num": 37,
+          "num": 38,
           "name": "Organic Turmeric Root Powder",
           "sub": null,
           "tags": [
@@ -910,7 +964,7 @@
           ]
         },
         {
-          "num": 34,
+          "num": 35,
           "name": "Organic Cayenne Pepper Powder",
           "sub": "50,000 SHU",
           "tags": [
@@ -930,7 +984,7 @@
       "desc": "Baked in small batches with organic ingredients. Cookies, brownies, sabl\u00e9s, petit fours.",
       "items": [
         {
-          "num": 39,
+          "num": 40,
           "name": "Cookies",
           "sub": "Double Chocolate Chunk, 1 Piece",
           "tags": [
@@ -957,7 +1011,7 @@
           ]
         },
         {
-          "num": 40,
+          "num": 41,
           "name": "Cookies",
           "sub": "Double Chocolate Chunk, 6 Pieces (box)",
           "tags": [
@@ -984,7 +1038,7 @@
           ]
         },
         {
-          "num": 41,
+          "num": 42,
           "name": "Cookies",
           "sub": "Vanilla Chocolate Chip, 1 Piece",
           "tags": [
@@ -1011,7 +1065,7 @@
           ]
         },
         {
-          "num": 42,
+          "num": 43,
           "name": "Cookies",
           "sub": "Vanilla Chocolate Chip, 6 Pieces (box)",
           "tags": [
@@ -1038,7 +1092,7 @@
           ]
         },
         {
-          "num": 43,
+          "num": 44,
           "name": "Double Chocolate Chip Brownie",
           "sub": "1 Piece",
           "tags": [
@@ -1065,7 +1119,7 @@
           ]
         },
         {
-          "num": 44,
+          "num": 45,
           "name": "Double Chocolate Chip Brownie",
           "sub": "6 Pieces (box)",
           "tags": [
@@ -1092,7 +1146,7 @@
           ]
         },
         {
-          "num": 45,
+          "num": 46,
           "name": "Double Chocolate Chip Muffin",
           "sub": "1 Piece",
           "tags": [
@@ -1119,7 +1173,7 @@
           ]
         },
         {
-          "num": 46,
+          "num": 47,
           "name": "Double Chocolate Chip Muffin",
           "sub": "4 Pieces (box)",
           "tags": [
@@ -1146,7 +1200,7 @@
           ]
         },
         {
-          "num": 47,
+          "num": 48,
           "name": "Double Chocolate Chip Muffin",
           "sub": "6 Pieces (box)",
           "tags": [
@@ -1173,7 +1227,7 @@
           ]
         },
         {
-          "num": 48,
+          "num": 49,
           "name": "Petit Four",
           "sub": "Double Chocolate",
           "tags": [
@@ -1200,7 +1254,7 @@
           ]
         },
         {
-          "num": 49,
+          "num": 50,
           "name": "Petit Four",
           "sub": "Double Chocolate",
           "tags": [
@@ -1227,7 +1281,7 @@
           ]
         },
         {
-          "num": 50,
+          "num": 51,
           "name": "Petit Four",
           "sub": "Apricot Jam",
           "tags": [
@@ -1254,7 +1308,7 @@
           ]
         },
         {
-          "num": 51,
+          "num": 52,
           "name": "Petit Four",
           "sub": "Apricot Jam",
           "tags": [
@@ -1281,7 +1335,7 @@
           ]
         },
         {
-          "num": 52,
+          "num": 53,
           "name": "Petit Four",
           "sub": "Strawberry Jam",
           "tags": [
@@ -1308,7 +1362,7 @@
           ]
         },
         {
-          "num": 53,
+          "num": 54,
           "name": "Petit Four",
           "sub": "Strawberry Jam",
           "tags": [
@@ -1335,7 +1389,7 @@
           ]
         },
         {
-          "num": 54,
+          "num": 55,
           "name": "Petit Four",
           "sub": "Vanilla Chocolate",
           "tags": [
@@ -1362,7 +1416,7 @@
           ]
         },
         {
-          "num": 55,
+          "num": 56,
           "name": "Petit Four",
           "sub": "Vanilla Chocolate",
           "tags": [
@@ -1389,7 +1443,7 @@
           ]
         },
         {
-          "num": 56,
+          "num": 57,
           "name": "Petit Four",
           "sub": "Variety Chocolate",
           "tags": [
@@ -1416,7 +1470,7 @@
           ]
         },
         {
-          "num": 57,
+          "num": 58,
           "name": "Petit Four",
           "sub": "Variety Chocolate",
           "tags": [
@@ -1443,7 +1497,7 @@
           ]
         },
         {
-          "num": 58,
+          "num": 59,
           "name": "Petit Four",
           "sub": "Variety Jam",
           "tags": [
@@ -1470,7 +1524,7 @@
           ]
         },
         {
-          "num": 59,
+          "num": 60,
           "name": "Petit Four",
           "sub": "Variety Jam",
           "tags": [
@@ -1497,7 +1551,7 @@
           ]
         },
         {
-          "num": 60,
+          "num": 61,
           "name": "Sabl\u00e9",
           "sub": "Double Chocolate",
           "tags": [
@@ -1524,7 +1578,7 @@
           ]
         },
         {
-          "num": 61,
+          "num": 62,
           "name": "Sabl\u00e9",
           "sub": "Vanilla Chocolate",
           "tags": [
@@ -1551,7 +1605,7 @@
           ]
         },
         {
-          "num": 62,
+          "num": 63,
           "name": "Sabl\u00e9",
           "sub": "Apricot Jam",
           "tags": [
@@ -1578,7 +1632,7 @@
           ]
         },
         {
-          "num": 63,
+          "num": 64,
           "name": "Sabl\u00e9",
           "sub": "Strawberry Jam",
           "tags": [
@@ -1611,7 +1665,7 @@
       "desc": "Berry-bright chews and little treats, made clean.",
       "items": [
         {
-          "num": 64,
+          "num": 65,
           "name": "Berrilicious",
           "sub": null,
           "tags": [
@@ -1638,7 +1692,7 @@
           ]
         },
         {
-          "num": 65,
+          "num": 66,
           "name": "Berry Noir Chews",
           "sub": null,
           "tags": [
@@ -1665,7 +1719,7 @@
           ]
         },
         {
-          "num": 66,
+          "num": 67,
           "name": "SoulBerry Chews",
           "sub": null,
           "tags": [
@@ -1692,7 +1746,7 @@
           ]
         },
         {
-          "num": 67,
+          "num": 68,
           "name": "TuttiFrutti Blend",
           "sub": null,
           "tags": [
@@ -1719,7 +1773,7 @@
           ]
         },
         {
-          "num": 68,
+          "num": 69,
           "name": "FruitVine Laces",
           "sub": null,
           "tags": [
@@ -1746,7 +1800,7 @@
           ]
         },
         {
-          "num": 69,
+          "num": 70,
           "name": "Lollie Patch",
           "sub": null,
           "tags": [
