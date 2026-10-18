@@ -171,6 +171,7 @@ return `
 <div class="card-name">${escapeHtml(p.name)}</div>
 ${subHtml}
 <div class="card-tags">${tagHtml(p.tags)}${importedPillHtml(p)}</div>
+${detailsLinkHtml(p)}
 <div data-cart-control>${cartControlHtml(p)}</div>
 </div>
 </div>`;
@@ -203,6 +204,81 @@ return String(s)
 .replace(/</g, "&lt;")
 .replace(/>/g, "&gt;")
 .replace(/"/g, "&quot;");
+}
+// ---------------- Product details pop-up ----------------
+// [2026-10-18] "Details" link on cards that have a description and/or ingredients
+// (fields `description`, `ingredients`, `badges` on the product, exported from
+// organicopia_details.py). Cards without text show no link. One shared dialog,
+// built on first use. Closes with the X, a tap outside, Esc, or the browser's back
+// button (a history entry is pushed on open and removed on close).
+let detailsOpen = false;
+let detailsReturnFocus = null;
+function hasDetails(p) {
+return !!(p.description || p.ingredients);
+}
+function detailsLinkHtml(p) {
+return hasDetails(p)
+? `<div class="card-details"><button type="button" class="details-link" data-details="${p.num}" aria-haspopup="dialog">Details</button></div>`
+: "";
+}
+function ensureDetailsModal() {
+let ov = document.getElementById("detailsOverlay");
+if (ov) return ov;
+ov = document.createElement("div");
+ov.id = "detailsOverlay";
+ov.className = "details-overlay";
+ov.hidden = true;
+ov.innerHTML = `<div class="details-sheet" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" tabindex="-1">
+<button type="button" class="details-close" id="detailsClose" aria-label="Close details">&times;</button>
+<h3 class="details-title" id="detailsTitle"></h3>
+<div class="details-sub" id="detailsSub"></div>
+<div class="details-badges" id="detailsBadges"></div>
+<p class="details-desc" id="detailsDesc"></p>
+<div class="details-ingr-block" id="detailsIngrBlock">
+<h4>Ingredients</h4>
+<p class="details-ingr" id="detailsIngr"></p>
+</div>
+</div>`;
+document.body.appendChild(ov);
+ov.addEventListener("click", (e) => {
+if (e.target === ov) closeDetails();
+});
+document.getElementById("detailsClose").addEventListener("click", () => closeDetails());
+return ov;
+}
+function openDetails(num, trigger) {
+const p = findProduct(num);
+if (!p || !hasDetails(p)) return;
+const ov = ensureDetailsModal();
+document.getElementById("detailsTitle").textContent = p.name;
+document.getElementById("detailsSub").textContent = p.sub || "";
+document.getElementById("detailsSub").style.display = p.sub ? "" : "none";
+document.getElementById("detailsBadges").innerHTML = (p.badges || [])
+.map((b) => `<span class="details-badge">${escapeHtml(b)}</span>`)
+.join("");
+const desc = document.getElementById("detailsDesc");
+desc.textContent = p.description || "";
+desc.style.display = p.description ? "" : "none";
+document.getElementById("detailsIngr").textContent = p.ingredients || "";
+document.getElementById("detailsIngrBlock").style.display = p.ingredients ? "" : "none";
+detailsReturnFocus = trigger || null;
+ov.hidden = false;
+document.body.classList.add("details-lock");
+detailsOpen = true;
+history.pushState({ details: true }, "");
+const sheet = ov.querySelector(".details-sheet");
+sheet.scrollTop = 0;
+document.getElementById("detailsClose").focus();
+}
+function closeDetails(fromPopState) {
+if (!detailsOpen) return;
+detailsOpen = false;
+const ov = document.getElementById("detailsOverlay");
+if (ov) ov.hidden = true;
+document.body.classList.remove("details-lock");
+if (!fromPopState && history.state && history.state.details) history.back();
+if (detailsReturnFocus && document.body.contains(detailsReturnFocus)) detailsReturnFocus.focus();
+detailsReturnFocus = null;
 }
 // ---------------- Cart UI updates ----------------
 function updateCardQtyUI(num) {
@@ -310,7 +386,25 @@ document.getElementById("cartClose").addEventListener("click", closeCart);
 document.getElementById("cartOverlay").addEventListener("click", closeCart);
 document.getElementById("checkoutBtn").addEventListener("click", checkout);
 document.getElementById("searchInput").addEventListener("input", (e) => applySearch(e.target.value));
+document.addEventListener("keydown", (e) => {
+if (!detailsOpen) return;
+if (e.key === "Escape") {
+e.preventDefault();
+closeDetails();
+} else if (e.key === "Tab") {
+e.preventDefault();
+document.getElementById("detailsClose").focus();
+}
+});
+window.addEventListener("popstate", () => {
+if (detailsOpen) closeDetails(true);
+});
 document.body.addEventListener("click", (e) => {
+const detailsBtn = e.target.closest("[data-details]");
+if (detailsBtn) {
+openDetails(Number(detailsBtn.dataset.details), detailsBtn);
+return;
+}
 const tierBtn = e.target.closest("[data-set-qty]");
 if (tierBtn) {
 const num = Number(tierBtn.dataset.setQty);
