@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-16",
+  "generated": "2026-10-18",
   "categories": [
     {
       "title": "Wellness",
@@ -30,6 +30,14 @@
               "qty": 6,
               "price": 5.25
             }
+          ],
+          "description": "A 25:1 concentrated powder made from the juice of organic wheatgrass, grown in the USA.",
+          "ingredients": "Organic Wheatgrass Juice Powder (Triticum aestivum).",
+          "badges": [
+            "100% Certified Organic",
+            "Non-GMO",
+            "Raw",
+            "Vegan"
           ]
         },
         {
@@ -90,6 +98,14 @@
               "qty": 6,
               "price": 11.25
             }
+          ],
+          "description": "Cold-pressed, hexane-free, USP-grade organic castor oil. Pure, unfiltered and undiluted.",
+          "ingredients": "Organic Castor Oil.",
+          "badges": [
+            "Certified Organic",
+            "USP Grade",
+            "Cold Pressed",
+            "Hexane Free"
           ]
         },
         {
@@ -117,6 +133,14 @@
               "qty": 6,
               "price": 14.0
             }
+          ],
+          "description": "Cold-pressed, unrefined organic black cumin (Nigella sativa) seed oil with a robust natural flavor.",
+          "ingredients": "Organic Black Cumin Seed Oil (Nigella Sativa).",
+          "badges": [
+            "USDA Certified Organic",
+            "Cold-Pressed",
+            "Unrefined",
+            "Hexane-Free"
           ]
         },
         {
@@ -144,7 +168,9 @@
               "qty": 6,
               "price": 3.0
             }
-          ]
+          ],
+          "description": "Food-grade activated charcoal powder made from organic coconut shells, made in the USA. Resealable bag.",
+          "ingredients": "Organic Coconut Charcoal."
         },
         {
           "num": 6,
@@ -171,7 +197,9 @@
               "qty": 6,
               "price": 2.25
             }
-          ]
+          ],
+          "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
+          "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Organic Food Grade Peppermint (Menthae Piperita), Unrefined Mineral Salt."
         },
         {
           "num": 7,
@@ -198,7 +226,9 @@
               "qty": 6,
               "price": 2.25
             }
-          ]
+          ],
+          "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
+          "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Ceylon Cinnamon Oil (Cinnamomum Zeylanicum), Unrefined Mineral Salt."
         },
         {
           "num": 8,
@@ -260,6 +290,13 @@
               "qty": 6,
               "price": 4.7
             }
+          ],
+          "description": "Rich, dark baking chunks made with 70% cacao. Great in cookies and brownies, or for snacking straight from the bag.",
+          "ingredients": "Organic Cacao Paste, Organic Cane Sugar, Organic Cacao Butter, Organic Vanilla Extract and Himalayan Salt.",
+          "badges": [
+            "Made with Certified Organic Ingredients",
+            "Non-GMO",
+            "Vegan"
           ]
         },
         {
@@ -288,6 +325,13 @@
               "qty": 6,
               "price": 9.5
             }
+          ],
+          "description": "Fermented, sun-dried and cold-pressed raw cacao powder, never roasted, with a rich, velvety texture and 20 to 22% fat.",
+          "ingredients": "Organic Raw Cacao Powder (Theobroma cacao).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Project Verified",
+            "Gluten-Free"
           ]
         },
         {
@@ -315,6 +359,15 @@
               "qty": 6,
               "price": 11.25
             }
+          ],
+          "description": "Crunchy, semi-bitter raw cacao nibs from organic Ecuadorian Arriba Nacional beans. Lovely in smoothies, oatmeal, baking and bean-to-bar chocolate.",
+          "ingredients": "100% Organic Cacao Beans (Arriba Nacional Beans).",
+          "badges": [
+            "Certified Organic",
+            "Raw",
+            "Non-GMO",
+            "Vegan",
+            "Gluten-Free"
           ]
         }
       ]
@@ -348,6 +401,16 @@
               "qty": 6,
               "price": 2.5
             }
+          ],
+          "description": "Raw, unhulled black sesame seeds with a bold, nutty aroma. Lovely in baking, desserts and Asian dishes.",
+          "ingredients": "Organic Black Sesame Seeds.",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO",
+            "Raw",
+            "Unhulled",
+            "Gluten-Free",
+            "Vegan"
           ]
         },
         {
@@ -429,6 +492,13 @@
               "qty": 6,
               "price": 4.5
             }
+          ],
+          "description": "USA-grown organic yellow popcorn kernels for classic movie-night popcorn. Pop on the stovetop, in an air popper or the microwave.",
+          "ingredients": "Organic Yellow Popcorn Kernels.",
+          "badges": [
+            "USA Grown",
+            "Non-GMO",
+            "Certified Organic"
           ]
         },
         {
@@ -456,6 +526,13 @@
               "qty": 6,
               "price": 4.25
             }
+          ],
+          "description": "USA-grown organic white popcorn kernels that pop up light and tender. Pop on the stovetop, in an air popper or the microwave.",
+          "ingredients": "Organic White Popcorn Kernels.",
+          "badges": [
+            "USA Grown",
+            "Non-GMO",
+            "Certified Organic"
           ]
         },
         {
@@ -483,6 +560,13 @@
               "qty": 6,
               "price": 4.25
             }
+          ],
+          "description": "A mix of four organic popcorn varieties, red, blue, white and yellow, for colorful, fun-to-eat popcorn.",
+          "ingredients": "Organic Red Popcorn, Organic Shaman Blue Popcorn, Organic Robust White Popcorn, Organic Yellow Popcorn.",
+          "badges": [
+            "USA Grown",
+            "Non-GMO",
+            "Certified Organic"
           ]
         },
         {
@@ -570,6 +654,14 @@
               "qty": 6,
               "price": 8.25
             }
+          ],
+          "description": "Pure organic stevia leaf powder, 250 to 400 times sweeter than cane sugar. A little goes a long way in baking and drinks.",
+          "ingredients": "Organic Stevia Leaf Extract Powder (98% Rebaudioside A).",
+          "badges": [
+            "Organic",
+            "Non-GMO",
+            "Vegan",
+            "Gluten-Free"
           ]
         },
         {
@@ -597,7 +689,9 @@
               "qty": 6,
               "price": 4.0
             }
-          ]
+          ],
+          "description": "Organic cane sugar ground ultra-fine for smooth frostings, glossy glazes and delicate dusting. Swap it one-for-one for regular powdered sugar.",
+          "ingredients": "Organic Cane Sugar."
         }
       ]
     },
@@ -630,6 +724,12 @@
               "qty": 6,
               "price": 12.5
             }
+          ],
+          "description": "Non-alcoholic pure Madagascar vanilla extract made with organic Bourbon vanilla beans. Warm, smooth and sweet for baking, drinks and desserts.",
+          "ingredients": "Organic Glycerin, Water, Extractives from Organic Vanilla Pods, and Natural Flavors (Proprietary Blend of Organic Spices).",
+          "badges": [
+            "Halal Certified",
+            "Non-Alcoholic"
           ]
         },
         {
@@ -657,7 +757,9 @@
               "qty": 6,
               "price": 15.0
             }
-          ]
+          ],
+          "description": "Pure cow butter, imported from Argentina and clarified in-house into golden ghee. One ingredient.",
+          "ingredients": "Pure Clarified Butter from cow's milk."
         },
         {
           "num": 26,
@@ -684,7 +786,9 @@
               "qty": 6,
               "price": 8.0
             }
-          ]
+          ],
+          "description": "Pure cow butter, imported from Argentina and clarified in-house into golden ghee. One ingredient.",
+          "ingredients": "Pure Clarified Butter from cow's milk."
         },
         {
           "num": 27,
@@ -799,6 +903,12 @@
               "qty": 6,
               "price": 3.5
             }
+          ],
+          "description": "A warm, savory-sweet blend of organic Ceylon cinnamon, ginger, nutmeg and cloves. Perfect for pumpkin pie, baking and drinks.",
+          "ingredients": "Organic Ceylon Cinnamon, Organic Ginger, Organic Nutmeg, Organic Cloves.",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified"
           ]
         },
         {
@@ -826,6 +936,12 @@
               "qty": 6,
               "price": 2.25
             }
+          ],
+          "description": "True Ceylon cinnamon powder, softer and sweeter than everyday cassia. Third-party lab tested for purity and heavy metals.",
+          "ingredients": "Organic Ceylon Cinnamon Powder (Cinnamomum zeylanicum).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified"
           ]
         },
         {
@@ -1008,7 +1124,9 @@
               "qty": 6,
               "price": 1.25
             }
-          ]
+          ],
+          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
+          "ingredients": "Organic White Flour, Organic Cane Sugar, Organic Cacao Powder, Organic Cacao Paste, Dairy Butter, Organic Free Range Eggs, Baking Soda (Aluminum Free), Himalayan Salt."
         },
         {
           "num": 41,
@@ -1035,7 +1153,9 @@
               "qty": 6,
               "price": 7.5
             }
-          ]
+          ],
+          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
+          "ingredients": "Organic White Flour, Organic Cane Sugar, Organic Cacao Powder, Organic Cacao Paste, Dairy Butter, Organic Free Range Eggs, Baking Soda (Aluminum Free), Himalayan Salt."
         },
         {
           "num": 42,
@@ -1062,7 +1182,9 @@
               "qty": 6,
               "price": 1.25
             }
-          ]
+          ],
+          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Cane Sugar, Organic Chocolate Chips (Soy Free), Dairy Butter, Organic Free Range Eggs, Organic Non Alcoholic Vanilla Extract, Apple Cider Vinegar, Baking Soda (Aluminum Free), Sea Salt."
         },
         {
           "num": 43,
@@ -1089,7 +1211,9 @@
               "qty": 6,
               "price": 7.5
             }
-          ]
+          ],
+          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Cane Sugar, Organic Chocolate Chips (Soy Free), Dairy Butter, Organic Free Range Eggs, Organic Non Alcoholic Vanilla Extract, Apple Cider Vinegar, Baking Soda (Aluminum Free), Sea Salt."
         },
         {
           "num": 44,
@@ -1116,7 +1240,9 @@
               "qty": 6,
               "price": 2.1
             }
-          ]
+          ],
+          "description": "Rich, fudgy, chewy brownies loaded with deep cacao and melty chocolate chips. Our best-selling chocolate-on-chocolate flavor.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free)."
         },
         {
           "num": 45,
@@ -1143,7 +1269,9 @@
               "qty": 6,
               "price": 11.5
             }
-          ]
+          ],
+          "description": "Rich, fudgy, chewy brownies loaded with deep cacao and melty chocolate chips. Our best-selling chocolate-on-chocolate flavor.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free)."
         },
         {
           "num": 46,
@@ -1170,7 +1298,9 @@
               "qty": 6,
               "price": 2.15
             }
-          ]
+          ],
+          "description": "Soft, moist double chocolate chip muffins made with organic cacao and soy-free organic chocolate chips. Ready to grab and go.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Homemade Yogurt, Organic Vanilla Extract (Non Alcoholic), Mineral Salt, Baking Soda."
         },
         {
           "num": 47,
@@ -1197,7 +1327,9 @@
               "qty": 6,
               "price": 8.0
             }
-          ]
+          ],
+          "description": "Soft, moist double chocolate chip muffins made with organic cacao and soy-free organic chocolate chips. Ready to grab and go.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Homemade Yogurt, Organic Vanilla Extract (Non Alcoholic), Mineral Salt, Baking Soda."
         },
         {
           "num": 48,
@@ -1224,7 +1356,9 @@
               "qty": 6,
               "price": 11.0
             }
-          ]
+          ],
+          "description": "Soft, moist double chocolate chip muffins made with organic cacao and soy-free organic chocolate chips. Ready to grab and go.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Homemade Yogurt, Organic Vanilla Extract (Non Alcoholic), Mineral Salt, Baking Soda."
         },
         {
           "num": 49,
@@ -1251,7 +1385,9 @@
               "qty": 6,
               "price": 7.0
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 50,
@@ -1278,7 +1414,9 @@
               "qty": 6,
               "price": 10.35
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 51,
@@ -1305,7 +1443,9 @@
               "qty": 6,
               "price": 7.0
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 52,
@@ -1332,7 +1472,9 @@
               "qty": 6,
               "price": 10.35
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 53,
@@ -1359,7 +1501,9 @@
               "qty": 6,
               "price": 7.0
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 54,
@@ -1386,7 +1530,9 @@
               "qty": 6,
               "price": 10.35
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 55,
@@ -1413,7 +1559,9 @@
               "qty": 6,
               "price": 7.0
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 56,
@@ -1440,7 +1588,9 @@
               "qty": 6,
               "price": 10.35
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 57,
@@ -1467,7 +1617,9 @@
               "qty": 6,
               "price": 7.0
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 58,
@@ -1494,7 +1646,9 @@
               "qty": 6,
               "price": 10.35
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 59,
@@ -1521,7 +1675,9 @@
               "qty": 6,
               "price": 7.0
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 60,
@@ -1548,7 +1704,9 @@
               "qty": 6,
               "price": 10.35
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 61,
@@ -1575,7 +1733,9 @@
               "qty": 6,
               "price": 2.5
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 62,
@@ -1602,7 +1762,9 @@
               "qty": 6,
               "price": 2.5
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 63,
@@ -1629,7 +1791,9 @@
               "qty": 6,
               "price": 2.5
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 64,
@@ -1656,7 +1820,9 @@
               "qty": 6,
               "price": 2.5
             }
-          ]
+          ],
+          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         }
       ]
     },
@@ -1689,6 +1855,14 @@
               "qty": 6,
               "price": 2.5
             }
+          ],
+          "description": "Juicy, chewy mixed berry gummies made with real fruit and vegetable juices, with no artificial dyes or high fructose corn syrup.",
+          "ingredients": "Organic Rice Syrup, Organic Tapioca Syrup, Organic Cane Sugar, Water, Organic Pear Juice Concentrate, Organic Strawberry Pur\u00e9e, Organic Corn Starch, Pectin, Citric Acid, Sodium Citrate, Ascorbic Acid (Vitamin C), Organic Natural Flavor, Organic Sunflower Oil, Organic Fruit and Vegetable Juice for Color (Organic Black Carrot and Organic Black Currant Extracts), Organic Arrowroot, Organic Carnauba Wax.",
+          "badges": [
+            "USDA Organic",
+            "Non-GMO",
+            "Gluten-Free",
+            "Vegan"
           ]
         },
         {
@@ -1716,6 +1890,14 @@
               "qty": 6,
               "price": 2.5
             }
+          ],
+          "description": "Mixed licorice that pairs deep black licorice with bright strawberry and pomegranate notes. Chewy and naturally colored.",
+          "ingredients": "Organic Cane Sugar, Organic Brown Rice Syrup, Organic Rice Flour, Organic Corn Starch, Organic Palm Fruit Oil, Organic Molasses, Organic Licorice Extract, Natural Flavor, Citric Acid, Sodium Citrate, Salt, Organic Strawberry Juice Concentrate, Organic Pomegranate and Cherry Juice Concentrate, Colored with Organic Concentrates (Carrot, Apple, Blackcurrant), Organic Carnauba Wax, Organic Arrowroot, Organic Sunflower Oil.",
+          "badges": [
+            "USDA Organic",
+            "Non-GMO",
+            "Gluten-Free",
+            "Vegan"
           ]
         },
         {
@@ -1743,6 +1925,14 @@
               "qty": 6,
               "price": 2.0
             }
+          ],
+          "description": "Soft, chewy organic strawberry licorice with real strawberry flavor, colored with fruit and vegetable juices.",
+          "ingredients": "Organic Cane Sugar, Organic Brown Rice Syrup, Organic Rice Flour, Organic Corn Starch, Organic Palm Fruit Oil, Natural Flavor, Citric Acid, Sodium Citrate, Organic Strawberry Juice Concentrate, Organic Licorice Extract, Salt, Colored with Organic Concentrate (Carrot, Apple, Blackcurrant), Organic Carnauba Wax, Organic Arrowroot, Organic Sunflower Oil.",
+          "badges": [
+            "USDA Organic",
+            "Non-GMO",
+            "Gluten-Free",
+            "Vegan"
           ]
         },
         {
@@ -1770,6 +1960,14 @@
               "qty": 6,
               "price": 2.5
             }
+          ],
+          "description": "Fruity snack pieces in banana, strawberry, cherry and peach flavors, colored with real fruit and vegetable juices.",
+          "ingredients": "Organic Rice Syrup, Organic Cane Sugar, Pectin, Citric Acid, Ascorbic Acid, Natural Flavors, Colored with Organic Concentrate (Apple, Carrot, Pumpkin, Blackcurrant), Organic Sunflower Oil, Organic Arrowroot, Organic Carnauba Wax.",
+          "badges": [
+            "USDA Organic",
+            "Non-GMO",
+            "Gluten-Free",
+            "Vegan"
           ]
         },
         {
@@ -1797,6 +1995,13 @@
               "qty": 6,
               "price": 2.5
             }
+          ],
+          "description": "Chewy fruit strands made from real fruit strips, in cherry, apple, raspberry, grape, strawberry and apricot flavors. Resealable pouch.",
+          "ingredients": "Apple Puree Concentrate, Pear Puree Concentrate, Lemon Juice Concentrate, Organic Powdered Cane Sugar, Organic Arrowroot, Natural Flavors. Contains one or more of the following depending on flavor: Cherry Puree Concentrate, Concentrated Orange Juice, Orange Pulp, Raspberry Puree Concentrate, Grape Puree Concentrate, Strawberry Puree Concentrate, Apricot Puree Concentrate, Vegetable Juice (for color).",
+          "badges": [
+            "Non-GMO",
+            "Gluten-Free",
+            "Vegan"
           ]
         },
         {
@@ -1824,6 +2029,15 @@
               "qty": 6,
               "price": 3.25
             }
+          ],
+          "description": "A colorful mix of organic lollipops in cherry, strawberry, green apple, watermelon, orange and grape flavors. Ten per bag, assortment may vary.",
+          "ingredients": "Organic Sugar, Organic Brown Rice Syrup, Citric Acid, Organic Natural Flavors, Organic Colors (Carrot Juice, Spirulina Extract, Purple Sweet Potato Extract, Turmeric Oleoresin).",
+          "badges": [
+            "USDA Organic",
+            "Vegan",
+            "Gluten-Free",
+            "Nut-Free",
+            "Non-GMO Project Verified"
           ]
         }
       ]
