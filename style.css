@@ -654,3 +654,111 @@ padding: 6px 10px;
 .tier-btn .tier-price { display: inline; }
 .tier-btn .tier-price { font-size: 13px; white-space: nowrap; }
 }
+
+/* ================================================================
+PRODUCT DETAILS POP-UP -- added 2026-10-18.
+A small "Details" text link under the tags on cards that have a description
+and/or ingredients, opening one shared dialog: a centred card on desktop, a
+bottom sheet on phones. Colours and fonts reuse the tokens above; nothing
+above this block is changed.
+================================================================ */
+.card-details { margin-top: 8px; }
+.details-link {
+background: none;
+border: 0;
+padding: 4px 0;
+font: inherit;
+font-size: 12px;
+color: var(--teal);
+text-decoration: underline;
+text-underline-offset: 2px;
+cursor: pointer;
+}
+.details-link:hover { color: var(--teal-dark); }
+.details-link:focus-visible,
+.details-close:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 3px; }
+
+body.details-lock { overflow: hidden; }
+.details-overlay {
+position: fixed;
+inset: 0;
+z-index: 40;
+background: rgba(30,20,10,0.45);
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 16px;
+}
+.details-overlay[hidden] { display: none; }
+.details-sheet {
+position: relative;
+background: var(--card-bg);
+border: 1px solid var(--border);
+border-radius: 12px;
+box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+width: 100%;
+max-width: 440px;
+max-height: 85vh;
+overflow-y: auto;
+padding: 22px 22px 24px;
+outline: none;
+animation: details-pop 0.15s ease-out;
+}
+@keyframes details-pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.details-close {
+position: absolute;
+top: 8px;
+right: 10px;
+background: none;
+border: 0;
+font-size: 26px;
+line-height: 1;
+color: var(--gray-text);
+cursor: pointer;
+padding: 4px 8px;
+}
+.details-title {
+font-family: Georgia, 'Liberation Serif', serif;
+font-size: 20px;
+line-height: 1.25;
+color: var(--teal-dark);
+margin: 0 28px 8px 0;
+}
+.details-sub { font-size: 12.5px; color: var(--gray-text); margin: -6px 0 10px; }
+.details-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.details-badges:empty { display: none; }
+.details-badge {
+font-family: 'Courier New', monospace;
+font-size: 10.5px;
+color: var(--teal-dark);
+border: 1px solid var(--teal);
+border-radius: 3px;
+padding: 2px 6px;
+}
+.details-desc { font-size: 14.5px; line-height: 1.5; color: var(--ink); margin: 0 0 14px; }
+.details-ingr-block { border-top: 1px dashed #ddd0ba; padding-top: 12px; }
+.details-ingr-block h4 {
+font-family: 'Courier New', monospace;
+font-size: 11px;
+letter-spacing: 0.5px;
+text-transform: uppercase;
+color: var(--gray-text);
+margin: 0 0 4px;
+}
+.details-ingr { font-size: 13px; line-height: 1.5; color: var(--ink); margin: 0; }
+
+@media (max-width: 640px) {
+.details-overlay { align-items: flex-end; padding: 0; }
+.details-sheet {
+max-width: none;
+border-radius: 16px 16px 0 0;
+border-bottom: 0;
+max-height: 80vh;
+padding: 22px 18px calc(24px + env(safe-area-inset-bottom));
+animation: details-slide 0.2s ease-out;
+}
+@keyframes details-slide { from { transform: translateY(100%); } to { transform: none; } }
+}
+@media (prefers-reduced-motion: reduce) {
+.details-sheet { animation: none; }
+}
