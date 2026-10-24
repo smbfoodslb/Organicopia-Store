@@ -1,5 +1,5 @@
 {
-  "generated": "2026-10-18",
+  "generated": "2026-10-24",
   "categories": [
     {
       "title": "Wellness",
@@ -620,6 +620,33 @@
             {
               "qty": 6,
               "price": 2.5
+            }
+          ]
+        },
+        {
+          "num": 21,
+          "name": "Organic Poppy Seeds",
+          "sub": null,
+          "tags": [
+            "65 g",
+            "Turkey"
+          ],
+          "imported_ingredients": false,
+          "img": "organicopia-poppy-seeds.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.5
+            },
+            {
+              "qty": 3,
+              "price": 3.3
+            },
+            {
+              "qty": 6,
+              "price": 3.0
             }
           ]
         }
