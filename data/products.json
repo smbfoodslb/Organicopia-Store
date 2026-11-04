@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-01",
+  "generated": "2026-11-04",
   "categories": [
     {
       "title": "Wellness",
@@ -109,41 +109,6 @@
           ]
         },
         {
-          "num": 4,
-          "name": "Organic Black Cumin Seed Oil",
-          "sub": "Cold Pressed",
-          "tags": [
-            "240 mL",
-            "India"
-          ],
-          "imported_ingredients": false,
-          "img": "organicopia-black-seed-oil-2.jpg",
-          "status": null,
-          "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 15.0
-            },
-            {
-              "qty": 3,
-              "price": 14.6
-            },
-            {
-              "qty": 6,
-              "price": 14.0
-            }
-          ],
-          "description": "Cold-pressed, unrefined organic black cumin (Nigella sativa) seed oil with a robust natural flavor.",
-          "ingredients": "Organic Black Cumin Seed Oil (Nigella Sativa).",
-          "badges": [
-            "USDA Certified Organic",
-            "Cold-Pressed",
-            "Unrefined",
-            "Hexane-Free"
-          ]
-        },
-        {
           "num": 5,
           "name": "Organic Coconut Activated Charcoal Powder",
           "sub": "Food Grade \u00b7 NSF Certified",
@@ -229,6 +194,28 @@
           ],
           "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
           "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Ceylon Cinnamon Oil (Cinnamomum Zeylanicum), Unrefined Mineral Salt."
+        },
+        {
+          "num": 4,
+          "name": "Organic Black Cumin Seed Oil",
+          "sub": "Cold Pressed",
+          "tags": [
+            "240 mL",
+            "India"
+          ],
+          "imported_ingredients": false,
+          "img": "organicopia-black-seed-oil-2.jpg",
+          "status": "oos",
+          "is_new": false,
+          "tiers": null,
+          "description": "Cold-pressed, unrefined organic black cumin (Nigella sativa) seed oil with a robust natural flavor.",
+          "ingredients": "Organic Black Cumin Seed Oil (Nigella Sativa).",
+          "badges": [
+            "USDA Certified Organic",
+            "Cold-Pressed",
+            "Unrefined",
+            "Hexane-Free"
+          ]
         },
         {
           "num": 8,
