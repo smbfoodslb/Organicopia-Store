@@ -1,18 +1,25 @@
 :root {
---teal: #1e6b64;
---teal-dark: #143f3c;
+/* Brand palette (Organicopia Brand Colors, Oct 2026): navy 033649, aqua 3FBBCB, brown 6A4534, tan BF9C70, cream F6E9D6, olive 7C8466, gold EFB453 */
+--teal: #033649;
+--teal-dark: #022536;
 --ink: #2a2420;
 --gray-text: #6b6058;
 --gray-light: #948a80;
---border: #e6dccb;
---terracotta: #a8632c;
+--border: #e3d3b8;
+--terracotta: #BF9C70;
 --oos: #8a1f1f;
 --soon: #1f4a8a;
---new: #1a7a4c;
---card-bg: #fffdfa;
---bg-top: #fbe9d8;
---bg-mid: #f7ede2;
+--new: #5b6b45;
+--card-bg: #fffbf4;
+--bg-top: #F6E9D6;
+--bg-mid: #f8efe0;
 --bg-bot: #eef0e2;
+--aqua: #3FBBCB;
+--brown: #6A4534;
+--tan: #BF9C70;
+--olive: #7C8466;
+--gold: #EFB453;
+--cream: #F6E9D6;
 }
 
 * { box-sizing: border-box; }
@@ -761,4 +768,78 @@ animation: details-slide 0.2s ease-out;
 }
 @media (prefers-reduced-motion: reduce) {
 .details-sheet { animation: none; }
+}
+
+
+/* closed cart drawer must not cast its shadow onto the page edge */
+.cart-drawer:not(.open) { box-shadow: none; }
+
+/* ================================================================
+BRAND REFRESH -- 2026-11-07
+New Organicopia logo (tree mark + script wordmark) in the header and
+footer, and the brand palette applied. Everything above is unchanged
+except the :root colour values; this block only overrides/extends.
+To roll back: restore the previous style.css and index.html.
+================================================================ */
+.site-header {
+background: rgba(246, 233, 214, 0.96);
+border-bottom: 1px solid #e3d3b8;
+box-shadow: 0 1px 0 rgba(191, 156, 112, 0.35);
+}
+.site-header-inner { padding: 10px 20px 8px; }
+.brand {
+display: flex;
+align-items: center;
+gap: 14px;
+text-decoration: none;
+color: inherit;
+min-width: 0;
+}
+.brand-mark { height: 66px; width: auto; display: block; flex-shrink: 0; }
+.brand-text { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.brand-wordmark { height: 50px; width: auto; max-width: 100%; display: block; }
+.brand-sub {
+color: var(--brown);
+margin-top: 4px;
+font-size: 12.5px;
+}
+.cart-header-total { background: rgba(3, 54, 73, 0.08); color: var(--teal); }
+.cart-toggle { background: var(--teal); }
+#searchInput:focus { outline: 2px solid var(--aqua); outline-offset: -1px; }
+.cat-nav a { background: rgba(255, 251, 244, 0.85); border: 1px solid #e3d3b8; color: var(--teal); }
+.cat-nav a:hover { background: #fff; border-color: var(--tan); }
+.tier-banner { color: var(--brown); }
+.category-block { scroll-margin-top: 200px; }
+.category-title { border-bottom-color: var(--tan); }
+.category-title h2 { color: var(--teal); }
+.tier-btn { background: #f3e6cf; }
+.tier-btn:hover { background: #ecdcc0; }
+.tier-btn.tier-best { background: var(--teal); }
+.tier-btn.tier-best .tier-qty { color: #bfe9ef; }
+.card-tag { background: #f3e6cf; color: #5a4636; }
+.site-footer {
+background: var(--teal);
+color: #d8cdb8;
+border-top: none;
+padding: 38px 20px 52px;
+margin-top: 40px;
+}
+.footer-logo { height: 130px; width: auto; display: block; margin: 0 auto 14px; }
+.site-footer div { color: #d8cdb8; }
+.site-footer .footer-tagline {
+font-family: Georgia, 'Liberation Serif', serif;
+font-style: italic;
+font-size: 17px;
+color: var(--gold);
+margin: 0 0 14px;
+letter-spacing: 0.02em;
+}
+
+@media (max-width: 640px) {
+.brand { gap: 9px; }
+.brand-mark { height: 46px; }
+.brand-wordmark { height: 35px; }
+.brand-sub { font-size: 10px; line-height: 1.25; margin-top: 3px; text-wrap: balance; }
+.site-header-inner { padding: 8px 14px 6px; }
+.footer-logo { height: 110px; }
 }
