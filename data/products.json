@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-04",
+  "generated": "2026-11-07",
   "categories": [
     {
       "title": "Wellness",
@@ -117,7 +117,7 @@
             "USA"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-activated-charcoal-powder.jpg",
+          "img": "organicopia-activated-charcoal-powder-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -196,6 +196,35 @@
           "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Ceylon Cinnamon Oil (Cinnamomum Zeylanicum), Unrefined Mineral Salt."
         },
         {
+          "num": 9,
+          "name": "Organic Shea Butter",
+          "sub": null,
+          "tags": [
+            "100 g",
+            "Ghana",
+            "Raw",
+            "Unrefined"
+          ],
+          "imported_ingredients": false,
+          "img": "organicopia-shea-butter.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.5
+            },
+            {
+              "qty": 3,
+              "price": 4.25
+            },
+            {
+              "qty": 6,
+              "price": 4.0
+            }
+          ]
+        },
+        {
           "num": 4,
           "name": "Organic Black Cumin Seed Oil",
           "sub": "Cold Pressed",
@@ -204,7 +233,7 @@
             "India"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-black-seed-oil-2.jpg",
+          "img": "organicopia-black-seed-oil-3.jpg",
           "status": "oos",
           "is_new": false,
           "tiers": null,
@@ -228,20 +257,6 @@
           "imported_ingredients": false,
           "img": "organicopia-batana-oil.jpg",
           "status": "hold",
-          "is_new": false,
-          "tiers": null
-        },
-        {
-          "num": 9,
-          "name": "100% African Shea Butter",
-          "sub": null,
-          "tags": [
-            "100 g",
-            "Ghana"
-          ],
-          "imported_ingredients": false,
-          "img": "organicopia-shea-butter.jpg",
-          "status": "oos",
           "is_new": false,
           "tiers": null
         }
@@ -359,7 +374,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-black-sesame-seeds-2.jpg",
+          "img": "organicopia-black-sesame-seeds-3.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -396,7 +411,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-sesame-seeds-hulled-2.jpg",
+          "img": "organicopia-sesame-seeds-hulled-3.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -607,9 +622,22 @@
           ],
           "imported_ingredients": false,
           "img": "organicopia-poppy-seeds.jpg",
-          "status": "oos",
+          "status": null,
           "is_new": false,
-          "tiers": null
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.5
+            },
+            {
+              "qty": 3,
+              "price": 3.3
+            },
+            {
+              "qty": 6,
+              "price": 3.0
+            }
+          ]
         }
       ]
     },
@@ -622,25 +650,25 @@
           "name": "Organic Stevia Powder",
           "sub": "100% Pure",
           "tags": [
-            "40 g",
+            "50 g",
             "China"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-stevia-powder.jpg",
+          "img": "organicopia-stevia-powder-2.jpg",
           "status": null,
           "is_new": false,
           "tiers": [
             {
               "qty": 1,
-              "price": 9.0
+              "price": 10.0
             },
             {
               "qty": 3,
-              "price": 8.65
+              "price": 9.6
             },
             {
               "qty": 6,
-              "price": 8.25
+              "price": 9.15
             }
           ],
           "description": "Pure organic stevia leaf powder, 250 to 400 times sweeter than cane sugar. A little goes a long way in baking and drinks.",
@@ -696,7 +724,7 @@
             "Madagascar"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-vanilla-extract.jpg",
+          "img": "organicopia-vanilla-extract-2.jpg",
           "status": null,
           "is_new": false,
           "tiers": [
@@ -729,7 +757,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
-          "img": "organicopia-ghee.jpg",
+          "img": "organicopia-ghee-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -875,7 +903,7 @@
             "USA"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-pumpkin-pie-spice.jpg",
+          "img": "organicopia-pumpkin-pie-spice-2.jpg",
           "status": null,
           "is_new": false,
           "tiers": [
@@ -908,7 +936,7 @@
             "Sri Lanka"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-ceylon-cinnamon-powder-2.jpg",
+          "img": "organicopia-ceylon-cinnamon-powder-3.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -941,7 +969,7 @@
             "USA"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-blackened-cajun-seasoning-2.jpg",
+          "img": "organicopia-blackened-cajun-seasoning-3.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -968,7 +996,7 @@
             "India"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-garlic-powder.jpg",
+          "img": "organicopia-garlic-powder-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -995,7 +1023,7 @@
             "Spain"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-smoked-paprika.jpg",
+          "img": "organicopia-smoked-paprika-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -1022,7 +1050,7 @@
             "India"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-ginger-root-powder.jpg",
+          "img": "organicopia-ginger-root-powder-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -1049,7 +1077,7 @@
             "India"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-turmeric-root-powder.jpg",
+          "img": "organicopia-turmeric-root-powder-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
@@ -1076,7 +1104,7 @@
             "India"
           ],
           "imported_ingredients": false,
-          "img": "organicopia-cayenne-pepper-2.jpg",
+          "img": "organicopia-cayenne-pepper-3.jpg",
           "status": "oos",
           "is_new": false,
           "tiers": null
