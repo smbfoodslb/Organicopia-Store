@@ -30,11 +30,13 @@ function tierHtml(p, q) {
   const a = activeTier(p, q);
   return `<div class="tiers">${p.tiers.map((t, i) => `<button type="button" class="tier ${i === a ? "active" : ""}" data-set="${p.num}" data-qty="${t.qty}" aria-label="${t.qty} for ${money(t.price)} each"><small>×${t.qty}</small><b>${money(t.price)}</b></button>`).join("")}</div>`;
 }
+// "Made With Imported Ingredients" is a render-only pill derived from imported_ingredients (never mixed into tags; the origin tooling reads tags[1]).
+const tagsHtml = p => (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("") + (p.imported_ingredients ? `<span class="tag">Made With Imported Ingredients</span>` : "");
 function cardHtml(p) {
   const q = cart[p.num] || 0;
   const badge = p.status === "oos" ? `<span class="badge oos">Sold out</span>` : p.status === "hold" ? `<span class="badge soon">Back soon</span>` : p.is_new ? `<span class="badge new">New</span>` : "";
   const made = isMade(p) ? `<span class="badge made">Made by us</span>` : "";
-  const tags = (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  const tags = tagsHtml(p);
   const bottom = purchasable(p)
     ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.num}" aria-label="Add one">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)}</span></span></div>` : "")
     : `<div class="unavail">${p.status === "oos" ? "Currently sold out. Message us to be notified." : "Coming back soon."}</div>`;
@@ -84,7 +86,7 @@ function renderModalTiers() { const p = byNum[modalNum]; const q = cart[modalNum
 function openProduct(num) { const p = byNum[num]; modalNum = num;
   $("modalImg").src = imgSrc(p); $("modalImg").alt = p.name; $("modalCat").textContent = p.cat + (isMade(p) ? " · Made with Intention" : " · Sourced with Intention");
   $("modalName").textContent = p.name; $("modalSub").textContent = p.sub || "";
-  $("modalTags").innerHTML = (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("");
+  $("modalTags").innerHTML = tagsHtml(p);
   $("modalBadges").innerHTML = (p.badges || []).map(b => `<span>${esc(b)}</span>`).join("");
   $("modalDesc").textContent = p.description || "";
   $("modalIng").textContent = p.ingredients ? "Ingredients: " + p.ingredients : ""; $("modalIng").hidden = !p.ingredients;
