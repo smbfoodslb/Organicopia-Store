@@ -135,6 +135,8 @@ section.block{padding-block:64px}
 /* standard */
 .standard{background:var(--surface);border-block:1px solid var(--line)}
 .beyond{display:grid;grid-template-columns:1fr 1.4fr;gap:28px;align-items:start;margin-top:28px;padding:28px;border-radius:var(--radius);background:var(--bg);border-left:6px solid var(--gold)}
+.beyond-kicker{font-family:var(--display);font-size:clamp(20px,2.2vw,26px);letter-spacing:.06em;text-transform:uppercase;color:var(--fg);line-height:1.2;font-weight:400}
+:root[data-theme="dark"] .beyond-kicker{color:var(--gold)}
 .beyond h3{font-size:clamp(26px,3vw,36px);line-height:1.12;margin-top:8px}
 .beyond p{margin:0 0 12px;font-size:14.5px;line-height:1.7;color:var(--muted)}
 .beyond p:last-child{margin:0}
