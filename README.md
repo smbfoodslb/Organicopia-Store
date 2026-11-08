@@ -13,7 +13,14 @@ repo and its own Vercel project, open to the public with no login.
 
 ## What's in here
 
-- `index.html`, `style.css`, `app.js` — the whole site.
+- `index.html`, `style.css`, `app.js` — the whole site (Nov 2026 revamp: hero with the
+  animated logo, shop with search/category chips, product details, "Our Standard",
+  "Our Story", "How to order", footer; brand palette and the Gilda Display + Inter web fonts).
+- `images/brand/` — logo mark, wordmark, lockups, the Sourced/Made with Intention stickers,
+  the wavy-lines graphic and `logo-animation.gif` (plays once on load).
+- Products marked **Made by us** (ghee and the "Fresh from the Oven" shelf) get the
+  *Made with Intention* label; everything else is *Sourced with Intention*
+  (see `isMade` in `app.js`).
 - `data/products.json` — all 71 Organicopia products, with volume pricing
   tiers, cross-checked against the wholesale catalog's product data.
 - `images/` — product photos (reused from the wholesale catalog's photos

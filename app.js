@@ -1,444 +1,131 @@
-/* Organicopia retail catalog — static, dependency-free. Cart persists in
-localStorage. Checkout opens a pre-filled WhatsApp chat (wa.me) with the
-order — customer taps Send. Pricing is tiered: buy 1, 3, or 6+ and the
-unit price drops at each threshold. */
-const WHATSAPP_NUMBER = "96170649386"; // +961 70 649 386, digits only, no leading +
-const CART_KEY = "organicopia-cart-v1";
-const IMG_BASE = "images/";
-const PLACEHOLDER_IMG = "images/placeholder.svg";
+/* Organicopia retail catalog — static, dependency-free. Catalog comes from
+data/products.json. Cart persists in localStorage. Checkout opens a pre-filled
+WhatsApp chat (wa.me). Pricing is tiered: ×1, ×3, ×6+ and the unit price drops
+at each threshold; the card shows the savings versus the ×1 price. */
 let CATALOG = null;
-let cart = loadCart();
-// ---------------- Cart persistence ----------------
-function loadCart() {
-try {
-const raw = localStorage.getItem(CART_KEY);
-return raw ? JSON.parse(raw) : {};
-} catch (e) {
-return {};
+const WHATSAPP = "96170649386";
+const CART_KEY = "organicopia-cart-v2";
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => "$" + n.toFixed(2);
+
+const PRODUCTS = [], byNum = {};
+const purchasable = p => Array.isArray(p.tiers) && p.tiers.length && (p.status == null || p.status === "active");
+const isMade = p => p.cat === "Fresh from the Oven" || /ghee/i.test(p.name);
+const imgSrc = p => p.img ? "images/" + p.img : "images/placeholder.svg";
+const unitPrice = (p, q) => { if (!purchasable(p) || q <= 0) return null; let pr = p.tiers[0].price; p.tiers.forEach(t => { if (q >= t.qty) pr = t.price }); return pr };
+const savings = (p, q) => purchasable(p) && q > 0 ? Math.max(0, (p.tiers[0].price - unitPrice(p, q)) * q) : 0;
+const saveHtml = (p, q) => savings(p, q) > 0.001 ? `<span class="save">You save ${money(savings(p, q))}</span>` : "";
+const activeTier = (p, q) => { let i = -1; p.tiers.forEach((t, k) => { if (q >= t.qty) i = k }); return i };
+
+let cart = {}; try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}") } catch (e) { cart = {} }
+const saveCart = () => { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)) } catch (e) {} };
+
+let category = "All", query = "", cats = ["All"];
+
+function renderChips() {
+  $("chips").innerHTML = cats.map(c => `<button type="button" class="chip ${c === category ? "active" : ""}" data-cat="${esc(c)}" role="tab" aria-selected="${c === category}">${esc(c)}</button>`).join("");
 }
+function tierHtml(p, q) {
+  const a = activeTier(p, q);
+  return `<div class="tiers">${p.tiers.map((t, i) => `<button type="button" class="tier ${i === a ? "active" : ""}" data-set="${p.num}" data-qty="${t.qty}" aria-label="${t.qty} for ${money(t.price)} each"><small>×${t.qty}</small><b>${money(t.price)}</b></button>`).join("")}</div>`;
 }
-function saveCart() {
-localStorage.setItem(CART_KEY, JSON.stringify(cart));
-}
-function findProduct(num) {
-for (const c of CATALOG.categories) {
-for (const p of c.items) {
-if (p.num === num) return p;
-}
-}
-return null;
-}
-function isPurchasable(p) {
-return Array.isArray(p.tiers) && p.tiers.length > 0 && (p.status == null || p.status === "active");
-}
-// Unit price for a given quantity: the price of the highest tier whose
-// qty threshold has been reached (tiers are ordered ascending by qty).
-function unitPriceForQty(p, qty) {
-if (!isPurchasable(p) || qty <= 0) return null;
-let price = p.tiers[0].price;
-for (const t of p.tiers) {
-if (qty >= t.qty) price = t.price;
-}
-return price;
-}
-// Index of the tier currently "active" for a given quantity — the same
-// tier whose price unitPriceForQty would return — so the UI can ring
-// that tier's button instead of hiding the others.
-function activeTierIndex(p, qty) {
-let idx = 0;
-p.tiers.forEach((t, i) => {
-if (qty >= t.qty) idx = i;
-});
-return idx;
-}
-function setQty(num, qty) {
-const p = findProduct(num);
-if (!p) return;
-if (qty <= 0) {
-delete cart[num];
-} else {
-cart[num] = qty;
-}
-saveCart();
-renderCartCount();
-renderCartDrawer();
-updateCardQtyUI(num);
-}
-function cartTotal() {
-let total = 0;
-let count = 0;
-for (const numStr of Object.keys(cart)) {
-const p = findProduct(Number(numStr));
-if (!p) continue;
-const qty = cart[numStr];
-const unit = unitPriceForQty(p, qty);
-if (unit == null) continue;
-total += unit * qty;
-count += qty;
-}
-return { total, count };
-}
-// ---------------- Rendering: catalog ----------------
-function imgSrc(p) {
-return p.img ? IMG_BASE + p.img : PLACEHOLDER_IMG;
-}
-function tagHtml(tags) {
-return (tags || []).map((t) => `<span class="card-tag">${escapeHtml(t)}</span>`).join("");
-}
-// [2026-09-13, round 11] "Made With Imported Ingredients" pill -- rendered as a span
-// sharing the SAME .card-tags flex-wrap row as the size/origin tags, styled IDENTICALLY
-// to .card-tag (see style.css's round-11 addition -- no yellow highlight, no separate
-// row), per SMB's ruling: "shouldn't be highlighted in yellow, should be similar to the
-// other pills to flow seamlessly." This is a RENDER-ONLY merge: the underlying data
-// field `imported_ingredients` on each product is a sibling key to `tags`, never added
-// to the `tags` array itself -- this project's origin-survey tooling reads tags[1]
-// unconditionally as an origin value, and mixing the two at the data level would
-// register this flag as a spurious extra "country". The `imported-pill` class is kept
-// separate from `card-tag` only so this specific pill stays individually selectable
-// later; its style.css ruleset is defined to be property-for-property identical to
-// .card-tag, not a variant of it.
-function importedPillHtml(p) {
-return p.imported_ingredients
-? `<span class="card-tag imported-pill">Made With Imported Ingredients</span>`
-: "";
-}
-function cartControlHtml(p) {
-if (!isPurchasable(p)) {
-if (p.status === "oos") return `<div class="unavailable-note">Out of stock</div>`;
-if (p.status === "soon") return `<div class="unavailable-note">Coming soon</div>`;
-if (p.status === "hold") return `<div class="unavailable-note">Temporarily unavailable</div>`;
-return `<div class="unavailable-note">Pricing to follow</div>`;
-}
-const qty = cart[p.num] || 0;
-const activeIdx = qty > 0 ? activeTierIndex(p, qty) : -1;
-// All three pack-size buttons stay visible and clickable at all times —
-// clicking one sets the cart quantity to that pack size. The active one
-// (based on current quantity, not just an exact match) gets ringed so
-// the customer can still compare all three prices at a glance.
-const tierRow = `<div class="tier-row">${p.tiers
-.map((t, i) => {
-const classes = ["tier-btn"];
-if (i === p.tiers.length - 1) classes.push("tier-best");
-if (i === activeIdx) classes.push("tier-active");
-return `
-<button class="${classes.join(" ")}" data-set-qty="${p.num}" data-qty="${t.qty}">
-<span class="tier-qty">&times;${t.qty}</span>
-<span class="tier-price">$${t.price.toFixed(2)}</span>
-</button>`;
-})
-.join("")}</div>`;
-let qtyPanel = "";
-if (qty > 0) {
-const unit = unitPriceForQty(p, qty);
-const lineTotal = unit * qty;
-const basePrice = p.tiers[0].price;
-const wasTotal = basePrice * qty;
-const savings = wasTotal - lineTotal;
-const showSavings = savings > 0.001;
-qtyPanel = `
-<div class="qty-panel" data-qty-row="${p.num}">
-<div class="qty-stepper" data-stepper="${p.num}">
-<button data-dec="${p.num}" aria-label="Decrease quantity">&minus;</button>
-<span class="qty-num">${qty}</span>
-<button data-inc="${p.num}" aria-label="Increase quantity">+</button>
-</div>
-<div class="qty-price-block">
-<div>
-${showSavings ? `<span class="was-price">$${wasTotal.toFixed(2)}</span>` : ""}
-<span class="now-price">$${lineTotal.toFixed(2)}</span>
-</div>
-${showSavings ? `<span class="save-note">You save $${savings.toFixed(2)}</span>` : ""}
-</div>
-</div>`;
-}
-return `<div class="tier-block">${tierRow}${qtyPanel}</div>`;
-}
+// "Made With Imported Ingredients" is a render-only pill derived from imported_ingredients (never mixed into tags; the origin tooling reads tags[1]).
+const tagsHtml = p => (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("") + (p.imported_ingredients ? `<span class="tag">Made With Imported Ingredients</span>` : "");
 function cardHtml(p) {
-const badges = [];
-if (p.status === "oos") badges.push('<span class="status-badge oos">Out of Stock</span>');
-else if (p.status === "soon") badges.push('<span class="status-badge soon">Coming Soon</span>');
-else if (p.status === "hold") badges.push('<span class="status-badge hold">Temporarily Unavailable</span>');
-if (p.is_new) badges.push('<span class="status-badge new">New</span>');
-let cardCls = "card";
-if (p.status === "oos" || p.status === "hold") cardCls += " is-oos";
-if (p.is_new) cardCls += " badge-new";
-const subHtml = `<div class="card-sub">${p.sub ? escapeHtml(p.sub) : ""}</div>`;
-return `
-<div class="${cardCls}" data-product="${p.num}" data-search="${escapeHtml(p.name + " " + (p.sub || "")).toLowerCase()}">
-<div class="card-badge-row">${badges.join("")}</div>
-<div class="card-img"><img src="${imgSrc(p)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.src='${PLACEHOLDER_IMG}'"></div>
-<div class="card-body">
-<div class="card-name">${escapeHtml(p.name)}</div>
-${subHtml}
-<div class="card-tags">${tagHtml(p.tags)}${importedPillHtml(p)}</div>
-${detailsLinkHtml(p)}
-<div data-cart-control>${cartControlHtml(p)}</div>
-</div>
-</div>`;
-}
-function categoryHtml(cat) {
-const catId = `cat-${slug(cat.title)}`;
-return `
-<div class="category-block" id="${catId}">
-<div class="category-title">
-<h2>${escapeHtml(cat.title)}</h2>
-<span class="desc">${escapeHtml(cat.desc)}</span>
-</div>
-<div class="grid">${cat.items.map(cardHtml).join("")}</div>
-</div>`;
+  const q = cart[p.num] || 0;
+  const badge = p.status === "oos" ? `<span class="badge oos">Sold out</span>` : p.status === "hold" ? `<span class="badge soon">Back soon</span>` : p.is_new ? `<span class="badge new">New</span>` : "";
+  const made = isMade(p) ? `<span class="badge made">Made by us</span>` : "";
+  const tags = tagsHtml(p);
+  const bottom = purchasable(p)
+    ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.num}" aria-label="Add one">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)}</span></span></div>` : "")
+    : `<div class="unavail">${p.status === "oos" ? "Currently sold out. Message us to be notified." : "Coming back soon."}</div>`;
+  return `<article class="card ${p.status === "oos" ? "is-oos" : ""}" data-num="${p.num}">
+    <div class="photo" data-view="${p.num}">${badge}${made}<img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400"></div>
+    <div class="body"><h4>${esc(p.name)}</h4><p class="sub">${esc(p.sub || "")}</p><div class="tags">${tags}</div><button type="button" class="details" data-view="${p.num}">Details</button>${bottom}</div>
+  </article>`;
 }
 function renderCatalog() {
-const root = document.getElementById("catalog");
-const nav = document.getElementById("catNav");
-root.innerHTML = CATALOG.categories.map(categoryHtml).join("");
-nav.innerHTML = CATALOG.categories
-.map((c) => `<a href="#cat-${slug(c.title)}">${escapeHtml(c.title)}</a>`)
-.join("");
+  renderChips();
+  const q = query.trim().toLowerCase();
+  const match = p => (category === "All" || p.cat === category) && (!q || (p.name + " " + (p.sub || "") + " " + (p.tags || []).join(" ") + " " + (p.description || "") + " " + p.cat).toLowerCase().includes(q));
+  let html = "", any = false;
+  CATALOG.categories.forEach(c => {
+    const items = c.items.filter(match);
+    if (!items.length) return; any = true;
+    html += `<div class="group" id="cat-${c.title.toLowerCase().replace(/[^a-z]+/g, "-")}"><div class="group-head"><h3>${esc(c.title)}</h3><span>${esc(c.desc)}</span></div><div class="grid">${items.map(cardHtml).join("")}</div></div>`;
+  });
+  $("catalog").innerHTML = any ? html : `<div class="empty">Nothing matches “${esc(query)}”. Try another word, or clear the search.</div>`;
 }
-function slug(s) {
-return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+function updateCard(num) {
+  const el = document.querySelector(`.card[data-num="${num}"]`);
+  if (el) el.outerHTML = cardHtml(byNum[num]);
+  if (!$("productModal").hidden && modalNum === num) renderModalTiers();
 }
-function escapeHtml(s) {
-return String(s)
-.replace(/&/g, "&amp;")
-.replace(/</g, "&lt;")
-.replace(/>/g, "&gt;")
-.replace(/"/g, "&quot;");
+function setQty(num, q) {
+  if (q <= 0) delete cart[num]; else cart[num] = q;
+  saveCart(); renderCart(); updateCard(num);
 }
-// ---------------- Product details pop-up ----------------
-// [2026-10-18] "Details" link on cards that have a description and/or ingredients
-// (fields `description`, `ingredients`, `badges` on the product, exported from
-// organicopia_details.py). Cards without text show no link. One shared dialog,
-// built on first use. Closes with the X, a tap outside, Esc, or the browser's back
-// button (a history entry is pushed on open and removed on close).
-let detailsOpen = false;
-let detailsReturnFocus = null;
-function hasDetails(p) {
-return !!(p.description || p.ingredients);
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2000) }
+
+function renderCart() {
+  const nums = Object.keys(cart).map(Number).filter(n => byNum[n] && purchasable(byNum[n]));
+  let total = 0, count = 0;
+  const rows = nums.map(n => { const p = byNum[n], q = cart[n], u = unitPrice(p, q); total += u * q; count += q;
+    return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(p.sub || (p.tags || []).join(" · "))} · ${money(u)} each</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt">${money(u * q)}${savings(p, q) > 0.001 ? `<div class="save">saved ${money(savings(p, q))}</div>` : ""}</div></div>` });
+  $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">Your basket is empty. Pick a product and choose ×1, ×3 or ×6.</p>`;
+  $("count").textContent = count; $("cartTotal").textContent = money(total);
+  const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${p.sub ? " (" + p.sub + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
+  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total)} (incl. VAT)\n\nPlease confirm availability and delivery. Thank you!`;
+  const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
 }
-function detailsLinkHtml(p) {
-return hasDetails(p)
-? `<div class="card-details"><button type="button" class="details-link" data-details="${p.num}" aria-haspopup="dialog">Details</button></div>`
-: "";
+
+let modalNum = null;
+function renderModalTiers() { const p = byNum[modalNum]; const q = cart[modalNum] || 0;
+  $("modalTiers").innerHTML = purchasable(p) ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}">−</button><span>${q}</span><button type="button" data-inc="${p.num}">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)} in basket</span></span></div>` : "") : `<div class="unavail">${p.status === "oos" ? "Currently sold out." : "Coming back soon."}</div>` }
+function openProduct(num) { const p = byNum[num]; modalNum = num;
+  $("modalImg").src = imgSrc(p); $("modalImg").alt = p.name; $("modalCat").textContent = p.cat + (isMade(p) ? " · Made with Intention" : " · Sourced with Intention");
+  $("modalName").textContent = p.name; $("modalSub").textContent = p.sub || "";
+  $("modalTags").innerHTML = tagsHtml(p);
+  $("modalBadges").innerHTML = (p.badges || []).map(b => `<span>${esc(b)}</span>`).join("");
+  $("modalDesc").textContent = p.description || "";
+  $("modalIng").textContent = p.ingredients ? "Ingredients: " + p.ingredients : ""; $("modalIng").hidden = !p.ingredients;
+  renderModalTiers(); $("productModal").hidden = false; $("closeModal").focus();
 }
-function ensureDetailsModal() {
-let ov = document.getElementById("detailsOverlay");
-if (ov) return ov;
-ov = document.createElement("div");
-ov.id = "detailsOverlay";
-ov.className = "details-overlay";
-ov.hidden = true;
-ov.innerHTML = `<div class="details-sheet" role="dialog" aria-modal="true" aria-labelledby="detailsTitle" tabindex="-1">
-<button type="button" class="details-close" id="detailsClose" aria-label="Close details">&times;</button>
-<h3 class="details-title" id="detailsTitle"></h3>
-<div class="details-sub" id="detailsSub"></div>
-<div class="details-badges" id="detailsBadges"></div>
-<p class="details-desc" id="detailsDesc"></p>
-<div class="details-ingr-block" id="detailsIngrBlock">
-<h4>Ingredients</h4>
-<p class="details-ingr" id="detailsIngr"></p>
-</div>
-</div>`;
-document.body.appendChild(ov);
-ov.addEventListener("click", (e) => {
-if (e.target === ov) closeDetails();
+function closeModal() { $("productModal").hidden = true; modalNum = null }
+function openCart() { renderCart(); $("cartOverlay").hidden = false; $("closeCart").focus() }
+function closeCart() { $("cartOverlay").hidden = true }
+
+document.body.addEventListener("click", e => {
+  const t = e.target.closest("[data-cat],[data-set],[data-inc],[data-dec],[data-remove],[data-view],[data-copy]");
+  if (!t) return;
+  if (t.dataset.cat) { category = t.dataset.cat; renderCatalog(); return }
+  if (t.dataset.set) { const n = +t.dataset.set, q = +t.dataset.qty; setQty(n, q); toast(`${byNum[n].name}: ${q} in basket at ${money(unitPrice(byNum[n], q))} each`); return }
+  if (t.dataset.inc) { const n = +t.dataset.inc; setQty(n, (cart[n] || 0) + 1); return }
+  if (t.dataset.dec) { const n = +t.dataset.dec; setQty(n, (cart[n] || 0) - 1); return }
+  if (t.dataset.remove) { setQty(+t.dataset.remove, 0); return }
+  if (t.dataset.view) { openProduct(+t.dataset.view); return }
+  if (t.dataset.copy) { const v = t.dataset.copy; const done = () => { t.textContent = "Copied"; setTimeout(() => t.textContent = "Copy", 1500) };
+    (navigator.clipboard?.writeText(v) || Promise.reject()).then(done).catch(() => { const r = document.createRange(); r.selectNodeContents(t.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r) }) }
 });
-document.getElementById("detailsClose").addEventListener("click", () => closeDetails());
-return ov;
+$("search").addEventListener("input", e => { query = e.target.value; renderCatalog() });
+$("searchJump").onclick = () => { $("shop").scrollIntoView({behavior: "smooth"}); setTimeout(() => $("search").focus(), 400) };
+$("openCart").onclick = openCart; $("closeCart").onclick = closeCart;
+$("cartOverlay").addEventListener("click", e => { if (e.target === $("cartOverlay")) closeCart() });
+$("closeModal").onclick = closeModal;
+$("productModal").addEventListener("click", e => { if (e.target === $("productModal")) closeModal() });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart() } });
+$("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your basket first.") } });
+// Replay the logo animation once when the hero scrolls back into view after a while.
+const heroAnim = $("heroAnim"); let playedAt = Date.now();
+if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  new IntersectionObserver(es => { es.forEach(x => { if (x.isIntersecting && Date.now() - playedAt > 30000) { heroAnim.src = heroAnim.src.split("?")[0] + "?r=" + Date.now(); playedAt = Date.now() } }) }, {threshold: .6}).observe(heroAnim);
 }
-function openDetails(num, trigger) {
-const p = findProduct(num);
-if (!p || !hasDetails(p)) return;
-const ov = ensureDetailsModal();
-document.getElementById("detailsTitle").textContent = p.name;
-document.getElementById("detailsSub").textContent = p.sub || "";
-document.getElementById("detailsSub").style.display = p.sub ? "" : "none";
-document.getElementById("detailsBadges").innerHTML = (p.badges || [])
-.map((b) => `<span class="details-badge">${escapeHtml(b)}</span>`)
-.join("");
-const desc = document.getElementById("detailsDesc");
-desc.textContent = p.description || "";
-desc.style.display = p.description ? "" : "none";
-document.getElementById("detailsIngr").textContent = p.ingredients || "";
-document.getElementById("detailsIngrBlock").style.display = p.ingredients ? "" : "none";
-detailsReturnFocus = trigger || null;
-ov.hidden = false;
-document.body.classList.add("details-lock");
-detailsOpen = true;
-history.pushState({ details: true }, "");
-const sheet = ov.querySelector(".details-sheet");
-sheet.scrollTop = 0;
-document.getElementById("detailsClose").focus();
-}
-function closeDetails(fromPopState) {
-if (!detailsOpen) return;
-detailsOpen = false;
-const ov = document.getElementById("detailsOverlay");
-if (ov) ov.hidden = true;
-document.body.classList.remove("details-lock");
-if (!fromPopState && history.state && history.state.details) history.back();
-if (detailsReturnFocus && document.body.contains(detailsReturnFocus)) detailsReturnFocus.focus();
-detailsReturnFocus = null;
-}
-// ---------------- Cart UI updates ----------------
-function updateCardQtyUI(num) {
-const el = document.querySelector(`.card[data-product="${num}"] [data-cart-control]`);
-if (el) {
-const p = findProduct(num);
-el.innerHTML = cartControlHtml(p);
-}
-}
-function renderCartCount() {
-const { count, total } = cartTotal();
-document.getElementById("cartCount").textContent = count;
-document.getElementById("cartHeaderTotal").textContent = `$${total.toFixed(2)}`;
-}
-function renderCartDrawer() {
-const itemsEl = document.getElementById("cartItems");
-const nums = Object.keys(cart).filter((n) => cart[n] > 0);
-if (nums.length === 0) {
-itemsEl.innerHTML = `<div class="cart-empty">Your cart is empty.<br>Pick a pack size on any item to add it.</div>`;
-} else {
-itemsEl.innerHTML = nums
-.map((numStr) => {
-const num = Number(numStr);
-const p = findProduct(num);
-const qty = cart[numStr];
-const unit = unitPriceForQty(p, qty);
-const lineTotal = (unit * qty).toFixed(2);
-return `
-<div class="cart-line">
-<div class="cart-line-img"><img src="${imgSrc(p)}" alt="" onerror="this.src='${PLACEHOLDER_IMG}'"></div>
-<div class="cart-line-body">
-<div class="cart-line-name">${escapeHtml(p.name)}</div>
-<div class="cart-line-sub">${p.sub ? escapeHtml(p.sub) + " · " : ""}$${unit.toFixed(2)} each</div>
-<div class="cart-line-controls">
-<div class="qty-stepper" data-stepper="${num}">
-<button data-dec="${num}" aria-label="Decrease quantity">&minus;</button>
-<span class="qty-num">${qty}</span>
-<button data-inc="${num}" aria-label="Increase quantity">+</button>
-</div>
-<span class="cart-line-price">$${lineTotal}</span>
-</div>
-<button class="cart-remove" data-remove="${num}">Remove</button>
-</div>
-</div>`;
-})
-.join("");
-}
-const { total, count } = cartTotal();
-document.getElementById("cartTotal").textContent = `$${total.toFixed(2)}`;
-document.getElementById("checkoutBtn").disabled = count === 0;
-}
-// ---------------- Cart drawer open/close ----------------
-function openCart() {
-document.getElementById("cartDrawer").classList.add("open");
-document.getElementById("cartOverlay").classList.add("open");
-}
-function closeCart() {
-document.getElementById("cartDrawer").classList.remove("open");
-document.getElementById("cartOverlay").classList.remove("open");
-}
-// ---------------- WhatsApp checkout ----------------
-function buildOrderMessage() {
-const nums = Object.keys(cart).filter((n) => cart[n] > 0);
-const lines = ["Hi Organicopia, I'd like to order:", ""];
-let total = 0;
-nums.forEach((numStr) => {
-const num = Number(numStr);
-const p = findProduct(num);
-const qty = cart[numStr];
-const unit = unitPriceForQty(p, qty);
-const lineTotal = unit * qty;
-total += lineTotal;
-const label = p.sub ? `${p.name} (${p.sub})` : p.name;
-lines.push(`${label} × ${qty} @ $${unit.toFixed(2)} — $${lineTotal.toFixed(2)}`);
-});
-lines.push("");
-lines.push(`Total: $${total.toFixed(2)}`);
-lines.push("");
-lines.push("Please confirm stock and delivery. Thank you!");
-return lines.join("\n");
-}
-function checkout() {
-const { count } = cartTotal();
-if (count === 0) return;
-const msg = buildOrderMessage();
-const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
-window.open(url, "_blank", "noopener");
-}
-// ---------------- Search ----------------
-function applySearch(query) {
-const q = query.trim().toLowerCase();
-document.querySelectorAll(".card").forEach((card) => {
-const match = !q || card.dataset.search.includes(q);
-card.style.display = match ? "" : "none";
-});
-document.querySelectorAll(".category-block").forEach((block) => {
-const anyVisible = Array.from(block.querySelectorAll(".card")).some((c) => c.style.display !== "none");
-block.style.display = anyVisible ? "" : "none";
-});
-}
-// ---------------- Event wiring ----------------
-function wireEvents() {
-document.getElementById("cartToggle").addEventListener("click", openCart);
-document.getElementById("cartClose").addEventListener("click", closeCart);
-document.getElementById("cartOverlay").addEventListener("click", closeCart);
-document.getElementById("checkoutBtn").addEventListener("click", checkout);
-document.getElementById("searchInput").addEventListener("input", (e) => applySearch(e.target.value));
-document.addEventListener("keydown", (e) => {
-if (!detailsOpen) return;
-if (e.key === "Escape") {
-e.preventDefault();
-closeDetails();
-} else if (e.key === "Tab") {
-e.preventDefault();
-document.getElementById("detailsClose").focus();
-}
-});
-window.addEventListener("popstate", () => {
-if (detailsOpen) closeDetails(true);
-});
-document.body.addEventListener("click", (e) => {
-const detailsBtn = e.target.closest("[data-details]");
-if (detailsBtn) {
-openDetails(Number(detailsBtn.dataset.details), detailsBtn);
-return;
-}
-const tierBtn = e.target.closest("[data-set-qty]");
-if (tierBtn) {
-const num = Number(tierBtn.dataset.setQty);
-const qty = Number(tierBtn.dataset.qty);
-setQty(num, qty);
-return;
-}
-const incBtn = e.target.closest("[data-inc]");
-if (incBtn) {
-const num = Number(incBtn.dataset.inc);
-setQty(num, (cart[num] || 0) + 1);
-return;
-}
-const decBtn = e.target.closest("[data-dec]");
-if (decBtn) {
-const num = Number(decBtn.dataset.dec);
-setQty(num, (cart[num] || 0) - 1);
-return;
-}
-const removeBtn = e.target.closest("[data-remove]");
-if (removeBtn) {
-const num = Number(removeBtn.dataset.remove);
-setQty(num, 0);
-return;
-}
-});
-}
-// ---------------- Init ----------------
 async function init() {
-const res = await fetch("data/products.json");
-CATALOG = await res.json();
-renderCatalog();
-wireEvents();
-renderCartCount();
-renderCartDrawer();
+  const res = await fetch("data/products.json");
+  CATALOG = await res.json();
+  CATALOG.categories.forEach(c => c.items.forEach(p => { const q = {...p, cat: c.title}; PRODUCTS.push(q); byNum[p.num] = q }));
+  cats = ["All", ...CATALOG.categories.map(c => c.title)];
+  renderCatalog(); renderCart();
 }
 init();
