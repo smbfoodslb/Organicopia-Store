@@ -237,6 +237,15 @@
               "qty": 6,
               "price": 4.0
             }
+          ],
+          "description": "Grade A raw, unrefined shea butter, handcrafted by a women's cooperative in Ghana and certified organic by Ecocert. A rich, traditional butter for skin and hair.",
+          "ingredients": "100% Organic Unrefined Shea Butter (Butyrospermum parkii).",
+          "badges": [
+            "Certified Organic (Ecocert)",
+            "Raw",
+            "Unrefined",
+            "Grade A",
+            "Fair Trade"
           ]
         },
         {
@@ -701,6 +710,12 @@
               "qty": 6,
               "price": 3.0
             }
+          ],
+          "description": "Whole organic poppy seeds from Turkey with a subtle, earthy flavor and a satisfying crunch. For breads, bagels, cakes and dressings.",
+          "ingredients": "Organic Poppy Seeds (Papaver somniferum).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO"
           ]
         }
       ]
@@ -1126,6 +1141,15 @@
               "qty": 6,
               "price": 2.1
             }
+          ],
+          "description": "Finely ground organic garlic with nothing added. An everyday seasoning for vegetables, legumes, meat and marinades.",
+          "ingredients": "Organic Garlic.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-GMO",
+            "Raw",
+            "Vegan"
           ]
         },
         {
