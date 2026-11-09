@@ -21,7 +21,8 @@ const activeTier = (p, q) => { let i = -1; p.tiers.forEach((t, k) => { if (q >= 
 let cart = {}; try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}") } catch (e) { cart = {} }
 const saveCart = () => { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)) } catch (e) {} };
 
-let category = "All", query = "", cats = ["All"];
+let category = CATALOG.categories[0]?.title || "", query = "";
+const cats = CATALOG.categories.map(c => c.title);
 
 function renderChips() {
   $("chips").innerHTML = cats.map(c => `<button type="button" class="chip ${c === category ? "active" : ""}" data-cat="${esc(c)}" role="tab" aria-selected="${c === category}">${esc(c)}</button>`).join("");
@@ -49,18 +50,27 @@ function cardHtml(p) {
     <div class="body">${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tags}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
   </article>`;
 }
-function scrollToCatalog() {
-  // Bring the first group of the (re)filtered catalog just under the sticky toolbar, wherever the visitor was.
-  const first = document.querySelector("#catalog .group"); if (!first) return;
-  const hd = document.querySelector("header"), tb = document.querySelector(".toolbar");
-  const offset = (hd ? hd.offsetHeight : 73) + (tb ? tb.offsetHeight : 90) + 12; // sticky header + sticky toolbar
-  const y = first.getBoundingClientRect().top + window.scrollY - offset;
-  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+// Category chips are jump links (like the nav): the whole catalog stays on the page.
+const groupId = title => "cat-" + title.toLowerCase().replace(/[^a-z]+/g, "-");
+function stickyOffset() { const hd = document.querySelector("header"), tb = document.querySelector(".toolbar"); return (hd ? hd.offsetHeight : 73) + (tb ? tb.offsetHeight : 90) + 12 }
+let spyMute = 0;
+function scrollToGroup(title) {
+  const el = document.getElementById(groupId(title)); if (!el) return;
+  spyMute = Date.now() + 900; // let the smooth scroll land before the spy takes over
+  window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - stickyOffset()), behavior: "smooth" });
 }
+let spyTick = 0;
+window.addEventListener("scroll", () => { if (spyTick) return; spyTick = requestAnimationFrame(() => { spyTick = 0;
+  if (Date.now() < spyMute) return;
+  const groups = [...document.querySelectorAll("#catalog .group")]; if (!groups.length) return;
+  const line = stickyOffset() + 40; let cur = groups[0].dataset.cat;
+  groups.forEach(g => { if (g.getBoundingClientRect().top <= line) cur = g.dataset.cat });
+  if (cur !== category) { category = cur; renderChips(); const a = document.querySelector(".chip.active"); if (a) a.scrollIntoView({ block: "nearest", inline: "nearest" }) }
+}) }, { passive: true });
 function renderCatalog() {
   renderChips();
   const q = query.trim().toLowerCase();
-  const match = p => (category === "All" || p.cat === category) && (!q || (p.name + " " + (p.sub || "") + " " + (p.tags || []).join(" ") + " " + (p.description || "") + " " + p.cat).toLowerCase().includes(q));
+  const match = p => (!q || (p.name + " " + (p.sub || "") + " " + (p.tags || []).join(" ") + " " + (p.description || "") + " " + p.cat).toLowerCase().includes(q));
   let html = "", any = false;
   CATALOG.categories.forEach(c => {
     const items = c.items.map(p => byNum[p.num] || p).filter(match);
@@ -112,7 +122,7 @@ function closeCart() { $("cartOverlay").hidden = true }
 document.body.addEventListener("click", e => {
   const t = e.target.closest("[data-cat],[data-set],[data-inc],[data-dec],[data-remove],[data-view],[data-copy]");
   if (!t) return;
-  if (t.dataset.cat) { category = t.dataset.cat; renderCatalog(); scrollToCatalog(); return }
+  if (t.dataset.cat) { category = t.dataset.cat; renderChips(); scrollToGroup(category); return }
   if (t.dataset.set) { const n = +t.dataset.set, q = +t.dataset.qty; setQty(n, q); toast(`${byNum[n].name}: ${q} in basket at ${money(unitPrice(byNum[n], q))} each`); return }
   if (t.dataset.inc) { const n = +t.dataset.inc; setQty(n, (cart[n] || 0) + 1); return }
   if (t.dataset.dec) { const n = +t.dataset.dec; setQty(n, (cart[n] || 0) - 1); return }
