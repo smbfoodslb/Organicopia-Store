@@ -94,7 +94,7 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 .search svg{width:18px;height:18px;color:var(--muted)}
 .chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;max-width:100%}
 .chips::-webkit-scrollbar{display:none}
-.chip{flex:none;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;white-space:nowrap}
+.chip{--cat:var(--sage);flex:none;display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;white-space:nowrap}
 .chip.active{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
 .pricing-note{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px;margin:10px 0 22px}
 .pricing-note b{color:var(--fg);font-weight:600}
@@ -113,8 +113,10 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 [data-cat="Sweet Things"]{--cat:var(--aqua)}
 :root[data-theme="dark"] [data-cat="Daily Care"]{--cat:var(--gold)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) [data-cat="Daily Care"]{--cat:var(--gold)}}
-.chip[data-cat]{--cat:var(--sage)}
+.chip[data-cat]:not([data-cat="All"])::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--cat);flex:none}
+.chip[data-cat]:not([data-cat="All"]){border-color:color-mix(in srgb,var(--cat) 55%,var(--line))}
 .chip[data-cat].active{background:var(--cat);border-color:var(--cat);color:#fff}
+.chip[data-cat].active::before{background:#fff}
 .chip[data-cat="All"].active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
 
 .group-head{display:flex;align-items:baseline;gap:12px;background:var(--cat);color:#fff;border-radius:var(--radius);padding:16px 22px;margin-bottom:20px}
