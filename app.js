@@ -31,7 +31,11 @@ function tierHtml(p, q) {
   return `<div class="tiers">${p.tiers.map((t, i) => `<button type="button" class="tier ${i === a ? "active" : ""}" data-set="${p.num}" data-qty="${t.qty}" aria-label="${t.qty} for ${money(t.price)} each"><small>×${t.qty}</small><b>${money(t.price)}</b></button>`).join("")}</div>`;
 }
 // "Made With Imported Ingredients" is a render-only pill derived from imported_ingredients (never mixed into tags; the origin tooling reads tags[1]).
-const tagsHtml = p => (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("") + (p.imported_ingredients ? `<span class="tag">Made With Imported Ingredients</span>` : "");
+const LAB_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/></svg>`;
+const isLab = p => !!p.lab_tested || /^lab tested$/i.test(p.sub || "");
+const subText = p => (/^lab tested$/i.test(p.sub || "") ? "" : (p.sub || ""));
+const tagsHtml = p => (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("") + (isLab(p) ? `<span class="tag lab">${LAB_ICON}Lab tested</span>` : "") + (p.imported_ingredients ? `<span class="tag">Made With Imported Ingredients</span>` : "");
+const hasDetails = p => !!(p.description || p.ingredients || (p.badges && p.badges.length));
 function cardHtml(p) {
   const q = cart[p.num] || 0;
   const badge = p.status === "oos" ? `<span class="badge oos">Sold out</span>` : p.status === "hold" ? `<span class="badge soon">Back soon</span>` : p.is_new ? `<span class="badge new">New</span>` : "";
@@ -42,7 +46,7 @@ function cardHtml(p) {
     : `<div class="unavail">${p.status === "oos" ? "Currently sold out. Message us to be notified." : "Coming back soon."}</div>`;
   return `<article class="card ${p.status === "oos" ? "is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}">${badge}${made}<img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400"></div>
-    <div class="body"><h4>${esc(p.name)}</h4><p class="sub">${esc(p.sub || "")}</p><div class="tags">${tags}</div><button type="button" class="details" data-view="${p.num}">Details</button>${bottom}</div>
+    <div class="body"><h4>${esc(p.name)}</h4><p class="sub">${esc(subText(p))}</p><div class="tags">${tags}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
   </article>`;
 }
 function renderCatalog() {
@@ -72,10 +76,10 @@ function renderCart() {
   const nums = Object.keys(cart).map(Number).filter(n => byNum[n] && purchasable(byNum[n]));
   let total = 0, count = 0;
   const rows = nums.map(n => { const p = byNum[n], q = cart[n], u = unitPrice(p, q); total += u * q; count += q;
-    return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(p.sub || (p.tags || []).join(" · "))} · ${money(u)} each</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt">${money(u * q)}${savings(p, q) > 0.001 ? `<div class="save">saved ${money(savings(p, q))}</div>` : ""}</div></div>` });
+    return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(subText(p) || (p.tags || []).join(" · "))} · ${money(u)} each</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt">${money(u * q)}${savings(p, q) > 0.001 ? `<div class="save">saved ${money(savings(p, q))}</div>` : ""}</div></div>` });
   $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">Your basket is empty. Pick a product and choose ×1, ×3 or ×6.</p>`;
   $("count").textContent = count; $("cartTotal").textContent = money(total);
-  const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${p.sub ? " (" + p.sub + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
+  const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
   const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total)} (incl. VAT)\n\nPlease confirm availability and delivery. Thank you!`;
   const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
 }
@@ -85,11 +89,12 @@ function renderModalTiers() { const p = byNum[modalNum]; const q = cart[modalNum
   $("modalTiers").innerHTML = purchasable(p) ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}">−</button><span>${q}</span><button type="button" data-inc="${p.num}">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)} in basket</span></span></div>` : "") : `<div class="unavail">${p.status === "oos" ? "Currently sold out." : "Coming back soon."}</div>` }
 function openProduct(num) { const p = byNum[num]; modalNum = num;
   $("modalImg").src = imgSrc(p); $("modalImg").alt = p.name; $("modalCat").textContent = p.cat + (isMade(p) ? " · Made with Intention" : " · Sourced with Intention");
-  $("modalName").textContent = p.name; $("modalSub").textContent = p.sub || "";
+  $("modalName").textContent = p.name; $("modalSub").textContent = subText(p);
   $("modalTags").innerHTML = tagsHtml(p);
   $("modalBadges").innerHTML = (p.badges || []).map(b => `<span>${esc(b)}</span>`).join("");
   $("modalDesc").textContent = p.description || "";
   $("modalIng").textContent = p.ingredients ? "Ingredients: " + p.ingredients : ""; $("modalIng").hidden = !p.ingredients;
+  $("modalLab").hidden = !isLab(p);
   renderModalTiers(); $("productModal").hidden = false; $("closeModal").focus();
 }
 function closeModal() { $("productModal").hidden = true; modalNum = null }
@@ -114,13 +119,31 @@ $("openCart").onclick = openCart; $("closeCart").onclick = closeCart;
 $("cartOverlay").addEventListener("click", e => { if (e.target === $("cartOverlay")) closeCart() });
 $("closeModal").onclick = closeModal;
 $("productModal").addEventListener("click", e => { if (e.target === $("productModal")) closeModal() });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart() } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); closeWholesale() } });
+// ---- Wholesale inquiry form -> WhatsApp
+const WHOLESALE_WA = "96178879350";
+function openWholesale() { $("wholesaleModal").hidden = false; $("whName").focus() }
+function closeWholesale() { $("wholesaleModal").hidden = true }
+document.querySelectorAll("#wholesaleLink,[data-wholesale]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); openWholesale() }));
+$("closeWholesale").onclick = closeWholesale;
+$("wholesaleModal").addEventListener("click", e => { if (e.target === $("wholesaleModal")) closeWholesale() });
+$("whForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const f = $("whForm"); f.querySelectorAll("input,select,textarea").forEach(x => x.classList.add("touched"));
+  if (!f.checkValidity()) { $("whErr").hidden = false; f.querySelector(":invalid")?.focus(); return }
+  $("whErr").hidden = true;
+  const v = id => $(id).value.trim();
+  const msg = `Hello Organicopia, I'm interested in wholesale.\n\nName: ${v("whName")}\nBusiness: ${v("whBiz")}\nPhone: ${v("whPhone")}\nLocation: ${v("whLoc")}\nInterest: ${v("whReason")}${v("whAbout") ? "\nAbout the business: " + v("whAbout") : ""}\n\nPlease get in touch. Thank you!`;
+  const a = document.createElement("a"); a.href = "https://wa.me/" + WHOLESALE_WA + "?text=" + encodeURIComponent(msg); a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
+  closeWholesale(); toast("Opening WhatsApp with your inquiry\u2026");
+});
+if (location.hash === "#wholesale") openWholesale();
 $("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your basket first.") } });
-// Replay the logo animation once when the hero scrolls back into view after a while.
-const heroAnim = $("heroAnim"); let playedAt = Date.now();
-if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  new IntersectionObserver(es => { es.forEach(x => { if (x.isIntersecting && Date.now() - playedAt > 30000) { heroAnim.src = heroAnim.src.split("?")[0] + "?r=" + Date.now(); playedAt = Date.now() } }) }, {threshold: .6}).observe(heroAnim);
-}
+// Logo animation: the GIF plays once (~6 s), then fades to the crisp SVG lockup. Reduced motion: lockup only.
+const heroAnim = $("heroAnim"), animBox = heroAnim.parentElement;
+const ANIM_MS = 4300; // the drawing finishes at ~4.26 s; the GIF then just holds its last frame
+if (matchMedia("(prefers-reduced-motion: reduce)").matches) { animBox.classList.add("done"); heroAnim.remove() }
+else { const start = () => setTimeout(() => animBox.classList.add("done"), ANIM_MS); heroAnim.complete ? start() : heroAnim.addEventListener("load", start, {once: true}) }
 async function init() {
   const res = await fetch("data/products.json");
   CATALOG = await res.json();

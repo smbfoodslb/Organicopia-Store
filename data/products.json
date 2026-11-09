@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-07",
+  "generated": "2026-11-09",
   "categories": [
     {
       "title": "Wellness",
@@ -14,6 +14,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-wheatgrass-powder-2.jpg",
           "status": null,
           "is_new": false,
@@ -49,6 +50,7 @@
             "Lithuania"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-hemp-protein-powder.jpg",
           "status": null,
           "is_new": false,
@@ -65,6 +67,14 @@
               "qty": 6,
               "price": 9.85
             }
+          ],
+          "description": "Fine, cold-processed hemp protein powder with 50% protein, grown in Lithuania. Pressed without hexane or other solvents.",
+          "ingredients": "Organic Hemp Protein (Cannabis sativa).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified",
+            "Gluten-Free",
+            "Vegan"
           ]
         }
       ]
@@ -82,6 +92,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-castor-oil-2.jpg",
           "status": null,
           "is_new": false,
@@ -113,10 +124,11 @@
           "name": "Organic Coconut Activated Charcoal Powder",
           "sub": "Food Grade \u00b7 NSF Certified",
           "tags": [
-            "35 g",
+            "55 g",
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-activated-charcoal-powder-2.jpg",
           "status": null,
           "is_new": true,
@@ -134,7 +146,7 @@
               "price": 3.0
             }
           ],
-          "description": "Food-grade activated charcoal powder made from organic coconut shells, made in the USA. Resealable bag.",
+          "description": "Food-grade activated charcoal powder made from organic coconut shells, made in the USA.",
           "ingredients": "Organic Coconut Charcoal."
         },
         {
@@ -146,6 +158,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "clay-toothpaste-peppermint.jpg",
           "status": null,
           "is_new": false,
@@ -175,6 +188,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "clay-toothpaste-cinnamon.jpg",
           "status": null,
           "is_new": false,
@@ -206,6 +220,7 @@
             "Unrefined"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-shea-butter-2.jpg",
           "status": null,
           "is_new": false,
@@ -222,6 +237,15 @@
               "qty": 6,
               "price": 4.0
             }
+          ],
+          "description": "Grade A raw, unrefined shea butter, handcrafted by a women's cooperative in Ghana and certified organic by Ecocert. A rich, traditional butter for skin and hair.",
+          "ingredients": "100% Organic Unrefined Shea Butter (Butyrospermum parkii).",
+          "badges": [
+            "Certified Organic (Ecocert)",
+            "Raw",
+            "Unrefined",
+            "Grade A",
+            "Fair Trade"
           ]
         },
         {
@@ -233,6 +257,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-black-seed-oil-3.jpg",
           "status": "oos",
           "is_new": false,
@@ -255,10 +280,18 @@
             "Honduras"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-batana-oil.jpg",
           "status": "hold",
           "is_new": false,
-          "tiers": null
+          "tiers": null,
+          "description": "Raw batana oil from the nut of the American oil palm, made in Honduras. A rich butter at room temperature that melts into an oil in the hand; traditionally used on hair.",
+          "ingredients": "100% Raw Batana Oil (Elaeis oleifera).",
+          "badges": [
+            "100% Raw",
+            "Unrefined",
+            "Cruelty-Free"
+          ]
         }
       ]
     },
@@ -276,6 +309,7 @@
             "Dark"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "organicopia-chocolate-chunks-2.jpg",
           "status": null,
           "is_new": true,
@@ -293,7 +327,7 @@
               "price": 4.95
             }
           ],
-          "description": "Rich, dark baking chunks made with 70% cacao. Great in cookies and brownies, or for snacking straight from the bag.",
+          "description": "Rich, dark baking chunks made with 70% cacao. Great in cookies and brownies, or for snacking.",
           "ingredients": "Organic Cacao Paste, Organic Cane Sugar, Organic Cacao Butter, Organic Vanilla Extract and Himalayan Salt.",
           "badges": [
             "Made with Certified Organic Ingredients",
@@ -310,6 +344,7 @@
             "Ecuador"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-cacao-nibs-4.jpg",
           "status": null,
           "is_new": false,
@@ -347,6 +382,7 @@
             "Raw"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-cacao-powder-2.jpg",
           "status": "oos",
           "is_new": false,
@@ -374,6 +410,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-black-sesame-seeds-3.jpg",
           "status": null,
           "is_new": true,
@@ -411,6 +448,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-sesame-seeds-hulled-3.jpg",
           "status": null,
           "is_new": true,
@@ -427,6 +465,13 @@
               "qty": 6,
               "price": 1.85
             }
+          ],
+          "description": "Raw hulled sesame seeds from small organic farms, with a rich, nutty flavor. Ideal for tahini, baking and toppings.",
+          "ingredients": "Organic Hulled Sesame Seeds (Sesamum indicum).",
+          "badges": [
+            "Certified Organic",
+            "Raw",
+            "Gluten-Free"
           ]
         },
         {
@@ -438,6 +483,7 @@
             "Turkey"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-apricots-sundried.jpg",
           "status": null,
           "is_new": true,
@@ -454,6 +500,13 @@
               "qty": 6,
               "price": 2.5
             }
+          ],
+          "description": "Sun-dried Turkish apricots, harvested ripe and gently dried. Chewy and naturally sweet, with no added sugar or sulphur.",
+          "ingredients": "Organic Apricots (Prunus armeniaca).",
+          "badges": [
+            "Certified Organic",
+            "Unsulphured",
+            "No Added Sugar"
           ]
         },
         {
@@ -465,6 +518,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-yellow-popcorn.jpg",
           "status": null,
           "is_new": false,
@@ -499,6 +553,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-white-popcorn.jpg",
           "status": null,
           "is_new": true,
@@ -533,6 +588,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-rainbow-popcorn.jpg",
           "status": null,
           "is_new": true,
@@ -567,6 +623,7 @@
             "Sri Lanka"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ceylon-coconut-chips-raw.jpg",
           "status": null,
           "is_new": true,
@@ -583,6 +640,13 @@
               "qty": 6,
               "price": 2.7
             }
+          ],
+          "description": "Wide-cut chips from the white flesh of mature Sri Lankan coconuts, gently dried to stay naturally sweet and chewy.",
+          "ingredients": "Organic Coconut Chips (Cocos nucifera).",
+          "badges": [
+            "Certified Organic",
+            "Raw",
+            "Unsweetened"
           ]
         },
         {
@@ -594,6 +658,7 @@
             "Sri Lanka"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ceylon-coconut-chips-toasted.jpg",
           "status": null,
           "is_new": true,
@@ -610,6 +675,13 @@
               "qty": 6,
               "price": 2.7
             }
+          ],
+          "description": "Wide-cut Sri Lankan coconut chips, lightly toasted for a crisp, nutty snack. Unsweetened and unsalted.",
+          "ingredients": "Organic Toasted Coconut Chips (Cocos nucifera).",
+          "badges": [
+            "Certified Organic",
+            "Unsweetened",
+            "Unsalted"
           ]
         },
         {
@@ -621,6 +693,7 @@
             "Turkey"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-poppy-seeds.jpg",
           "status": null,
           "is_new": false,
@@ -637,6 +710,12 @@
               "qty": 6,
               "price": 3.0
             }
+          ],
+          "description": "Whole organic poppy seeds from Turkey with a subtle, earthy flavor and a satisfying crunch. For breads, bagels, cakes and dressings.",
+          "ingredients": "Organic Poppy Seeds (Papaver somniferum).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO"
           ]
         }
       ]
@@ -654,6 +733,7 @@
             "China"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-stevia-powder-2.jpg",
           "status": null,
           "is_new": false,
@@ -689,6 +769,7 @@
             "Brazil"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-powdered-cane-sugar-2.jpg",
           "status": null,
           "is_new": false,
@@ -724,6 +805,7 @@
             "Madagascar"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-vanilla-extract-2.jpg",
           "status": null,
           "is_new": false,
@@ -757,6 +839,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "organicopia-ghee-3.jpg",
           "status": null,
           "is_new": true,
@@ -786,6 +869,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "organicopia-ghee-250g.jpg",
           "status": null,
           "is_new": true,
@@ -815,6 +899,7 @@
             "Philippines"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-coconut-butter.jpg",
           "status": null,
           "is_new": true,
@@ -831,6 +916,12 @@
               "qty": 6,
               "price": 5.8
             }
+          ],
+          "description": "Creamy coconut butter made from the whole flesh of organic coconuts, with nothing added. Spread it, blend it or bake with it.",
+          "ingredients": "Organic Coconut (Cocos nucifera).",
+          "badges": [
+            "Certified Organic",
+            "No Additives"
           ]
         },
         {
@@ -842,6 +933,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-peanut-butter.jpg",
           "status": null,
           "is_new": true,
@@ -858,6 +950,13 @@
               "qty": 6,
               "price": 5.9
             }
+          ],
+          "description": "Smooth peanut butter made from USA-grown organic peanuts and a pinch of salt. No added oils or sugar.",
+          "ingredients": "Organic Peanuts, Salt.",
+          "badges": [
+            "Certified Organic",
+            "No Added Sugar",
+            "No Added Oil"
           ]
         },
         {
@@ -869,10 +968,19 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-coconut-aminos.jpg",
           "status": "oos",
           "is_new": false,
-          "tiers": null
+          "tiers": null,
+          "description": "A soy-free seasoning sauce made from coconut blossom nectar and sap with sea salt. Use it like soy sauce in marinades, stir-fries and dressings.",
+          "ingredients": "Organic Coconut Nectar, Organic Coconut Blossom Sap, Unrefined Sea Salt.",
+          "badges": [
+            "Certified Organic",
+            "Soy-Free",
+            "Gluten-Free",
+            "Kosher"
+          ]
         },
         {
           "num": 30,
@@ -883,10 +991,19 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-toasted-sesame-oil.jpg",
           "status": "oos",
           "is_new": false,
-          "tiers": null
+          "tiers": null,
+          "description": "Organic sesame seeds, roasted and cold pressed for a deep, nutty aroma. Finish noodles, dressings and stir-fries with a few drops.",
+          "ingredients": "Organic Toasted Sesame Oil.",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Project Verified",
+            "Cold Pressed",
+            "Kosher"
+          ]
         }
       ]
     },
@@ -903,6 +1020,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-pumpkin-pie-spice-2.jpg",
           "status": null,
           "is_new": false,
@@ -930,12 +1048,13 @@
         {
           "num": 32,
           "name": "Organic Ceylon Cinnamon Powder",
-          "sub": "Lab Tested",
+          "sub": null,
           "tags": [
             "45 g",
             "Sri Lanka"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ceylon-cinnamon-powder-3.jpg",
           "status": null,
           "is_new": true,
@@ -969,6 +1088,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-blackened-cajun-seasoning-3.jpg",
           "status": null,
           "is_new": true,
@@ -985,6 +1105,14 @@
               "qty": 6,
               "price": 3.6
             }
+          ],
+          "description": "A smoky, savory Cajun blend with a touch of heat. Made for blackened fish and shrimp, grilled chicken, oven fries and corn.",
+          "ingredients": "Organic Paprika, Sea Salt, Organic Onion, Organic Garlic, Organic Oregano, Organic Thyme, Organic Cayenne, Organic Smoked Paprika, Organic Rice Concentrate, Organic Celery Seed.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-Irradiated",
+            "No Artificial Ingredients"
           ]
         },
         {
@@ -996,6 +1124,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-garlic-powder-3.jpg",
           "status": null,
           "is_new": true,
@@ -1012,6 +1141,15 @@
               "qty": 6,
               "price": 2.1
             }
+          ],
+          "description": "Finely ground organic garlic with nothing added. An everyday seasoning for vegetables, legumes, meat and marinades.",
+          "ingredients": "Organic Garlic.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-GMO",
+            "Raw",
+            "Vegan"
           ]
         },
         {
@@ -1023,6 +1161,7 @@
             "Spain"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-smoked-paprika-2.jpg",
           "status": null,
           "is_new": true,
@@ -1039,17 +1178,26 @@
               "qty": 6,
               "price": 4.8
             }
+          ],
+          "description": "Spanish paprika smoked over oak wood for a sweet, earthy flavor and deep color. Great with eggs, beans, potatoes and grilled meats.",
+          "ingredients": "Organic Smoked Paprika.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-Irradiated",
+            "No Artificial Ingredients"
           ]
         },
         {
           "num": 37,
           "name": "Organic Ginger Root Powder",
-          "sub": "Lab Tested",
+          "sub": null,
           "tags": [
             "60 g",
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ginger-root-powder-3.jpg",
           "status": null,
           "is_new": true,
@@ -1066,6 +1214,13 @@
               "qty": 6,
               "price": 2.2
             }
+          ],
+          "description": "Finely ground organic ginger root from India, with a warm, spicy flavor for teas, baking and curries.",
+          "ingredients": "Organic Ginger Root Powder (Zingiber officinale).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified",
+            "Raw"
           ]
         },
         {
@@ -1077,6 +1232,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-turmeric-root-powder-2.jpg",
           "status": null,
           "is_new": true,
@@ -1093,6 +1249,12 @@
               "qty": 6,
               "price": 2.3
             }
+          ],
+          "description": "Earthy, golden turmeric root powder from India, ground from the whole root. For curries, golden milk and rice.",
+          "ingredients": "Organic Turmeric Root Powder (Curcuma longa).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified"
           ]
         },
         {
@@ -1104,10 +1266,19 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-cayenne-pepper-3.jpg",
           "status": "oos",
           "is_new": false,
-          "tiers": null
+          "tiers": null,
+          "description": "Ground organic cayenne from India at 50,000 Scoville heat units: a medium-hot cayenne that adds clean heat and color to any dish.",
+          "ingredients": "Organic Cayenne Pepper.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-Irradiated",
+            "No Artificial Ingredients"
+          ]
         }
       ]
     },
@@ -1124,6 +1295,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1141,8 +1313,8 @@
               "price": 1.5
             }
           ],
-          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
-          "ingredients": "Organic White Flour, Organic Cane Sugar, Organic Cacao Powder, Organic Cacao Paste, Dairy Butter, Organic Free Range Eggs, Baking Soda (Aluminum Free), Himalayan Salt."
+          "description": "Crave-worthy meets clean ingredients. Rich, fudgy cookies made with a short list of Certified Organic ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip. No fillers, no shortcuts.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Raw Cacao Powder, Organic Cacao Paste, Baking Soda, Organic Eggs, Apple Cider Vinegar, Mineral Salt."
         },
         {
           "num": 41,
@@ -1153,6 +1325,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1170,8 +1343,8 @@
               "price": 8.75
             }
           ],
-          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
-          "ingredients": "Organic White Flour, Organic Cane Sugar, Organic Cacao Powder, Organic Cacao Paste, Dairy Butter, Organic Free Range Eggs, Baking Soda (Aluminum Free), Himalayan Salt."
+          "description": "Crave-worthy meets clean ingredients. Rich, fudgy cookies made with a short list of Certified Organic ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip. No fillers, no shortcuts.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Raw Cacao Powder, Organic Cacao Paste, Baking Soda, Organic Eggs, Apple Cider Vinegar, Mineral Salt."
         },
         {
           "num": 42,
@@ -1182,6 +1355,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-vanilla-chip-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1199,7 +1373,7 @@
               "price": 1.5
             }
           ],
-          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
+          "description": "Crave-worthy meets clean ingredients. Rich, fudgy cookies made with a short list of Certified Organic ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip. No fillers, no shortcuts.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Cane Sugar, Organic Chocolate Chips (Soy Free), Dairy Butter, Organic Free Range Eggs, Organic Non Alcoholic Vanilla Extract, Apple Cider Vinegar, Baking Soda (Aluminum Free), Sea Salt."
         },
         {
@@ -1211,6 +1385,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-vanilla-chip-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1228,7 +1403,7 @@
               "price": 8.75
             }
           ],
-          "description": "Rich, fudgy cookies made with a short list of simple ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip.",
+          "description": "Crave-worthy meets clean ingredients. Rich, fudgy cookies made with a short list of Certified Organic ingredients, in Double Chocolate Chunk or Vanilla Chocolate Chip. No fillers, no shortcuts.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Cane Sugar, Organic Chocolate Chips (Soy Free), Dairy Butter, Organic Free Range Eggs, Organic Non Alcoholic Vanilla Extract, Apple Cider Vinegar, Baking Soda (Aluminum Free), Sea Salt."
         },
         {
@@ -1240,6 +1415,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "brownie-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1257,8 +1433,8 @@
               "price": 2.25
             }
           ],
-          "description": "Rich, fudgy, chewy brownies loaded with deep cacao and melty chocolate chips. Our best-selling chocolate-on-chocolate flavor.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free)."
+          "description": "Decadence you can feel good about. Rich, fudgy, chewy brownies packed with deep cacao and melty chocolate chips, made with clean, simple ingredients. Our best-selling chocolate-on-chocolate flavor.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Olive Oil."
         },
         {
           "num": 45,
@@ -1269,6 +1445,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "brownie-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1286,8 +1463,8 @@
               "price": 12.4
             }
           ],
-          "description": "Rich, fudgy, chewy brownies loaded with deep cacao and melty chocolate chips. Our best-selling chocolate-on-chocolate flavor.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free)."
+          "description": "Decadence you can feel good about. Rich, fudgy, chewy brownies packed with deep cacao and melty chocolate chips, made with clean, simple ingredients. Our best-selling chocolate-on-chocolate flavor.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Organic Demerara Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Olive Oil."
         },
         {
           "num": 46,
@@ -1298,6 +1475,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-double-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1315,7 +1493,7 @@
               "price": 2.6
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "description": "A taste of tradition, elevated. Delicate, melt-in-your-mouth butter sabl\u00e9s inspired by French baking, made with Certified Organic ingredients and filled with rich chocolate or vibrant fruit jam.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
@@ -1327,6 +1505,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-vanilla-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1344,8 +1523,8 @@
               "price": 2.6
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Delicate, melt-in-your-mouth butter sabl\u00e9s inspired by French baking, made with Certified Organic ingredients and filled with rich chocolate or vibrant fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 48,
@@ -1356,6 +1535,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-apricot-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1373,8 +1553,8 @@
               "price": 2.6
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Delicate, melt-in-your-mouth butter sabl\u00e9s inspired by French baking, made with Certified Organic ingredients and filled with rich chocolate or vibrant fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Apricot Jam (Apricots, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 49,
@@ -1385,6 +1565,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-strawberry-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1402,8 +1583,8 @@
               "price": 2.6
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Delicate, melt-in-your-mouth butter sabl\u00e9s inspired by French baking, made with Certified Organic ingredients and filled with rich chocolate or vibrant fruit jam.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry Jam (Strawberries, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 50,
@@ -1414,6 +1595,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "muffin-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1431,7 +1613,7 @@
               "price": 2.3
             }
           ],
-          "description": "Soft, moist double chocolate chip muffins made with organic cacao and soy-free organic chocolate chips. Ready to grab and go.",
+          "description": "Moist, rich and ready to go. Soft double chocolate chip muffins loaded with organic cacao and soy-free organic chocolate chips, with nothing artificial, ever.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Homemade Yogurt, Organic Vanilla Extract (Non Alcoholic), Mineral Salt, Baking Soda."
         },
         {
@@ -1443,6 +1625,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "muffin-double-chocolate-4pc.jpg",
           "status": null,
           "is_new": false,
@@ -1460,7 +1643,7 @@
               "price": 8.9
             }
           ],
-          "description": "Soft, moist double chocolate chip muffins made with organic cacao and soy-free organic chocolate chips. Ready to grab and go.",
+          "description": "Moist, rich and ready to go. Soft double chocolate chip muffins loaded with organic cacao and soy-free organic chocolate chips, with nothing artificial, ever.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Homemade Yogurt, Organic Vanilla Extract (Non Alcoholic), Mineral Salt, Baking Soda."
         },
         {
@@ -1472,6 +1655,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "muffin-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1489,7 +1673,7 @@
               "price": 12.25
             }
           ],
-          "description": "Soft, moist double chocolate chip muffins made with organic cacao and soy-free organic chocolate chips. Ready to grab and go.",
+          "description": "Moist, rich and ready to go. Soft double chocolate chip muffins loaded with organic cacao and soy-free organic chocolate chips, with nothing artificial, ever.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Chocolate Chips (Soy Free), Homemade Yogurt, Organic Vanilla Extract (Non Alcoholic), Mineral Salt, Baking Soda."
         },
         {
@@ -1501,6 +1685,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-double-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1518,7 +1703,7 @@
               "price": 7.3
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
@@ -1530,6 +1715,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-double-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1547,7 +1733,7 @@
               "price": 10.65
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
@@ -1559,6 +1745,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-apricot-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1576,8 +1763,8 @@
               "price": 7.3
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Apricot Jam (Apricots, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 56,
@@ -1588,6 +1775,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-apricot-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1605,8 +1793,8 @@
               "price": 10.65
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Apricot Jam (Apricots, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 57,
@@ -1617,6 +1805,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-strawberry-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1634,8 +1823,8 @@
               "price": 7.3
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry Jam (Strawberries, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 58,
@@ -1646,6 +1835,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-strawberry-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1663,8 +1853,8 @@
               "price": 10.65
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry Jam (Strawberries, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 59,
@@ -1675,6 +1865,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-vanilla-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1692,8 +1883,8 @@
               "price": 7.3
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 60,
@@ -1704,6 +1895,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-vanilla-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1721,8 +1913,8 @@
               "price": 10.65
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 61,
@@ -1733,6 +1925,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1750,7 +1943,7 @@
               "price": 7.3
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
@@ -1762,6 +1955,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1779,7 +1973,7 @@
               "price": 10.65
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
           "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Organic Raw Cacao Powder, Organic Cacao Paste, Organic Vanilla Extract (Non Alcoholic)."
         },
         {
@@ -1791,6 +1985,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1808,8 +2003,8 @@
               "price": 7.3
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry Jam (Strawberries, Apple Molasses), Apricot Jam (Apricots, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         },
         {
           "num": 64,
@@ -1820,6 +2015,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1837,8 +2033,8 @@
               "price": 10.65
             }
           ],
-          "description": "Delicate, melt-in-your-mouth French-style butter sabl\u00e9 cookies, filled with chocolate or fruit jam.",
-          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry or Apricot Jam (Strawberries or Apricot, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
+          "description": "A taste of tradition, elevated. Beloved in every Lebanese bakery, these delicate, melt-in-your-mouth butter petit fours are made with Certified Organic ingredients and layered with fruit jam or rich chocolate.",
+          "ingredients": "Organic Pastry Flour, Organic Cane Sugar, Butter, Organic Eggs, Strawberry Jam (Strawberries, Apple Molasses), Apricot Jam (Apricots, Apple Molasses), Organic Vanilla Extract (Non Alcoholic)."
         }
       ]
     },
@@ -1855,6 +2051,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "gummies-berrilicious.jpg",
           "status": null,
           "is_new": false,
@@ -1890,6 +2087,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "chews-berry-noir.jpg",
           "status": null,
           "is_new": false,
@@ -1925,6 +2123,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "chews-soulberry.jpg",
           "status": null,
           "is_new": false,
@@ -1960,6 +2159,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "gummies-tuttifrutti-blend.jpg",
           "status": null,
           "is_new": false,
@@ -1995,6 +2195,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "gummies-fruitvine-laces.jpg",
           "status": null,
           "is_new": false,
@@ -2029,6 +2230,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "lollipops-lollie-patch.jpg",
           "status": null,
           "is_new": false,
