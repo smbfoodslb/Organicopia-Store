@@ -66,7 +66,7 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 .hero-visual{position:relative;aspect-ratio:1/1;max-width:100%;border-radius:48% 52% 46% 54% / 56% 44% 56% 44%;background:var(--sage);overflow:hidden;isolation:isolate}
 .hero-visual .waves{position:absolute;inset:auto -10% -6% -10%;width:120%;opacity:.55;pointer-events:none}
 .hero-visual .leaf{position:absolute;width:100%;left:-1%;top:5%;height:auto}
-.hero-visual .anim{position:absolute;left:26%;top:15%;width:47%;aspect-ratio:1/1}
+.hero-visual .anim{position:absolute;left:24%;top:19%;width:47%;aspect-ratio:1/1}
 .hero-visual .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .25s}
 .hero-visual .anim .still{opacity:0;padding:0 2%;transform:scale(1.06)}
 .hero-visual .anim.done #heroAnim{opacity:0}
@@ -141,6 +141,7 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 
 /* standard */
 .standard{background:var(--surface);border-block:1px solid var(--line)}
+.standard .block{padding-block:20px 18px}
 .standard .section-head .eyebrow{display:inline-block;font-size:12px;letter-spacing:.18em;font-weight:700;color:var(--cream);background:var(--sage);border-radius:999px;padding:8px 16px}
 :root[data-theme="dark"] .standard .section-head .eyebrow{background:var(--gold);color:var(--navy)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .standard .section-head .eyebrow{background:var(--gold);color:var(--navy)}}
