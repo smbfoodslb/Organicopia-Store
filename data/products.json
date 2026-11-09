@@ -135,15 +135,15 @@
           "tiers": [
             {
               "qty": 1,
-              "price": 3.55
+              "price": 4.0
             },
             {
               "qty": 3,
-              "price": 3.3
+              "price": 3.8
             },
             {
               "qty": 6,
-              "price": 3.0
+              "price": 3.5
             }
           ],
           "description": "Food-grade activated charcoal powder made from organic coconut shells, made in the USA.",
