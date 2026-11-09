@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Inter:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
@@ -35,7 +35,7 @@
     <img class="mark logo-img" src="images/brand/logo-mark.svg" alt="" width="52" height="48">
     <span><img class="word logo-img" src="images/brand/wordmark.svg" alt="Organicopia" width="150" height="40"><span class="tag">Reconnect with the natural rhythm of life.</span></span>
   </a>
-  <nav class="navlinks" aria-label="Main"><a href="#shop">Shop</a><a href="#standard">Our Standard</a><a href="#story">Our Story</a><a href="#order">How to Order</a></nav>
+  <nav class="navlinks" aria-label="Main"><a href="#shop">Shop</a><a href="#standard">Our Standard</a><a href="#story">Our Story</a><a href="#order">How to Order</a><a href="#wholesale" data-wholesale>Wholesale</a></nav>
   <div class="nav-actions">
     <button class="iconbtn searchjump" id="searchJump" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="iconbtn cartbtn" id="openCart" type="button" aria-label="Open your basket">Basket <span class="n" id="count">0</span></button>
@@ -52,7 +52,7 @@
   </div>
   <div class="hero-visual" aria-hidden="true">
     <svg class="leaf" viewBox="0 0 433.51 373" aria-hidden="true"><path fill="var(--cream)" d="M43.31,335.54S23.18-14.35,393.2,43.55c0,0-28.94,140.25-137.07,226.05-13.49,10.71-28.56,19.27-44.61,25.53-24.94,9.74-68.19,24.02-120.38,30.34,0,0-35.24,0-47.83,10.07Z"/></svg>
-    <div class="anim"><img id="heroAnim" src="images/brand/logo-animation.gif" alt="" width="480" height="480"></div>
+    <div class="anim"><img id="heroAnim" src="images/brand/logo-animation.gif" alt="" width="480" height="480"><img id="heroStill" class="still" src="images/brand/logo-lockup.svg" alt="" width="480" height="480"></div>
     <img class="waves" src="images/brand/wavy-navy.svg" alt="">
     <div class="pill">Sourced with intention</div>
   </div>
@@ -123,7 +123,7 @@
   <div class="wrap">
     <div><img class="foot-logo" src="images/brand/wordmark.svg" alt="Organicopia" style="filter:brightness(0) saturate(100%) invert(93%) sepia(13%) saturate(426%) hue-rotate(336deg) brightness(102%) contrast(95%)"><p style="margin-top:10px;font-family:var(--display);font-style:italic">Rooted in Nature. Made for life.</p><p>Real food, made and curated in Lebanon, shared with the people we love.</p></div>
     <div><h4>Contact</h4><p class="contactline"><span>WhatsApp / phone: <a href="https://wa.me/96170649386" target="_blank" rel="noopener">+961 70 649 386</a></span><button class="copy" type="button" data-copy="+961 70 649 386">Copy</button></p><p class="contactline"><span>Email: info@organicopia-lb.com</span><button class="copy" type="button" data-copy="info@organicopia-lb.com">Copy</button></p><p>Lebanon</p></div>
-    <div><h4>Explore</h4><ul><li><a href="#shop">Shop the collection</a></li><li><a href="#standard">The Organicopia standard</a></li><li><a href="#story">Our story</a></li><li><a href="https://wa.me/96178879350" target="_blank" rel="noopener">Wholesale Inquiries</a></li></ul></div>
+    <div><h4>Explore</h4><ul><li><a href="#shop">Shop the collection</a></li><li><a href="#standard">The Organicopia standard</a></li><li><a href="#story">Our story</a></li><li><a href="#wholesale" id="wholesaleLink">Wholesale Inquiries</a></li></ul></div>
   </div>
   <div class="foot-bottom"><div class="wrap"><span>© 2026 Organicopia · Soul Mind Body Foods SARL</span><span>All prices include VAT.</span></div></div>
 </footer>
@@ -149,12 +149,33 @@
     <div class="badges" id="modalBadges"></div>
     <p class="desc" id="modalDesc"></p>
     <div class="ing" id="modalIng"></div>
+    <div class="labnote" id="modalLab" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/></svg><span><b>Lab tested.</b> This product has been laboratory tested for quality and purity.</span></div>
     <div class="modal-tiers" id="modalTiers"></div>
   </div>
 </div></div>
 
+<div class="modal" id="wholesaleModal" hidden><div class="modalbox form" role="dialog" aria-labelledby="whTitle">
+  <button class="x" id="closeWholesale" type="button" aria-label="Close">&times;</button>
+  <form id="whForm" novalidate>
+    <div class="eyebrow">Wholesale inquiries</div>
+    <h2 id="whTitle">Stock Organicopia in your business.</h2>
+    <p class="sub">Tell us a little about you and we'll continue the conversation on WhatsApp.</p>
+    <div class="fields">
+      <label>Full name<input id="whName" name="name" type="text" autocomplete="name" required></label>
+      <label>Business name<input id="whBiz" name="business" type="text" autocomplete="organization" required></label>
+      <label>Phone number<input id="whPhone" name="phone" type="tel" autocomplete="tel" placeholder="+961 ..." required></label>
+      <label>Location<input id="whLoc" name="location" type="text" placeholder="City / area" required></label>
+      <label class="full">Reason for interest<select id="whReason" name="reason" required><option value="">Select one</option><option>Retail store or supermarket</option><option>Caf&eacute;, restaurant or bakery</option><option>Hotel or catering</option><option>Online shop</option><option>Distributor or reseller</option><option>Corporate gifting</option><option>Other</option></select></label>
+      <label class="full">About your business <span class="opt">(optional)</span><textarea id="whAbout" name="about" rows="3" maxlength="400" placeholder="What you sell, how many locations, products you're interested in..."></textarea></label>
+    </div>
+    <p class="err" id="whErr" hidden>Please fill in the required fields.</p>
+    <button class="btn wa" id="whSubmit" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp</button>
+    <p class="note">Opens WhatsApp with your details pre-filled for our wholesale team (+961 78 879 350). Nothing is sent until you press send.</p>
+  </form>
+</div></div>
+
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-07",
+  "generated": "2026-11-09",
   "categories": [
     {
       "title": "Wellness",
@@ -14,6 +14,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-wheatgrass-powder-2.jpg",
           "status": null,
           "is_new": false,
@@ -49,6 +50,7 @@
             "Lithuania"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-hemp-protein-powder.jpg",
           "status": null,
           "is_new": false,
@@ -82,6 +84,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-castor-oil-2.jpg",
           "status": null,
           "is_new": false,
@@ -117,6 +120,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-activated-charcoal-powder-2.jpg",
           "status": null,
           "is_new": true,
@@ -146,6 +150,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "clay-toothpaste-peppermint.jpg",
           "status": null,
           "is_new": false,
@@ -175,6 +180,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "clay-toothpaste-cinnamon.jpg",
           "status": null,
           "is_new": false,
@@ -206,6 +212,7 @@
             "Unrefined"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-shea-butter-2.jpg",
           "status": null,
           "is_new": false,
@@ -233,6 +240,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-black-seed-oil-3.jpg",
           "status": "oos",
           "is_new": false,
@@ -255,6 +263,7 @@
             "Honduras"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-batana-oil.jpg",
           "status": "hold",
           "is_new": false,
@@ -276,6 +285,7 @@
             "Dark"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "organicopia-chocolate-chunks-2.jpg",
           "status": null,
           "is_new": true,
@@ -310,6 +320,7 @@
             "Ecuador"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-cacao-nibs-4.jpg",
           "status": null,
           "is_new": false,
@@ -347,6 +358,7 @@
             "Raw"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-cacao-powder-2.jpg",
           "status": "oos",
           "is_new": false,
@@ -374,6 +386,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-black-sesame-seeds-3.jpg",
           "status": null,
           "is_new": true,
@@ -411,6 +424,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-sesame-seeds-hulled-3.jpg",
           "status": null,
           "is_new": true,
@@ -438,6 +452,7 @@
             "Turkey"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-apricots-sundried.jpg",
           "status": null,
           "is_new": true,
@@ -465,6 +480,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-yellow-popcorn.jpg",
           "status": null,
           "is_new": false,
@@ -499,6 +515,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-white-popcorn.jpg",
           "status": null,
           "is_new": true,
@@ -533,6 +550,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-rainbow-popcorn.jpg",
           "status": null,
           "is_new": true,
@@ -567,6 +585,7 @@
             "Sri Lanka"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ceylon-coconut-chips-raw.jpg",
           "status": null,
           "is_new": true,
@@ -594,6 +613,7 @@
             "Sri Lanka"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ceylon-coconut-chips-toasted.jpg",
           "status": null,
           "is_new": true,
@@ -621,6 +641,7 @@
             "Turkey"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-poppy-seeds.jpg",
           "status": null,
           "is_new": false,
@@ -654,6 +675,7 @@
             "China"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-stevia-powder-2.jpg",
           "status": null,
           "is_new": false,
@@ -689,6 +711,7 @@
             "Brazil"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-powdered-cane-sugar-2.jpg",
           "status": null,
           "is_new": false,
@@ -724,6 +747,7 @@
             "Madagascar"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-vanilla-extract-2.jpg",
           "status": null,
           "is_new": false,
@@ -757,6 +781,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "organicopia-ghee-3.jpg",
           "status": null,
           "is_new": true,
@@ -786,6 +811,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "organicopia-ghee-250g.jpg",
           "status": null,
           "is_new": true,
@@ -815,6 +841,7 @@
             "Philippines"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-coconut-butter.jpg",
           "status": null,
           "is_new": true,
@@ -842,6 +869,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-peanut-butter.jpg",
           "status": null,
           "is_new": true,
@@ -869,6 +897,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-coconut-aminos.jpg",
           "status": "oos",
           "is_new": false,
@@ -883,6 +912,7 @@
             "Mexico"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-toasted-sesame-oil.jpg",
           "status": "oos",
           "is_new": false,
@@ -903,6 +933,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-pumpkin-pie-spice-2.jpg",
           "status": null,
           "is_new": false,
@@ -930,12 +961,13 @@
         {
           "num": 32,
           "name": "Organic Ceylon Cinnamon Powder",
-          "sub": "Lab Tested",
+          "sub": null,
           "tags": [
             "45 g",
             "Sri Lanka"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ceylon-cinnamon-powder-3.jpg",
           "status": null,
           "is_new": true,
@@ -969,6 +1001,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-blackened-cajun-seasoning-3.jpg",
           "status": null,
           "is_new": true,
@@ -996,6 +1029,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-garlic-powder-3.jpg",
           "status": null,
           "is_new": true,
@@ -1023,6 +1057,7 @@
             "Spain"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-smoked-paprika-2.jpg",
           "status": null,
           "is_new": true,
@@ -1044,12 +1079,13 @@
         {
           "num": 37,
           "name": "Organic Ginger Root Powder",
-          "sub": "Lab Tested",
+          "sub": null,
           "tags": [
             "60 g",
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-ginger-root-powder-3.jpg",
           "status": null,
           "is_new": true,
@@ -1077,6 +1113,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": true,
           "img": "organicopia-turmeric-root-powder-2.jpg",
           "status": null,
           "is_new": true,
@@ -1104,6 +1141,7 @@
             "India"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "organicopia-cayenne-pepper-3.jpg",
           "status": "oos",
           "is_new": false,
@@ -1124,6 +1162,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1153,6 +1192,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1182,6 +1222,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-vanilla-chip-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1211,6 +1252,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "cookies-vanilla-chip-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1240,6 +1282,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "brownie-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1269,6 +1312,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "brownie-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1298,6 +1342,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-double-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1327,6 +1372,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-vanilla-chocolate.jpg",
           "status": null,
           "is_new": false,
@@ -1356,6 +1402,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-apricot-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1385,6 +1432,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "sable-strawberry-jam.jpg",
           "status": null,
           "is_new": false,
@@ -1414,6 +1462,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "muffin-double-chocolate-1pc.jpg",
           "status": null,
           "is_new": false,
@@ -1443,6 +1492,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "muffin-double-chocolate-4pc.jpg",
           "status": null,
           "is_new": false,
@@ -1472,6 +1522,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "muffin-double-chocolate-6pc.jpg",
           "status": null,
           "is_new": false,
@@ -1501,6 +1552,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-double-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1530,6 +1582,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-double-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1559,6 +1612,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-apricot-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1588,6 +1642,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-apricot-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1617,6 +1672,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-strawberry-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1646,6 +1702,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-strawberry-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1675,6 +1732,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-vanilla-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1704,6 +1762,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-vanilla-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1733,6 +1792,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-chocolate-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1762,6 +1822,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-chocolate-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1791,6 +1852,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-jam-200g.jpg",
           "status": null,
           "is_new": false,
@@ -1820,6 +1882,7 @@
             "Lebanon"
           ],
           "imported_ingredients": true,
+          "lab_tested": false,
           "img": "petit-four-variety-jam-300g.jpg",
           "status": null,
           "is_new": false,
@@ -1855,6 +1918,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "gummies-berrilicious.jpg",
           "status": null,
           "is_new": false,
@@ -1890,6 +1954,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "chews-berry-noir.jpg",
           "status": null,
           "is_new": false,
@@ -1925,6 +1990,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "chews-soulberry.jpg",
           "status": null,
           "is_new": false,
@@ -1960,6 +2026,7 @@
             "France"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "gummies-tuttifrutti-blend.jpg",
           "status": null,
           "is_new": false,
@@ -1995,6 +2062,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "gummies-fruitvine-laces.jpg",
           "status": null,
           "is_new": false,
@@ -2029,6 +2097,7 @@
             "USA"
           ],
           "imported_ingredients": false,
+          "lab_tested": false,
           "img": "lollipops-lollie-patch.jpg",
           "status": null,
           "is_new": false,
