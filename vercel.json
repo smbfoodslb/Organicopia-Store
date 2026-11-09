@@ -1,0 +1,11 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "organicopia-store.vercel.app" }],
+      "destination": "https://www.organicopia-lb.com/$1",
+      "permanent": true
+    },
+    { "source": "/index.html", "destination": "/", "permanent": true }
+  ]
+}
