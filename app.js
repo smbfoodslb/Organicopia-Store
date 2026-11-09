@@ -49,6 +49,14 @@ function cardHtml(p) {
     <div class="body">${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tags}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
   </article>`;
 }
+function scrollToCatalog() {
+  // Bring the first group of the (re)filtered catalog just under the sticky toolbar, wherever the visitor was.
+  const first = document.querySelector("#catalog .group"); if (!first) return;
+  const hd = document.querySelector("header"), tb = document.querySelector(".toolbar");
+  const offset = (hd ? hd.offsetHeight : 73) + (tb ? tb.offsetHeight : 90) + 12; // sticky header + sticky toolbar
+  const y = first.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+}
 function renderCatalog() {
   renderChips();
   const q = query.trim().toLowerCase();
@@ -104,7 +112,7 @@ function closeCart() { $("cartOverlay").hidden = true }
 document.body.addEventListener("click", e => {
   const t = e.target.closest("[data-cat],[data-set],[data-inc],[data-dec],[data-remove],[data-view],[data-copy]");
   if (!t) return;
-  if (t.dataset.cat) { category = t.dataset.cat; renderCatalog(); return }
+  if (t.dataset.cat) { category = t.dataset.cat; renderCatalog(); scrollToCatalog(); return }
   if (t.dataset.set) { const n = +t.dataset.set, q = +t.dataset.qty; setQty(n, q); toast(`${byNum[n].name}: ${q} in basket at ${money(unitPrice(byNum[n], q))} each`); return }
   if (t.dataset.inc) { const n = +t.dataset.inc; setQty(n, (cart[n] || 0) + 1); return }
   if (t.dataset.dec) { const n = +t.dataset.dec; setQty(n, (cart[n] || 0) - 1); return }
