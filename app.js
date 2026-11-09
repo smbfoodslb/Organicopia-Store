@@ -118,6 +118,7 @@ function closeModal() { $("productModal").hidden = true; modalNum = null }
 function openCart() { renderCart(); $("cartOverlay").hidden = false; $("closeCart").focus() }
 function closeCart() { $("cartOverlay").hidden = true }
 
+document.querySelectorAll(".chips").forEach(el => el.addEventListener("wheel", e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth) { e.preventDefault(); el.scrollLeft += e.deltaY } }, { passive: false }));
 document.body.addEventListener("click", e => {
   const t = e.target.closest("[data-cat],[data-set],[data-inc],[data-dec],[data-remove],[data-view],[data-copy]");
   if (!t) return;

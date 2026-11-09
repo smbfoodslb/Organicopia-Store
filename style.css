@@ -92,8 +92,10 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 .search{flex:1 1 260px;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:0 14px}
 .search input{flex:1;min-width:0;border:0;background:transparent;padding:11px 0;outline:none}
 .search svg{width:18px;height:18px;color:var(--muted)}
-.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;max-width:100%}
-.chips::-webkit-scrollbar{display:none}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent;padding-bottom:6px;max-width:100%;overscroll-behavior-x:contain}
+.chips::-webkit-scrollbar{height:6px}
+.chips::-webkit-scrollbar-thumb{background:var(--line);border-radius:999px}
+.chips::-webkit-scrollbar-track{background:transparent}
 .chip{--cat:var(--sage);flex:none;display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;white-space:nowrap}
 .chip.active{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
 .pricing-note{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px;margin:10px 0 22px}
