@@ -46,7 +46,7 @@ function cardHtml(p) {
     : `<div class="unavail">${p.status === "oos" ? "Currently sold out. Message us to be notified." : "Coming back soon."}</div>`;
   return `<article class="card ${p.status === "oos" ? "is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}">${badge}${made}<img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400"></div>
-    <div class="body"><h4>${esc(p.name)}</h4><p class="sub">${esc(subText(p))}</p><div class="tags">${tags}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
+    <div class="body">${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tags}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
   </article>`;
 }
 function renderCatalog() {
