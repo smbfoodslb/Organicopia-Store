@@ -100,9 +100,27 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 .pricing-note b{color:var(--fg);font-weight:600}
 
 /* category groups + cards */
-.group{margin-top:34px;scroll-margin-top:150px}
-.group-head{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--tan);padding-bottom:10px;margin-bottom:18px}
-.group-head h3{font-size:27px;font-weight:700;color:var(--fg)}
+.group{margin-top:28px;scroll-margin-top:150px;--cat:var(--sage);background:color-mix(in srgb,var(--cat) 9%,var(--surface));border:1px solid color-mix(in srgb,var(--cat) 28%,var(--line));border-radius:var(--radius);padding:22px 22px 24px}
+/* Category colours, from the brand palette */
+[data-cat="Cooking Essentials"]{--cat:var(--tan)}
+[data-cat="Baking"]{--cat:var(--brown)}
+[data-cat="Spices"]{--cat:var(--gold)}
+[data-cat="Seeds & Pantry"]{--cat:var(--sage)}
+[data-cat="Clean Sweeteners"]{--cat:var(--aqua)}
+[data-cat="Daily Care"]{--cat:var(--navy)}
+[data-cat="Wellness"]{--cat:var(--sage)}
+[data-cat="Fresh from the Oven"]{--cat:var(--brown)}
+[data-cat="Sweet Things"]{--cat:var(--aqua)}
+:root[data-theme="dark"] [data-cat="Daily Care"]{--cat:var(--gold)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) [data-cat="Daily Care"]{--cat:var(--gold)}}
+.chip[data-cat]{--cat:var(--sage)}
+.chip[data-cat].active{background:var(--cat);border-color:var(--cat);color:#fff}
+.chip[data-cat="All"].active{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.group .card{border-color:color-mix(in srgb,var(--cat) 22%,var(--line))}
+.group .card .photo{background:color-mix(in srgb,var(--cat) 7%,#fff)}
+.group-head{display:flex;align-items:baseline;gap:12px;border-bottom:3px solid var(--cat);padding-bottom:10px;margin-bottom:18px}
+.group-head h3::before{content:"";display:inline-block;width:14px;height:14px;border-radius:4px;background:var(--cat);margin-right:12px;vertical-align:baseline;transform:translateY(1px)}
+.group-head h3{font-size:27px;font-weight:700;color:color-mix(in srgb,var(--cat) 70%,var(--fg))}
 .group-head span{color:var(--muted);font-size:13.5px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s;min-width:0}
@@ -254,7 +272,7 @@ footer a{color:var(--band-fg)}
   .pillars{grid-template-columns:1fr 1fr} .story .wrap{grid-template-columns:1fr} footer .wrap{grid-template-columns:1fr 1fr}
   .trust .wrap{grid-template-columns:1fr 1fr} .nav{flex-wrap:wrap} .navlinks{order:3;width:100%;gap:18px;overflow-x:auto;padding-bottom:4px} .navlinks a{font-size:12.5px;white-space:nowrap}
 }
-@media (max-width:720px){
+@media (max-width:720px){ .group{padding:14px 12px 16px} .group-head{flex-wrap:wrap;gap:2px 12px} .group-head h3{font-size:22px}
   .hero{grid-template-columns:1fr;gap:28px;padding-block:32px 28px} .hero-visual{max-width:420px;margin-inline:auto;width:100%}
   .steps,.stickers,.pillars,.beyond{grid-template-columns:1fr} footer .wrap{grid-template-columns:1fr}
   .brand .word{width:118px} .brand .mark{width:40px;height:38px} .brand .tag{display:none}

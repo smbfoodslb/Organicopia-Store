@@ -57,7 +57,7 @@ function renderCatalog() {
   CATALOG.categories.forEach(c => {
     const items = c.items.map(p => byNum[p.num] || p).filter(match);
     if (!items.length) return; any = true;
-    html += `<div class="group" id="cat-${c.title.toLowerCase().replace(/[^a-z]+/g, "-")}"><div class="group-head"><h3>${esc(c.title)}</h3><span>${esc(c.desc)}</span></div><div class="grid">${items.map(cardHtml).join("")}</div></div>`;
+    html += `<div class="group" data-cat="${esc(c.title)}" id="cat-${c.title.toLowerCase().replace(/[^a-z]+/g, "-")}"><div class="group-head"><h3>${esc(c.title)}</h3><span>${esc(c.desc)}</span></div><div class="grid">${items.map(cardHtml).join("")}</div></div>`;
   });
   $("catalog").innerHTML = any ? html : `<div class="empty">Nothing matches “${esc(query)}”. Try another word, or clear the search.</div>`;
 }
