@@ -21,8 +21,7 @@ const activeTier = (p, q) => { let i = -1; p.tiers.forEach((t, k) => { if (q >= 
 let cart = {}; try { cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}") } catch (e) { cart = {} }
 const saveCart = () => { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)) } catch (e) {} };
 
-let category = CATALOG.categories[0]?.title || "", query = "";
-const cats = CATALOG.categories.map(c => c.title);
+let category = "", query = "", cats = [];
 
 function renderChips() {
   $("chips").innerHTML = cats.map(c => `<button type="button" class="chip ${c === category ? "active" : ""}" data-cat="${esc(c)}" role="tab" aria-selected="${c === category}">${esc(c)}</button>`).join("");
@@ -166,7 +165,7 @@ async function init() {
   const res = await fetch("data/products.json");
   CATALOG = await res.json();
   CATALOG.categories.forEach(c => c.items.forEach(p => { const q = {...p, cat: c.title}; PRODUCTS.push(q); byNum[p.num] = q }));
-  cats = ["All", ...CATALOG.categories.map(c => c.title)];
+  cats = CATALOG.categories.map(c => c.title); category = cats[0] || "";
   renderCatalog(); renderCart();
 }
 init();
