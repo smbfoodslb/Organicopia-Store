@@ -2,295 +2,216 @@
   "generated": "2026-11-09",
   "categories": [
     {
-      "title": "Wellness",
-      "desc": "Green powders and gentle support.",
+      "title": "Cooking Essentials",
+      "desc": "The pantry staples a clean kitchen reaches for first.",
       "items": [
         {
           "num": 1,
-          "name": "Organic Wheatgrass Juice Powder",
-          "sub": null,
+          "name": "Organic Vanilla",
+          "sub": "Non-Alcoholic",
           "tags": [
-            "50 g",
-            "USA"
+            "60 mL",
+            "Madagascar"
           ],
           "imported_ingredients": false,
-          "lab_tested": true,
-          "img": "organicopia-wheatgrass-powder-2.jpg",
+          "lab_tested": false,
+          "img": "organicopia-vanilla-extract-2.jpg",
           "status": null,
           "is_new": false,
           "tiers": [
             {
               "qty": 1,
-              "price": 6.55
+              "price": 13.25
             },
             {
               "qty": 3,
-              "price": 6.2
+              "price": 13.0
             },
             {
               "qty": 6,
-              "price": 5.7
+              "price": 12.5
             }
           ],
-          "description": "A 25:1 concentrated powder made from the juice of organic wheatgrass, grown in the USA.",
-          "ingredients": "Organic Wheatgrass Juice Powder (Triticum aestivum).",
+          "description": "Non-alcoholic pure vanilla extract made with organic Madagascar vanilla beans. Warm, smooth and sweet for baking, drinks and desserts.",
+          "ingredients": "Organic Glycerin, Water, Extractives from Organic Vanilla Pods, and Natural Flavors (Proprietary Blend of Organic Spices).",
           "badges": [
-            "100% Certified Organic",
-            "Non-GMO",
-            "Raw",
-            "Vegan"
+            "Halal Certified",
+            "Non-Alcoholic"
           ]
         },
         {
           "num": 2,
-          "name": "Organic Hemp Protein Powder",
-          "sub": "50% Protein \u00b7 Whole-food plant protein",
+          "name": "100% Ghee",
+          "sub": "Clarified Butter \u00b7 Freshly Made to Order",
           "tags": [
-            "300 g",
-            "Lithuania"
+            "500 g",
+            "Lebanon"
           ],
-          "imported_ingredients": false,
-          "lab_tested": true,
-          "img": "organicopia-hemp-protein-powder.jpg",
-          "status": null,
-          "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 10.95
-            },
-            {
-              "qty": 3,
-              "price": 10.4
-            },
-            {
-              "qty": 6,
-              "price": 9.85
-            }
-          ],
-          "description": "Fine, cold-processed hemp protein powder with 50% protein, grown in Lithuania. Pressed without hexane or other solvents.",
-          "ingredients": "Organic Hemp Protein (Cannabis sativa).",
-          "badges": [
-            "Certified Organic",
-            "Non-GMO Verified",
-            "Gluten-Free",
-            "Vegan"
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Daily Care",
-      "desc": "Cold-pressed oils and simple care for skin and hair.",
-      "items": [
-        {
-          "num": 3,
-          "name": "Organic Castor Oil",
-          "sub": "USP Grade \u00b7 Certified Organic \u00b7 Cold Pressed",
-          "tags": [
-            "240 mL",
-            "India"
-          ],
-          "imported_ingredients": false,
+          "imported_ingredients": true,
           "lab_tested": false,
-          "img": "organicopia-castor-oil-2.jpg",
-          "status": null,
-          "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 12.0
-            },
-            {
-              "qty": 3,
-              "price": 11.75
-            },
-            {
-              "qty": 6,
-              "price": 11.25
-            }
-          ],
-          "description": "Cold-pressed, hexane-free, USP-grade organic castor oil. Pure, unfiltered and undiluted.",
-          "ingredients": "Organic Castor Oil.",
-          "badges": [
-            "Certified Organic",
-            "USP Grade",
-            "Cold Pressed",
-            "Hexane Free"
-          ]
-        },
-        {
-          "num": 5,
-          "name": "Organic Coconut Activated Charcoal Powder",
-          "sub": "Food Grade \u00b7 NSF Certified",
-          "tags": [
-            "55 g",
-            "USA"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-activated-charcoal-powder-2.jpg",
+          "img": "organicopia-ghee-3.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
             {
               "qty": 1,
-              "price": 4.0
+              "price": 17.9
             },
             {
               "qty": 3,
-              "price": 3.8
+              "price": 17.35
             },
             {
               "qty": 6,
-              "price": 3.5
+              "price": 16.5
             }
           ],
-          "description": "Food-grade activated charcoal powder made from organic coconut shells, made in the USA.",
-          "ingredients": "Organic Coconut Charcoal."
+          "description": "Pure cow butter, imported from Argentina and clarified in-house into golden ghee. One ingredient.",
+          "ingredients": "Pure Clarified Butter from cow's milk."
         },
         {
-          "num": 6,
-          "name": "Clay Toothpaste",
-          "sub": "Organic Peppermint",
+          "num": 3,
+          "name": "100% Ghee",
+          "sub": "Clarified Butter \u00b7 Freshly Made to Order",
           "tags": [
-            "60 g",
+            "250 g",
             "Lebanon"
           ],
           "imported_ingredients": true,
           "lab_tested": false,
-          "img": "clay-toothpaste-peppermint.jpg",
+          "img": "organicopia-ghee-250g.jpg",
           "status": null,
-          "is_new": false,
+          "is_new": true,
           "tiers": [
             {
               "qty": 1,
-              "price": 3.45
+              "price": 9.85
             },
             {
               "qty": 3,
-              "price": 2.9
+              "price": 9.5
             },
             {
               "qty": 6,
-              "price": 2.55
+              "price": 9.05
             }
           ],
-          "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
-          "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Organic Food Grade Peppermint (Menthae Piperita), Unrefined Mineral Salt."
-        },
-        {
-          "num": 7,
-          "name": "Clay Toothpaste",
-          "sub": "Organic Cinnamon",
-          "tags": [
-            "60 g",
-            "Lebanon"
-          ],
-          "imported_ingredients": true,
-          "lab_tested": false,
-          "img": "clay-toothpaste-cinnamon.jpg",
-          "status": null,
-          "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 3.45
-            },
-            {
-              "qty": 3,
-              "price": 2.9
-            },
-            {
-              "qty": 6,
-              "price": 2.55
-            }
-          ],
-          "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
-          "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Ceylon Cinnamon Oil (Cinnamomum Zeylanicum), Unrefined Mineral Salt."
-        },
-        {
-          "num": 9,
-          "name": "Organic Shea Butter",
-          "sub": null,
-          "tags": [
-            "100 g",
-            "Ghana",
-            "Raw",
-            "Unrefined"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-shea-butter-2.jpg",
-          "status": null,
-          "is_new": false,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 4.5
-            },
-            {
-              "qty": 3,
-              "price": 4.25
-            },
-            {
-              "qty": 6,
-              "price": 4.0
-            }
-          ],
-          "description": "Grade A raw, unrefined shea butter, handcrafted by a women's cooperative in Ghana and certified organic by Ecocert. A rich, traditional butter for skin and hair.",
-          "ingredients": "100% Organic Unrefined Shea Butter (Butyrospermum parkii).",
-          "badges": [
-            "Certified Organic (Ecocert)",
-            "Raw",
-            "Unrefined",
-            "Grade A",
-            "Fair Trade"
-          ]
+          "description": "Pure cow butter, imported from Argentina and clarified in-house into golden ghee. One ingredient.",
+          "ingredients": "Pure Clarified Butter from cow's milk."
         },
         {
           "num": 4,
-          "name": "Organic Black Cumin Seed Oil",
-          "sub": "Cold Pressed",
+          "name": "Organic Coconut Butter",
+          "sub": null,
           "tags": [
-            "240 mL",
-            "India"
+            "250 g",
+            "Philippines"
           ],
           "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-black-seed-oil-3.jpg",
-          "status": "oos",
-          "is_new": false,
-          "tiers": null,
-          "description": "Cold-pressed, unrefined organic black cumin (Nigella sativa) seed oil with a robust natural flavor.",
-          "ingredients": "Organic Black Cumin Seed Oil (Nigella Sativa).",
+          "lab_tested": true,
+          "img": "organicopia-coconut-butter.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 6.3
+            },
+            {
+              "qty": 3,
+              "price": 6.05
+            },
+            {
+              "qty": 6,
+              "price": 5.8
+            }
+          ],
+          "description": "Creamy coconut butter made from the whole flesh of organic coconuts, with nothing added. Spread it, blend it or bake with it.",
+          "ingredients": "Organic Coconut (Cocos nucifera).",
           "badges": [
-            "USDA Certified Organic",
-            "Cold-Pressed",
-            "Unrefined",
-            "Hexane-Free"
+            "Certified Organic",
+            "No Additives"
           ]
         },
         {
-          "num": 8,
-          "name": "100% Raw Batana Oil",
+          "num": 5,
+          "name": "Organic Peanut Butter",
+          "sub": "Salted",
+          "tags": [
+            "250 g",
+            "USA"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": true,
+          "img": "organicopia-peanut-butter.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 6.5
+            },
+            {
+              "qty": 3,
+              "price": 6.25
+            },
+            {
+              "qty": 6,
+              "price": 5.9
+            }
+          ],
+          "description": "Smooth peanut butter made from USA-grown organic peanuts and a pinch of salt. No added oils or sugar.",
+          "ingredients": "Organic Peanuts, Salt.",
+          "badges": [
+            "Certified Organic",
+            "No Added Sugar",
+            "No Added Oil"
+          ]
+        },
+        {
+          "num": 6,
+          "name": "Organic Coconut Aminos",
           "sub": null,
           "tags": [
-            "72 g",
-            "Honduras"
+            "280 mL",
+            "Mexico"
           ],
           "imported_ingredients": false,
           "lab_tested": false,
-          "img": "organicopia-batana-oil.jpg",
-          "status": "hold",
+          "img": "organicopia-coconut-aminos.jpg",
+          "status": "oos",
           "is_new": false,
           "tiers": null,
-          "description": "Raw batana oil from the nut of the American oil palm, made in Honduras. A rich butter at room temperature that melts into an oil in the hand; traditionally used on hair.",
-          "ingredients": "100% Raw Batana Oil (Elaeis oleifera).",
+          "description": "A soy-free seasoning sauce made from coconut blossom nectar and sap with sea salt. Use it like soy sauce in marinades, stir-fries and dressings.",
+          "ingredients": "Organic Coconut Nectar, Organic Coconut Blossom Sap, Unrefined Sea Salt.",
           "badges": [
-            "100% Raw",
-            "Unrefined",
-            "Cruelty-Free"
+            "Certified Organic",
+            "Soy-Free",
+            "Gluten-Free",
+            "Kosher"
+          ]
+        },
+        {
+          "num": 7,
+          "name": "Organic Toasted Sesame Oil",
+          "sub": null,
+          "tags": [
+            "280 mL",
+            "Mexico"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": false,
+          "img": "organicopia-toasted-sesame-oil.jpg",
+          "status": "oos",
+          "is_new": false,
+          "tiers": null,
+          "description": "Organic sesame seeds, roasted and cold pressed for a deep, nutty aroma. Finish noodles, dressings and stir-fries with a few drops.",
+          "ingredients": "Organic Toasted Sesame Oil.",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Project Verified",
+            "Cold Pressed",
+            "Kosher"
           ]
         }
       ]
@@ -300,7 +221,7 @@
       "desc": "Single-origin cacao and the clean baking shelf.",
       "items": [
         {
-          "num": 10,
+          "num": 8,
           "name": "Organic Chocolate Chunks",
           "sub": "70% Cacao",
           "tags": [
@@ -336,7 +257,7 @@
           ]
         },
         {
-          "num": 12,
+          "num": 10,
           "name": "Organic Cacao Nibs",
           "sub": "100% Cacao Beans",
           "tags": [
@@ -373,7 +294,7 @@
           ]
         },
         {
-          "num": 11,
+          "num": 9,
           "name": "Organic Cacao Powder",
           "sub": "20-22% Cacao",
           "tags": [
@@ -398,11 +319,286 @@
       ]
     },
     {
-      "title": "Seeds",
+      "title": "Spices",
+      "desc": "Single-origin spices, ground and whole.",
+      "items": [
+        {
+          "num": 11,
+          "name": "Organic Pumpkin Pie Spice",
+          "sub": null,
+          "tags": [
+            "45 g",
+            "USA"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": true,
+          "img": "organicopia-pumpkin-pie-spice-2.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.15
+            },
+            {
+              "qty": 3,
+              "price": 3.95
+            },
+            {
+              "qty": 6,
+              "price": 3.6
+            }
+          ],
+          "description": "A warm, savory-sweet blend of organic Ceylon cinnamon, ginger, nutmeg and cloves. Perfect for pumpkin pie, baking and drinks.",
+          "ingredients": "Organic Ceylon Cinnamon, Organic Ginger, Organic Nutmeg, Organic Cloves.",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified"
+          ]
+        },
+        {
+          "num": 12,
+          "name": "Organic Ceylon Cinnamon Powder",
+          "sub": null,
+          "tags": [
+            "45 g",
+            "Sri Lanka"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": true,
+          "img": "organicopia-ceylon-cinnamon-powder-3.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.9
+            },
+            {
+              "qty": 3,
+              "price": 2.7
+            },
+            {
+              "qty": 6,
+              "price": 2.35
+            }
+          ],
+          "description": "True Ceylon cinnamon powder, softer and sweeter than everyday cassia. Third-party lab tested for purity and heavy metals.",
+          "ingredients": "Organic Ceylon Cinnamon Powder (Cinnamomum zeylanicum).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified"
+          ]
+        },
+        {
+          "num": 13,
+          "name": "Organic Blackened Cajun Seasoning",
+          "sub": null,
+          "tags": [
+            "60 g",
+            "USA"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": false,
+          "img": "organicopia-blackened-cajun-seasoning-3.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.15
+            },
+            {
+              "qty": 3,
+              "price": 3.95
+            },
+            {
+              "qty": 6,
+              "price": 3.6
+            }
+          ],
+          "description": "A smoky, savory Cajun blend with a touch of heat. Made for blackened fish and shrimp, grilled chicken, oven fries and corn.",
+          "ingredients": "Organic Paprika, Sea Salt, Organic Onion, Organic Garlic, Organic Oregano, Organic Thyme, Organic Cayenne, Organic Smoked Paprika, Organic Rice Concentrate, Organic Celery Seed.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-Irradiated",
+            "No Artificial Ingredients"
+          ]
+        },
+        {
+          "num": 14,
+          "name": "Organic Garlic Powder",
+          "sub": null,
+          "tags": [
+            "55 g",
+            "India"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": false,
+          "img": "organicopia-garlic-powder-3.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.65
+            },
+            {
+              "qty": 3,
+              "price": 2.4
+            },
+            {
+              "qty": 6,
+              "price": 2.1
+            }
+          ],
+          "description": "Finely ground organic garlic with nothing added. An everyday seasoning for vegetables, legumes, meat and marinades.",
+          "ingredients": "Organic Garlic.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-GMO",
+            "Raw",
+            "Vegan"
+          ]
+        },
+        {
+          "num": 16,
+          "name": "Organic Smoked Paprika",
+          "sub": null,
+          "tags": [
+            "60 g",
+            "Spain"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": false,
+          "img": "organicopia-smoked-paprika-2.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 5.4
+            },
+            {
+              "qty": 3,
+              "price": 5.15
+            },
+            {
+              "qty": 6,
+              "price": 4.8
+            }
+          ],
+          "description": "Spanish paprika smoked over oak wood for a sweet, earthy flavor and deep color. Great with eggs, beans, potatoes and grilled meats.",
+          "ingredients": "Organic Smoked Paprika.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-Irradiated",
+            "No Artificial Ingredients"
+          ]
+        },
+        {
+          "num": 17,
+          "name": "Organic Ginger Root Powder",
+          "sub": null,
+          "tags": [
+            "60 g",
+            "India"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": true,
+          "img": "organicopia-ginger-root-powder-3.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.85
+            },
+            {
+              "qty": 3,
+              "price": 2.65
+            },
+            {
+              "qty": 6,
+              "price": 2.2
+            }
+          ],
+          "description": "Finely ground organic ginger root from India, with a warm, spicy flavor for teas, baking and curries.",
+          "ingredients": "Organic Ginger Root Powder (Zingiber officinale).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified",
+            "Raw"
+          ]
+        },
+        {
+          "num": 18,
+          "name": "Organic Turmeric Root Powder",
+          "sub": null,
+          "tags": [
+            "70 g",
+            "India"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": true,
+          "img": "organicopia-turmeric-root-powder-2.jpg",
+          "status": null,
+          "is_new": true,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 2.85
+            },
+            {
+              "qty": 3,
+              "price": 2.65
+            },
+            {
+              "qty": 6,
+              "price": 2.3
+            }
+          ],
+          "description": "Earthy, golden turmeric root powder from India, ground from the whole root. For curries, golden milk and rice.",
+          "ingredients": "Organic Turmeric Root Powder (Curcuma longa).",
+          "badges": [
+            "Certified Organic",
+            "Non-GMO Verified"
+          ]
+        },
+        {
+          "num": 15,
+          "name": "Organic Cayenne Pepper Powder",
+          "sub": "50,000 SHU",
+          "tags": [
+            "55 g",
+            "India"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": false,
+          "img": "organicopia-cayenne-pepper-3.jpg",
+          "status": "oos",
+          "is_new": false,
+          "tiers": null,
+          "description": "Ground organic cayenne from India at 50,000 Scoville heat units: a medium-hot cayenne that adds clean heat and color to any dish.",
+          "ingredients": "Organic Cayenne Pepper.",
+          "badges": [
+            "Certified Organic",
+            "Kosher",
+            "Non-Irradiated",
+            "No Artificial Ingredients"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Seeds & Pantry",
       "desc": "Raw seeds and whole kernels, kept simple.",
       "items": [
         {
-          "num": 13,
+          "num": 20,
           "name": "Organic Black Sesame Seeds",
           "sub": null,
           "tags": [
@@ -440,7 +636,7 @@
           ]
         },
         {
-          "num": 14,
+          "num": 21,
           "name": "Organic Sesame Seeds",
           "sub": "Hulled",
           "tags": [
@@ -475,7 +671,7 @@
           ]
         },
         {
-          "num": 15,
+          "num": 22,
           "name": "Organic Apricots",
           "sub": "Sun-Dried",
           "tags": [
@@ -510,7 +706,7 @@
           ]
         },
         {
-          "num": 16,
+          "num": 23,
           "name": "Organic Yellow Popcorn",
           "sub": "US Grown",
           "tags": [
@@ -545,7 +741,7 @@
           ]
         },
         {
-          "num": 17,
+          "num": 24,
           "name": "Organic White Popcorn",
           "sub": "Non-GMO",
           "tags": [
@@ -580,7 +776,7 @@
           ]
         },
         {
-          "num": 18,
+          "num": 25,
           "name": "Organic Rainbow Popcorn",
           "sub": "Non-GMO",
           "tags": [
@@ -615,7 +811,7 @@
           ]
         },
         {
-          "num": 19,
+          "num": 26,
           "name": "Organic Ceylon Coconut Chips",
           "sub": "Raw",
           "tags": [
@@ -650,7 +846,7 @@
           ]
         },
         {
-          "num": 20,
+          "num": 27,
           "name": "Organic Ceylon Coconut Chips",
           "sub": "Toasted",
           "tags": [
@@ -685,7 +881,7 @@
           ]
         },
         {
-          "num": 21,
+          "num": 28,
           "name": "Organic Poppy Seeds",
           "sub": null,
           "tags": [
@@ -725,7 +921,7 @@
       "desc": "Clean cane sugar and leaf stevia.",
       "items": [
         {
-          "num": 22,
+          "num": 29,
           "name": "Organic Stevia Powder",
           "sub": "100% Pure",
           "tags": [
@@ -761,7 +957,7 @@
           ]
         },
         {
-          "num": 23,
+          "num": 30,
           "name": "Organic Powdered Cane Sugar",
           "sub": null,
           "tags": [
@@ -793,491 +989,295 @@
       ]
     },
     {
-      "title": "Cooking Essentials",
-      "desc": "The pantry staples a clean kitchen reaches for first.",
+      "title": "Daily Care",
+      "desc": "Cold-pressed oils and simple care for skin and hair.",
       "items": [
         {
-          "num": 24,
-          "name": "Organic Vanilla",
-          "sub": "Non-Alcoholic",
+          "num": 31,
+          "name": "Organic Castor Oil",
+          "sub": "USP Grade \u00b7 Certified Organic \u00b7 Cold Pressed",
           "tags": [
-            "60 mL",
-            "Madagascar"
+            "240 mL",
+            "India"
           ],
           "imported_ingredients": false,
           "lab_tested": false,
-          "img": "organicopia-vanilla-extract-2.jpg",
+          "img": "organicopia-castor-oil-2.jpg",
           "status": null,
           "is_new": false,
           "tiers": [
             {
               "qty": 1,
-              "price": 13.25
+              "price": 12.0
             },
             {
               "qty": 3,
-              "price": 13.0
+              "price": 11.75
             },
             {
               "qty": 6,
-              "price": 12.5
+              "price": 11.25
             }
           ],
-          "description": "Non-alcoholic pure vanilla extract made with organic Madagascar vanilla beans. Warm, smooth and sweet for baking, drinks and desserts.",
-          "ingredients": "Organic Glycerin, Water, Extractives from Organic Vanilla Pods, and Natural Flavors (Proprietary Blend of Organic Spices).",
-          "badges": [
-            "Halal Certified",
-            "Non-Alcoholic"
-          ]
-        },
-        {
-          "num": 25,
-          "name": "100% Ghee",
-          "sub": "Clarified Butter \u00b7 Freshly Made to Order",
-          "tags": [
-            "500 g",
-            "Lebanon"
-          ],
-          "imported_ingredients": true,
-          "lab_tested": false,
-          "img": "organicopia-ghee-3.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 17.9
-            },
-            {
-              "qty": 3,
-              "price": 17.35
-            },
-            {
-              "qty": 6,
-              "price": 16.5
-            }
-          ],
-          "description": "Pure cow butter, imported from Argentina and clarified in-house into golden ghee. One ingredient.",
-          "ingredients": "Pure Clarified Butter from cow's milk."
-        },
-        {
-          "num": 26,
-          "name": "100% Ghee",
-          "sub": "Clarified Butter \u00b7 Freshly Made to Order",
-          "tags": [
-            "250 g",
-            "Lebanon"
-          ],
-          "imported_ingredients": true,
-          "lab_tested": false,
-          "img": "organicopia-ghee-250g.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 9.85
-            },
-            {
-              "qty": 3,
-              "price": 9.5
-            },
-            {
-              "qty": 6,
-              "price": 9.05
-            }
-          ],
-          "description": "Pure cow butter, imported from Argentina and clarified in-house into golden ghee. One ingredient.",
-          "ingredients": "Pure Clarified Butter from cow's milk."
-        },
-        {
-          "num": 27,
-          "name": "Organic Coconut Butter",
-          "sub": null,
-          "tags": [
-            "250 g",
-            "Philippines"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": true,
-          "img": "organicopia-coconut-butter.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 6.3
-            },
-            {
-              "qty": 3,
-              "price": 6.05
-            },
-            {
-              "qty": 6,
-              "price": 5.8
-            }
-          ],
-          "description": "Creamy coconut butter made from the whole flesh of organic coconuts, with nothing added. Spread it, blend it or bake with it.",
-          "ingredients": "Organic Coconut (Cocos nucifera).",
+          "description": "Cold-pressed, hexane-free, USP-grade organic castor oil. Pure, unfiltered and undiluted.",
+          "ingredients": "Organic Castor Oil.",
           "badges": [
             "Certified Organic",
-            "No Additives"
+            "USP Grade",
+            "Cold Pressed",
+            "Hexane Free"
           ]
         },
         {
-          "num": 28,
-          "name": "Organic Peanut Butter",
-          "sub": "Salted",
+          "num": 33,
+          "name": "Organic Coconut Activated Charcoal Powder",
+          "sub": "Food Grade \u00b7 NSF Certified",
           "tags": [
-            "250 g",
+            "55 g",
             "USA"
           ],
           "imported_ingredients": false,
-          "lab_tested": true,
-          "img": "organicopia-peanut-butter.jpg",
+          "lab_tested": false,
+          "img": "organicopia-activated-charcoal-powder-2.jpg",
           "status": null,
           "is_new": true,
           "tiers": [
             {
               "qty": 1,
-              "price": 6.5
+              "price": 4.0
             },
             {
               "qty": 3,
-              "price": 6.25
+              "price": 3.8
             },
             {
               "qty": 6,
-              "price": 5.9
+              "price": 3.5
             }
           ],
-          "description": "Smooth peanut butter made from USA-grown organic peanuts and a pinch of salt. No added oils or sugar.",
-          "ingredients": "Organic Peanuts, Salt.",
-          "badges": [
-            "Certified Organic",
-            "No Added Sugar",
-            "No Added Oil"
-          ]
+          "description": "Food-grade activated charcoal powder made from organic coconut shells, made in the USA.",
+          "ingredients": "Organic Coconut Charcoal."
         },
         {
-          "num": 29,
-          "name": "Organic Coconut Aminos",
+          "num": 34,
+          "name": "Clay Toothpaste",
+          "sub": "Organic Peppermint",
+          "tags": [
+            "60 g",
+            "Lebanon"
+          ],
+          "imported_ingredients": true,
+          "lab_tested": false,
+          "img": "clay-toothpaste-peppermint.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.45
+            },
+            {
+              "qty": 3,
+              "price": 2.9
+            },
+            {
+              "qty": 6,
+              "price": 2.55
+            }
+          ],
+          "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
+          "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Organic Food Grade Peppermint (Menthae Piperita), Unrefined Mineral Salt."
+        },
+        {
+          "num": 35,
+          "name": "Clay Toothpaste",
+          "sub": "Organic Cinnamon",
+          "tags": [
+            "60 g",
+            "Lebanon"
+          ],
+          "imported_ingredients": true,
+          "lab_tested": false,
+          "img": "clay-toothpaste-cinnamon.jpg",
+          "status": null,
+          "is_new": false,
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 3.45
+            },
+            {
+              "qty": 3,
+              "price": 2.9
+            },
+            {
+              "qty": 6,
+              "price": 2.55
+            }
+          ],
+          "description": "All-natural mineral clay toothpaste with unrefined salt and organic essential oils, in a zero-waste glass jar.",
+          "ingredients": "Sodium Bentonite Clay, Fluoride Free Spring Water, Ceylon Cinnamon Oil (Cinnamomum Zeylanicum), Unrefined Mineral Salt."
+        },
+        {
+          "num": 37,
+          "name": "Organic Shea Butter",
           "sub": null,
           "tags": [
-            "280 mL",
-            "Mexico"
+            "100 g",
+            "Ghana",
+            "Raw",
+            "Unrefined"
           ],
           "imported_ingredients": false,
           "lab_tested": false,
-          "img": "organicopia-coconut-aminos.jpg",
-          "status": "oos",
+          "img": "organicopia-shea-butter-2.jpg",
+          "status": null,
           "is_new": false,
-          "tiers": null,
-          "description": "A soy-free seasoning sauce made from coconut blossom nectar and sap with sea salt. Use it like soy sauce in marinades, stir-fries and dressings.",
-          "ingredients": "Organic Coconut Nectar, Organic Coconut Blossom Sap, Unrefined Sea Salt.",
+          "tiers": [
+            {
+              "qty": 1,
+              "price": 4.5
+            },
+            {
+              "qty": 3,
+              "price": 4.25
+            },
+            {
+              "qty": 6,
+              "price": 4.0
+            }
+          ],
+          "description": "Grade A raw, unrefined shea butter, handcrafted by a women's cooperative in Ghana and certified organic by Ecocert. A rich, traditional butter for skin and hair.",
+          "ingredients": "100% Organic Unrefined Shea Butter (Butyrospermum parkii).",
           "badges": [
-            "Certified Organic",
-            "Soy-Free",
-            "Gluten-Free",
-            "Kosher"
+            "Certified Organic (Ecocert)",
+            "Raw",
+            "Unrefined",
+            "Grade A",
+            "Fair Trade"
           ]
         },
         {
-          "num": 30,
-          "name": "Organic Toasted Sesame Oil",
-          "sub": null,
+          "num": 32,
+          "name": "Organic Black Cumin Seed Oil",
+          "sub": "Cold Pressed",
           "tags": [
-            "280 mL",
-            "Mexico"
+            "240 mL",
+            "India"
           ],
           "imported_ingredients": false,
           "lab_tested": false,
-          "img": "organicopia-toasted-sesame-oil.jpg",
+          "img": "organicopia-black-seed-oil-3.jpg",
           "status": "oos",
           "is_new": false,
           "tiers": null,
-          "description": "Organic sesame seeds, roasted and cold pressed for a deep, nutty aroma. Finish noodles, dressings and stir-fries with a few drops.",
-          "ingredients": "Organic Toasted Sesame Oil.",
+          "description": "Cold-pressed, unrefined organic black cumin (Nigella sativa) seed oil with a robust natural flavor.",
+          "ingredients": "Organic Black Cumin Seed Oil (Nigella Sativa).",
           "badges": [
-            "Certified Organic",
-            "Non-GMO Project Verified",
-            "Cold Pressed",
-            "Kosher"
+            "USDA Certified Organic",
+            "Cold-Pressed",
+            "Unrefined",
+            "Hexane-Free"
+          ]
+        },
+        {
+          "num": 36,
+          "name": "100% Raw Batana Oil",
+          "sub": null,
+          "tags": [
+            "72 g",
+            "Honduras"
+          ],
+          "imported_ingredients": false,
+          "lab_tested": false,
+          "img": "organicopia-batana-oil.jpg",
+          "status": "hold",
+          "is_new": false,
+          "tiers": null,
+          "description": "Raw batana oil from the nut of the American oil palm, made in Honduras. A rich butter at room temperature that melts into an oil in the hand; traditionally used on hair.",
+          "ingredients": "100% Raw Batana Oil (Elaeis oleifera).",
+          "badges": [
+            "100% Raw",
+            "Unrefined",
+            "Cruelty-Free"
           ]
         }
       ]
     },
     {
-      "title": "Spices",
-      "desc": "Single-origin spices, ground and whole.",
+      "title": "Wellness",
+      "desc": "Green powders and gentle support.",
       "items": [
         {
-          "num": 31,
-          "name": "Organic Pumpkin Pie Spice",
+          "num": 38,
+          "name": "Organic Wheatgrass Juice Powder",
           "sub": null,
           "tags": [
-            "45 g",
+            "50 g",
             "USA"
           ],
           "imported_ingredients": false,
           "lab_tested": true,
-          "img": "organicopia-pumpkin-pie-spice-2.jpg",
+          "img": "organicopia-wheatgrass-powder-2.jpg",
           "status": null,
           "is_new": false,
           "tiers": [
             {
               "qty": 1,
-              "price": 4.15
+              "price": 6.55
             },
             {
               "qty": 3,
-              "price": 3.95
+              "price": 6.2
             },
             {
               "qty": 6,
-              "price": 3.6
+              "price": 5.7
             }
           ],
-          "description": "A warm, savory-sweet blend of organic Ceylon cinnamon, ginger, nutmeg and cloves. Perfect for pumpkin pie, baking and drinks.",
-          "ingredients": "Organic Ceylon Cinnamon, Organic Ginger, Organic Nutmeg, Organic Cloves.",
+          "description": "A 25:1 concentrated powder made from the juice of organic wheatgrass, grown in the USA.",
+          "ingredients": "Organic Wheatgrass Juice Powder (Triticum aestivum).",
           "badges": [
-            "Certified Organic",
-            "Non-GMO Verified"
-          ]
-        },
-        {
-          "num": 32,
-          "name": "Organic Ceylon Cinnamon Powder",
-          "sub": null,
-          "tags": [
-            "45 g",
-            "Sri Lanka"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": true,
-          "img": "organicopia-ceylon-cinnamon-powder-3.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 2.9
-            },
-            {
-              "qty": 3,
-              "price": 2.7
-            },
-            {
-              "qty": 6,
-              "price": 2.35
-            }
-          ],
-          "description": "True Ceylon cinnamon powder, softer and sweeter than everyday cassia. Third-party lab tested for purity and heavy metals.",
-          "ingredients": "Organic Ceylon Cinnamon Powder (Cinnamomum zeylanicum).",
-          "badges": [
-            "Certified Organic",
-            "Non-GMO Verified"
-          ]
-        },
-        {
-          "num": 33,
-          "name": "Organic Blackened Cajun Seasoning",
-          "sub": null,
-          "tags": [
-            "60 g",
-            "USA"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-blackened-cajun-seasoning-3.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 4.15
-            },
-            {
-              "qty": 3,
-              "price": 3.95
-            },
-            {
-              "qty": 6,
-              "price": 3.6
-            }
-          ],
-          "description": "A smoky, savory Cajun blend with a touch of heat. Made for blackened fish and shrimp, grilled chicken, oven fries and corn.",
-          "ingredients": "Organic Paprika, Sea Salt, Organic Onion, Organic Garlic, Organic Oregano, Organic Thyme, Organic Cayenne, Organic Smoked Paprika, Organic Rice Concentrate, Organic Celery Seed.",
-          "badges": [
-            "Certified Organic",
-            "Kosher",
-            "Non-Irradiated",
-            "No Artificial Ingredients"
-          ]
-        },
-        {
-          "num": 34,
-          "name": "Organic Garlic Powder",
-          "sub": null,
-          "tags": [
-            "55 g",
-            "India"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-garlic-powder-3.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 2.65
-            },
-            {
-              "qty": 3,
-              "price": 2.4
-            },
-            {
-              "qty": 6,
-              "price": 2.1
-            }
-          ],
-          "description": "Finely ground organic garlic with nothing added. An everyday seasoning for vegetables, legumes, meat and marinades.",
-          "ingredients": "Organic Garlic.",
-          "badges": [
-            "Certified Organic",
-            "Kosher",
+            "100% Certified Organic",
             "Non-GMO",
             "Raw",
             "Vegan"
           ]
         },
         {
-          "num": 36,
-          "name": "Organic Smoked Paprika",
-          "sub": null,
+          "num": 39,
+          "name": "Organic Hemp Protein Powder",
+          "sub": "50% Protein \u00b7 Whole-food plant protein",
           "tags": [
-            "60 g",
-            "Spain"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-smoked-paprika-2.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 5.4
-            },
-            {
-              "qty": 3,
-              "price": 5.15
-            },
-            {
-              "qty": 6,
-              "price": 4.8
-            }
-          ],
-          "description": "Spanish paprika smoked over oak wood for a sweet, earthy flavor and deep color. Great with eggs, beans, potatoes and grilled meats.",
-          "ingredients": "Organic Smoked Paprika.",
-          "badges": [
-            "Certified Organic",
-            "Kosher",
-            "Non-Irradiated",
-            "No Artificial Ingredients"
-          ]
-        },
-        {
-          "num": 37,
-          "name": "Organic Ginger Root Powder",
-          "sub": null,
-          "tags": [
-            "60 g",
-            "India"
+            "300 g",
+            "Lithuania"
           ],
           "imported_ingredients": false,
           "lab_tested": true,
-          "img": "organicopia-ginger-root-powder-3.jpg",
+          "img": "organicopia-hemp-protein-powder.jpg",
           "status": null,
-          "is_new": true,
+          "is_new": false,
           "tiers": [
             {
               "qty": 1,
-              "price": 2.85
+              "price": 10.95
             },
             {
               "qty": 3,
-              "price": 2.65
+              "price": 10.4
             },
             {
               "qty": 6,
-              "price": 2.2
+              "price": 9.85
             }
           ],
-          "description": "Finely ground organic ginger root from India, with a warm, spicy flavor for teas, baking and curries.",
-          "ingredients": "Organic Ginger Root Powder (Zingiber officinale).",
+          "description": "Fine, cold-processed hemp protein powder with 50% protein, grown in Lithuania. Pressed without hexane or other solvents.",
+          "ingredients": "Organic Hemp Protein (Cannabis sativa).",
           "badges": [
             "Certified Organic",
             "Non-GMO Verified",
-            "Raw"
-          ]
-        },
-        {
-          "num": 38,
-          "name": "Organic Turmeric Root Powder",
-          "sub": null,
-          "tags": [
-            "70 g",
-            "India"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": true,
-          "img": "organicopia-turmeric-root-powder-2.jpg",
-          "status": null,
-          "is_new": true,
-          "tiers": [
-            {
-              "qty": 1,
-              "price": 2.85
-            },
-            {
-              "qty": 3,
-              "price": 2.65
-            },
-            {
-              "qty": 6,
-              "price": 2.3
-            }
-          ],
-          "description": "Earthy, golden turmeric root powder from India, ground from the whole root. For curries, golden milk and rice.",
-          "ingredients": "Organic Turmeric Root Powder (Curcuma longa).",
-          "badges": [
-            "Certified Organic",
-            "Non-GMO Verified"
-          ]
-        },
-        {
-          "num": 35,
-          "name": "Organic Cayenne Pepper Powder",
-          "sub": "50,000 SHU",
-          "tags": [
-            "55 g",
-            "India"
-          ],
-          "imported_ingredients": false,
-          "lab_tested": false,
-          "img": "organicopia-cayenne-pepper-3.jpg",
-          "status": "oos",
-          "is_new": false,
-          "tiers": null,
-          "description": "Ground organic cayenne from India at 50,000 Scoville heat units: a medium-hot cayenne that adds clean heat and color to any dish.",
-          "ingredients": "Organic Cayenne Pepper.",
-          "badges": [
-            "Certified Organic",
-            "Kosher",
-            "Non-Irradiated",
-            "No Artificial Ingredients"
+            "Gluten-Free",
+            "Vegan"
           ]
         }
       ]

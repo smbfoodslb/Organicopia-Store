@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&family=Inter:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
 
@@ -35,7 +35,7 @@
     <img class="mark logo-img" src="images/brand/logo-mark.svg" alt="" width="52" height="48">
     <span><img class="word logo-img" src="images/brand/wordmark.svg" alt="Organicopia" width="150" height="40"><span class="tag">Reconnect with the natural rhythm of life.</span></span>
   </a>
-  <nav class="navlinks" aria-label="Main"><a href="#shop">Shop</a><a href="#standard">Our Standard</a><a href="#story">Our Story</a><a href="#order">How to Order</a><a href="#wholesale" data-wholesale>Wholesale</a></nav>
+  <nav class="navlinks" aria-label="Main"><a href="#standard">Our Standard</a><a href="#shop">Shop</a><a href="#story">Our Story</a><a href="#order">How to Order</a><a href="#wholesale" data-wholesale>Wholesale</a></nav>
   <div class="nav-actions">
     <button class="iconbtn searchjump" id="searchJump" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
     <button class="iconbtn cartbtn" id="openCart" type="button" aria-label="Open your basket">Basket <span class="n" id="count">0</span></button>
@@ -65,16 +65,6 @@
   <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg><span>Order and confirm on WhatsApp</span></div>
 </div></div>
 
-<section class="wrap block" id="shop">
-  <div class="section-head"><div><div class="eyebrow">The collection</div><h2>Everyday goodness, verified for you.</h2></div><p>Spices, cacao, seeds, oils, pantry staples and small-batch bakes. Browse by shelf or search for an ingredient.</p></div>
-  <div class="toolbar">
-    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" type="search" placeholder="Search products, origins or ingredients…" aria-label="Search products" autocomplete="off"></div>
-    <div class="chips" id="chips" role="tablist" aria-label="Categories"></div>
-  </div>
-  <div class="pricing-note"><span><b>Buy more, pay less.</b> Every product has three unit prices. Pick ×1, ×3 or ×6 and the price per piece drops. All prices include VAT.</span></div>
-  <div id="catalog"></div>
-</section>
-
 <section class="standard" id="standard"><div class="wrap block">
   <div class="section-head"><div><div class="eyebrow">The Organicopia standard</div><h2>How we decide what earns a place on your shelf.</h2></div><p>Good food begins with informed choices. A product is listed only when it clears the same four questions, every time.</p></div>
   <div class="beyond"><div><div class="beyond-kicker">Beyond Organic. Beyond The Label.</div><h3>Organic doesn't always mean clean.</h3></div><div><p>Organic certification matters, and we respect it. But it mostly describes how food is grown, not everything that happens afterward. Even certified organic products can contain highly processed ingredients, flavour enhancers and additives.</p><p>So we look beyond the label. Before anything reaches your shelf we check the ingredients, how they are processed, what goes into manufacturing, and the overall quality of the finished product. Organic is a plus. Clean, honest and thoughtfully made is the standard.</p></div></div>
@@ -90,6 +80,17 @@
   </div>
 </div></section>
 
+<section class="wrap block" id="shop">
+  <div class="section-head"><div><div class="eyebrow">The collection</div><h2>Everyday goodness, verified for you.</h2></div><p>Spices, cacao, seeds, oils, pantry staples and small-batch bakes. Browse by shelf or search for an ingredient.</p></div>
+  <div class="toolbar">
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" type="search" placeholder="Search products, origins or ingredients…" aria-label="Search products" autocomplete="off"></div>
+    <div class="chips" id="chips" role="tablist" aria-label="Categories"></div>
+  </div>
+  <div class="pricing-note"><span><b>Buy more, pay less.</b> Every product has three unit prices. Pick ×1, ×3 or ×6 and the price per piece drops. All prices include VAT.</span></div>
+  <div id="catalog"></div>
+</section>
+
+
 <section class="story" id="story">
   <img class="waves" src="images/brand/wavy-navy.svg" alt="" aria-hidden="true" style="filter:brightness(0) invert(1)">
   <div class="wrap">
@@ -104,7 +105,7 @@
     <div class="side">
       <div class="panel seal"><img class="seal-img" src="images/brand/logo-mark.svg" alt="Organicopia tree mark"></div>
       <div class="panel"><h3>Our philosophy</h3><p>Beyond organic. Beyond the label. Thoughtfully sourced. We value organic certification, but we never assume a product is clean just because it carries a label. We look at how it is made, what goes into it, and the quality behind every ingredient, and we only list what we can stand behind.</p></div>
-      <div class="panel"><h3>Part of the Soul Mind Body Foods family</h3><p>Our parent company supplies organic ingredients to businesses across Lebanon and believes a healthier world starts with pure ingredients. <a href="https://www.smbfoods-lb.com/#story" target="_blank" rel="noopener">Read their story →</a></p></div>
+      <div class="panel"><h3>Part of the Soul Mind Body Foods family</h3><p>Our parent company supplies organic ingredients to businesses across Lebanon and believes a healthier world starts with pure ingredients. <a href="https://smbfoods.odoo.com/about-us" target="_blank" rel="noopener">Read their story →</a></p></div>
     </div>
   </div>
 </section>
@@ -176,6 +177,6 @@
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js?v=16"></script>
+<script src="app.js?v=17"></script>
 </body>
 </html>

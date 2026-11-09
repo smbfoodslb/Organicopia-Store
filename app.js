@@ -55,7 +55,7 @@ function renderCatalog() {
   const match = p => (category === "All" || p.cat === category) && (!q || (p.name + " " + (p.sub || "") + " " + (p.tags || []).join(" ") + " " + (p.description || "") + " " + p.cat).toLowerCase().includes(q));
   let html = "", any = false;
   CATALOG.categories.forEach(c => {
-    const items = c.items.filter(match);
+    const items = c.items.map(p => byNum[p.num] || p).filter(match);
     if (!items.length) return; any = true;
     html += `<div class="group" id="cat-${c.title.toLowerCase().replace(/[^a-z]+/g, "-")}"><div class="group-head"><h3>${esc(c.title)}</h3><span>${esc(c.desc)}</span></div><div class="grid">${items.map(cardHtml).join("")}</div></div>`;
   });
