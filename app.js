@@ -11,7 +11,7 @@ const money = n => "$" + n.toFixed(2);
 
 const PRODUCTS = [], byNum = {};
 const purchasable = p => Array.isArray(p.tiers) && p.tiers.length && (p.status == null || p.status === "active");
-const isMade = p => p.cat === "Fresh from the Oven" || /ghee/i.test(p.name);
+const isMade = p => p.cat === "Fresh from the Oven" || /ghee/i.test(p.name) || /toothpaste/i.test(p.name);
 const imgSrc = p => p.img ? "images/" + p.img : "images/placeholder.svg";
 const unitPrice = (p, q) => { if (!purchasable(p) || q <= 0) return null; let pr = p.tiers[0].price; p.tiers.forEach(t => { if (q >= t.qty) pr = t.price }); return pr };
 const savings = (p, q) => purchasable(p) && q > 0 ? Math.max(0, (p.tiers[0].price - unitPrice(p, q)) * q) : 0;
