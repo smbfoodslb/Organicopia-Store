@@ -67,7 +67,7 @@ header.site{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;backgrou
 .hero-visual .waves{position:absolute;inset:auto -10% -6% -10%;width:120%;opacity:.55;pointer-events:none}
 .hero-visual .leaf{position:absolute;width:86%;left:7%;top:7%;height:auto}
 .hero-visual .anim{position:absolute;left:19%;top:14%;width:58%;aspect-ratio:1/1}
-.hero-visual .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .5s}
+.hero-visual .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .25s}
 .hero-visual .anim .still{opacity:0;padding:0 2%;transform:scale(1.06)}
 .hero-visual .anim.done #heroAnim{opacity:0}
 .hero-visual .anim.done .still{opacity:1}

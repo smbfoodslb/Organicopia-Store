@@ -141,7 +141,7 @@ if (location.hash === "#wholesale") openWholesale();
 $("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your basket first.") } });
 // Logo animation: the GIF plays once (~6 s), then fades to the crisp SVG lockup. Reduced motion: lockup only.
 const heroAnim = $("heroAnim"), animBox = heroAnim.parentElement;
-const ANIM_MS = 6400;
+const ANIM_MS = 4300; // the drawing finishes at ~4.26 s; the GIF then just holds its last frame
 if (matchMedia("(prefers-reduced-motion: reduce)").matches) { animBox.classList.add("done"); heroAnim.remove() }
 else { const start = () => setTimeout(() => animBox.classList.add("done"), ANIM_MS); heroAnim.complete ? start() : heroAnim.addEventListener("load", start, {once: true}) }
 async function init() {
