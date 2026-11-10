@@ -27,4 +27,12 @@ for (const [key, code] of Object.entries(FIX)) {
 }
 const still = await rpc('product.template', 'search_read', [[['website_published', '=', true], ['public_categ_ids', 'child_of', [118, 119]], ['country_of_origin', '=', false]]], { fields: ['name', 'default_code'] });
 log.stillMissing = still.map(s => (s.default_code || '') + ' ' + s.name);
+// gingerbread kits are made by SMB in Lebanon -> "Made in Lebanon" badge
+{
+  const tag = await rpc('product.tag', 'search_read', [[['name', '=', 'Made in Lebanon']]], { fields: ['id'] });
+  const gb = await rpc('product.template', 'search_read', [[['default_code', 'in', ['12341', '12342']]]], { fields: ['id', 'product_tag_ids'] });
+  const todo = gb.filter(g => tag.length && !g.product_tag_ids.includes(tag[0].id)).map(g => g.id);
+  if (todo.length) await rpc('product.template', 'write', [todo, { product_tag_ids: [[4, tag[0].id]] }]);
+  log.gingerbreadMadeInLebanon = todo.length;
+}
 window.__step38 = log;
