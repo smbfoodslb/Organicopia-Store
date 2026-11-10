@@ -4,13 +4,13 @@
 #wrapwrap{font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--smb-ink)}
 #wrapwrap h1,#wrapwrap h2,#wrapwrap h3,#wrapwrap h4,#wrapwrap .h1,#wrapwrap .h2,#wrapwrap .h3,#wrapwrap .h4,#wrapwrap .display-1,#wrapwrap .display-2,#wrapwrap .display-3{font-family:'DM Serif Display',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.01em;color:var(--smb-green)}
 #wrapwrap>main{background:var(--smb-paper)}
-#wrapwrap .btn{border-radius:8px;font-weight:600}
+#wrapwrap .btn{border-radius:8px;font-weight:600;font-family:'IBM Plex Sans',system-ui,sans-serif}
 #wrapwrap .btn-primary,#wrapwrap .btn-primary:focus{background:var(--smb-green);border-color:var(--smb-green);color:#fff}
 #wrapwrap .btn-primary:hover{background:var(--smb-green-2);border-color:var(--smb-green-2)}
 #wrapwrap .btn-outline-primary{color:var(--smb-green);border-color:var(--smb-green)}
 #wrapwrap .btn-outline-primary:hover{background:var(--smb-green);color:#fff}
 #wrapwrap .btn-secondary,#wrapwrap .btn-light{border-radius:8px}
-#wrapwrap a{color:var(--smb-green)}
+#wrapwrap>main a:not(.btn){color:var(--smb-green)}
 #wrapwrap .form-control,#wrapwrap .form-select{border:1.5px solid var(--smb-line);border-radius:8px;background:#fff}
 #wrapwrap .form-control:focus,#wrapwrap .form-select:focus{border-color:var(--smb-leaf);box-shadow:0 0 0 3px rgba(67,158,112,.18)}
 #wrapwrap .card{border:1px solid var(--smb-line);border-radius:12px}
