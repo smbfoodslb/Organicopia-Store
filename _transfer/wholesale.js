@@ -17,7 +17,7 @@ const LOCKED = () => !!(CATALOG && CATALOG.locked);
 const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
 const LOGIN = "/web/login?redirect=/";
 const lockHtml = () => `<a class="lockprice" href="${LOGIN}">${LOCK_SVG}Log in to see prices</a>`;
-const purchasable = p => p.status !== "soon" && p.status !== "hold" && p.price != null && p.price > 0; // out-of-stock items stay orderable; the badge is informational
+const purchasable = p => p.status === "active" && p.price != null && p.price > 0;
 // Case-only items are charged per case; the stepper shows pieces when case_show_pieces is set (same rules as before).
 const unitPrice = p => p.price;
 const displayQty = (p, q) => q;
@@ -90,8 +90,8 @@ function cardHtml(p) {
   const hl = p.is_new ? " hl-new" : p.back_in_stock ? " hl-back" : (p.holiday_item && p.status !== "oos" && p.status !== "hold") ? " hl-holiday" : "";
   const bottom = LOCKED() ? lockHtml() : purchasable(p)
     ? `<div class="pricebox">${priceHtml(p)}${controlHtml(p)}</div>` + (q ? `<div class="qtyrow"><span class="hint">${q} piece${q > 1 ? "s" : ""}</span><span class="amt num">${money(unitPrice(p) * q)}</span></div>` : "")
-    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
-  return `<article class="card${hl}${p.status === "hold" ? " is-oos" : ""}" data-num="${p.num}">
+    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? "Out of stock. Message us to be notified." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
+  return `<article class="card${hl}${(p.status === "oos" || p.status === "hold") ? " is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}"><span class="ref">${esc(p.ref || "")}</span><div class="badges-tr">${tr.join("")}</div><img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/smb/placeholder.svg'"></div>
     <div class="body">${p.brand ? `<div class="brandline">${esc(p.brand)}</div>` : ""}${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tagsHtml(p)}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
   </article>`;
