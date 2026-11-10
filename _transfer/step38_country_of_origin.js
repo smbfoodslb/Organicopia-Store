@@ -10,7 +10,10 @@ const FIX = { // default_code or exact name -> ISO code
   'Organic Ceylon Cinnamon Powder Bulk': 'LK', 'Organic Coconut Activated Charcoal Powder - Bulk': 'US', 'Organic Coconut Butter - Bulk': 'PH',
   'Organic Coconut Chips (Raw) Bulk': 'LK', 'Organic Coconut Chips (Toasted) Bulk': 'LK', 'Organic Garlic Powder Bulk': 'IN',
   'Organic Ginger Root Powder Bulk': 'IN', 'Organic Hemp Protein Powder Bulk': 'LT', 'Organic Pumpkin Pie Spice Bulk': 'US',
-  'Organic Raw Poppy Seeds - Bulk': 'TR', 'Organic Sesame Seeds (Hulled) - Bulk': 'MX', 'Organic Smoked Paprika Bulk': 'ES', 'Organic Turmeric Root Powder Bulk': 'IN',
+  'Organic Raw Poppy Seeds - Bulk': 'TR',
+  // confirmed by Mustafa 2026-11-10
+  '428': 'FR', 'Four Sigmatic Organic Instant Coffee': 'US', '12341': 'LB', '12342': 'LB', '31201': 'PE', '31000': 'PE', '92109': 'IN', '13604': 'CN',
+  '183': 'US', 'YumEarth Organic Gummies': 'US', 'YumEarth Organic Lollipop': 'MX', 'Organic Sesame Seeds (Hulled) - Bulk': 'MX', 'Organic Smoked Paprika Bulk': 'ES', 'Organic Turmeric Root Powder Bulk': 'IN',
 };
 const log = {};
 for (const [key, code] of Object.entries(FIX)) {
