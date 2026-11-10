@@ -1,0 +1,190 @@
+<t t-name="website.smb_wholesale">
+<t t-set="env" t-value="website.env"/>
+<t t-set="locked" t-value="request.env.user._is_public()"/>
+<t t-set="sections" t-value="[]"/>
+<t t-foreach="[(118,'own','Organicopia line'),(119,'wide','Wider range')]" t-as="sec">
+  <t t-set="cats" t-value="[]"/>
+  <t t-foreach="env['product.public.category'].sudo().search([('parent_id','=',sec[0])], order='sequence, name')" t-as="c">
+    <t t-set="tmpls" t-value="env['product.template'].search([('website_published','=',True),('public_categ_ids','in',c.id)], order='website_sequence, name')"/>
+    <t t-set="items" t-value="[{'num': v.id, 'tid': tm.id, 'ref': v.default_code or '', 'name': tm.name, 'sub': ', '.join(v.product_template_variant_value_ids.mapped('name')), 'brand': tm.sudo().x_brand or '', 'tags': [s for s in (tm.sudo().x_size or '').split(' · ') if s], 'badges': v.sudo().all_product_tag_ids.mapped('name'), 'oos': bool(v.sudo().is_storable and not v.sudo().allow_out_of_stock_order and v.sudo().free_qty &lt;= 0), 'price': (None if locked else tm._get_combination_info(product_id=v.id).get('price')), 'desc': tm.website_description or '', 'img': '/web/image/product.product/%s/image_512' % v.id} for tm in tmpls for v in tm.product_variant_ids]"/>
+    <t t-set="_" t-value="cats.append({'title': c.name, 'desc': '', 'items': items})"/>
+  </t>
+  <t t-set="_" t-value="sections.append({'key': sec[1], 'label': sec[2], 'categories': cats})"/>
+</t>
+<t t-set="order" t-value="request.cart"/>
+<t t-set="data" t-value="{'locked': locked, 'sections': sections, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.order_line if order else [])}, 'user': ('' if locked else (request.env.user.partner_id.commercial_partner_id.name or request.env.user.name))}"/>
+&lt;!DOCTYPE html&gt;
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>SMB Foods Wholesale</title>
+<meta name="description" content="Wholesale catalog of SMB Foods (Soul Mind Body Foods SARL), Lebanon: the Organicopia line and partner brands for retailers, cafés and distributors."/>
+<link rel="icon" href="/smb/favicon.svg" type="image/svg+xml"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap"/>
+<link rel="stylesheet" href="/smb/wholesale.css?v=701fa2f6"/>
+</head>
+<body>
+<div class="topbar"><div class="wrap"><span>Wholesale catalog for retailers, cafés and distributors · All prices include VAT</span><span class="who" id="who"/></div></div>
+
+<header class="site"><div class="wrap nav">
+  <div class="brand">
+    <img class="mark" src="/smb/smb-logo.svg" alt="" width="46" height="50"/>
+    <span><span class="name">SMB Foods</span><span class="tagline">Home of Organicopia</span></span>
+  </div>
+  <nav class="navlinks" aria-label="Main"><a href="#catalog">Catalog</a><a href="#standard">Our Standard</a><a href="#story">Our Story</a><a href="#order">How to Order</a><a href="#new-customer" data-newcust="">New Customer</a></nav>
+  <div class="nav-actions">
+    <button class="iconbtn searchjump" id="searchJump" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
+    <button class="iconbtn cartbtn" id="openCart" type="button" aria-label="Open your order">Order <span class="n" id="count">0</span> <span class="tot num" id="headTotal">$0.00</span></button>
+  </div>
+</div></header>
+
+<main id="top">
+<section class="wrap hero">
+  <div>
+    <div class="eyebrow">Soul Mind Body Foods · Lebanon</div>
+    <h1>Beyond organic, <em>sourced for your shelves.</em></h1>
+    <p class="lede">SMB Foods imports, produces and distributes organic and clean-label food across Lebanon. One catalog for the Organicopia line we make and pack ourselves and the partner brands we trust, with your wholesale pricing on every item once you log in.</p>
+    <div class="ctas"><a class="btn" href="#catalog">Browse the catalog →</a><a class="btn ghost" href="#order">How to order</a></div>
+  </div>
+  <div class="hero-panel" aria-label="Catalog at a glance">
+    <img class="logo" src="/smb/smb-logo.svg" alt=""/>
+    <div class="stats">
+      <div class="stat"><b id="statProducts">–</b><span>Products</span></div>
+      <div class="stat"><b id="statBrands">–</b><span>Brands</span></div>
+      <div class="stat"><b id="statOwn">–</b><span>Organicopia line</span></div>
+      <div class="stat"><b id="statMade">–</b><span>Made in Lebanon</span></div>
+    </div>
+    <div class="foot">Live catalog · Prices include VAT · Orders confirmed by our team</div>
+  </div>
+</section>
+
+<div class="trust"><div class="wrap">
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22c5-3 8-7 8-12V5l-8-3-8 3v5c0 5 3 9 8 12Z"/><path d="m9 12 2 2 4-4"/></svg><span>Organic to USDA &amp; EU standards where certified</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><span>We look beyond the label: ingredients, processing, quality</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l9-4 9 4v10l-9 4-9-4V7Z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg><span>Your wholesale prices on every product</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg><span>Stock, pricing and delivery confirmed on WhatsApp</span></div>
+</div></div>
+
+<section class="wrap block" id="catalog">
+  <div class="section-head"><div><div class="eyebrow">The catalog</div><h2>Everything we stock, in one place.</h2></div><p>The Organicopia line comes first, followed by our wider range of partner brands. Jump between the two with the switch, filter by shelf, or search by product, brand or item number.</p></div>
+  <div class="toolbar">
+    <div class="toolbar-row">
+      <div class="tabs" id="tabs" role="tablist" aria-label="Catalog sections"/>
+      <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" type="search" placeholder="Search products, brands or item #…" aria-label="Search products" autocomplete="off"/></div>
+    </div>
+    <div class="chips" id="chips" role="tablist" aria-label="Categories"/>
+  </div>
+  <div id="catalogGrid"/>
+</section>
+
+<section class="standard" id="standard"><div class="wrap block">
+  <div class="section-head"><div><div class="eyebrow">The SMB Foods standard</div><h2>What earns a place in our catalog.</h2></div><p>Every product we import, make or distribute clears the same four tests. It is how we keep a shelf a retailer can trust without reading every label.</p></div>
+  <div class="beyond"><div><div class="beyond-kicker">Beyond Organic. Beyond The Label.</div><h3>Certified organic is where we start, not where we stop.</h3></div><div><p>Certified organic means a product meets the USDA National Organic Program or the EU Organic Program: grown, handled and processed without synthetic chemicals, GMOs or artificial additives, with annual inspections to prove it. We respect that standard and sell to it wherever a product is certified.</p><p>But certification mostly describes how a crop is grown. So before anything reaches your shelf we also look at how it is processed, what goes into the finished product and how consistent the quality is from lot to lot. Organic is a plus. Clean, honest and thoughtfully made is the standard.</p></div></div>
+  <div class="pillars">
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5M4 21h16"/></svg><h3>Quality &amp; purity</h3><p>100% natural ingredients, free from synthetic preservatives and artificial additives. Products we are proud to put our own name beside.</p></div>
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22c-5 0-8-4-8-9 0-4 3-8 8-10 5 2 8 6 8 10 0 5-3 9-8 9Z"/><path d="M12 22V9"/></svg><h3>Sustainability</h3><p>Organic farming that protects soil and biodiversity, and sourcing decisions that consider the planet at every step, from grower to warehouse.</p></div>
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6M15 19c0-2.5 1.8-4.5 4-4.5s3 1.5 3 4.5"/></svg><h3>Community impact</h3><p>We support local farmers, villages and small producers, and we make and pack the Organicopia line in Lebanon.</p></div>
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7h13l5 5v5H3zM7 17a2 2 0 1 0 4 0M15 17a2 2 0 1 0 4 0"/></svg><h3>Reliability</h3><p>Consistency is key for a business. We built our supply chain so you have access to the same products, at the same quality, whenever you need them.</p></div>
+  </div>
+  <div class="promise">
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><div><h3>Sourcing the best</h3><p>Authentic organic ingredients from growers around the world, each checked against global standards before we list it.</p></div></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/></svg><div><h3>Lab tested where it matters</h3><p>Our spices, seeds, powders and nut butters carry a Lab tested pill when the lot has been laboratory tested for quality and purity.</p></div></div>
+    <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg><div><h3>Personalised service</h3><p>One point of contact on WhatsApp for stock, pricing, labelling questions and delivery, whether you run one shop or twenty.</p></div></div>
+  </div>
+</div></section>
+
+<section class="story" id="story">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Our story</div>
+      <h2>Your partner in healthy living.</h2>
+      <p class="big">In a market full of processed options, finding reliable, accessible health products shouldn't be a struggle for a business or for the families it serves. Soul Mind Body Foods was created to close that gap.</p>
+      <p>We started as importers, bringing certified organic ingredients into Lebanon that met the strictest USDA and EU standards and sharing them with shops, cafés and kitchens that wanted to offer healthier alternatives. Along the way we became producers too: today the Organicopia line is sourced, made and packed by our own team in Lebanon.</p>
+      <p>We are not just another distributor. Our philosophy is simplicity and purity: pure ingredients, conscious decisions, and farming methods that protect the land and the people who work it. A healthier world starts with what goes into the jar, and with the partners who put it on the shelf.</p>
+      <p>Whether you stock one product or the full range, we see our work as a way to give back: to you, to the communities we source from, and to the planet.</p>
+    </div>
+    <div class="side">
+      <div class="panel seal"><img src="/smb/smb-logo.svg" alt="Soul Mind Body Foods"/></div>
+      <div class="panel"><h3>Global sourcing, local production</h3><p>We source the finest organic ingredients from around the world and proudly produce a growing range in Lebanon, from ghee to fresh baked petit four.</p></div>
+      <div class="panel"><h3>Home of Organicopia</h3><p>Organicopia is our consumer brand: clean, thoughtfully sourced pantry staples for Lebanese kitchens. Your customers can also shop it directly at <a href="https://www.organicopia-lb.com" target="_blank" rel="noopener">organicopia-lb.com</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap block" id="order">
+  <div class="section-head"><div><div class="eyebrow">How to order</div><h2>Three steps.</h2></div><p>Prices and ordering are for registered wholesale customers: log in with your phone number and password, or request an account below. Your order then reaches our team directly, or on WhatsApp if you prefer.</p></div>
+  <div class="steps">
+    <div class="step"><div class="num">1</div><h3>Build your order</h3><p>Log in, then add items with the + button. Your running total sits in the Order button at the top.</p></div>
+    <div class="step"><div class="num">2</div><h3>Confirm your order</h3><p>Review your order, confirm it, and it lands with our team as a sales order. Prefer WhatsApp? Send the same list with one tap instead.</p></div>
+    <div class="step"><div class="num">3</div><h3>We confirm</h3><p>Our team replies to confirm stock, final pricing and delivery or pickup for your location.</p></div>
+  </div>
+  <div class="cta-band" id="new-customer"><div><h3>New to SMB Foods?</h3><p>Tell us about your business and we'll set you up on WhatsApp with pricing, a catalog and a point of contact.</p></div><button class="btn" type="button" data-newcust="">New customer account →</button></div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><img class="foot-logo" src="/smb/smb-logo.svg" alt="Soul Mind Body Foods"/><p style="margin-top:12px;font-family:var(--display);font-size:18px">Your partner in healthy living.</p><p>Importer, producer and distributor of organic and clean-label food. Home of Organicopia.</p></div>
+    <div><h4>Wholesale team</h4><p class="contactline"><span>WhatsApp / phone: <a href="https://wa.me/96178879350" target="_blank" rel="noopener">+961 78 879 350</a></span><button class="copy" type="button" data-copy="+961 78 879 350">Copy</button></p><p class="contactline"><span>Email: sales@smbfoods-lb.com</span><button class="copy" type="button" data-copy="sales@smbfoods-lb.com">Copy</button></p><p>Lebanon</p></div>
+    <div><h4>Explore</h4><ul><li><a href="#catalog">Catalog</a></li><li><a href="/shop">Shop view</a></li><li id="accountLi" hidden=""><a href="/my">My account</a></li><li><a href="#standard">The SMB Foods standard</a></li><li><a href="#story" target="_blank" rel="noopener">About Soul Mind Body Foods</a></li><li><a href="https://www.organicopia-lb.com" target="_blank" rel="noopener">Organicopia (Retail)</a></li><li id="logoutLi" hidden=""><a href="/web/session/logout?redirect=/">Log out</a></li></ul></div>
+  </div>
+  <div class="foot-bottom"><div class="wrap"><span>© 2026 Soul Mind Body Foods SARL</span><span>All prices include VAT.</span></div></div>
+</footer>
+
+<div class="overlay" id="cartOverlay" hidden=""><aside class="drawer" role="dialog" aria-label="Your order">
+  <div class="drawer-head"><h2>Your order</h2><button class="x" id="closeCart" type="button" aria-label="Close">×</button></div>
+  <div class="drawer-body" id="cartItems"/>
+  <div class="drawer-foot">
+    <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span class="num" id="cartTotal">$0.00</span></div>
+    <a class="btn primary" id="confirm" href="/shop/cart">Review &amp; confirm order →</a><div class="or">or</div><a class="btn wa" id="checkout" href="#" target="_blank" rel="noopener" aria-disabled="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp instead</a>
+    <p class="note">Your order is saved to your account as you add items. Our team confirms stock, pricing and delivery either way.</p>
+  </div>
+</aside></div>
+
+<div class="modal" id="productModal" hidden=""><div class="modalbox" role="dialog" aria-labelledby="modalName">
+  <button class="x" id="closeModal" type="button" aria-label="Close">×</button>
+  <div class="photo"><img id="modalImg" src="" alt=""/></div>
+  <div class="content">
+    <div class="eyebrow" id="modalCat"/>
+    <h2 id="modalName"/>
+    <p class="sub" id="modalSub"/>
+    <div class="tags" id="modalTags"/>
+    <div class="badges" id="modalBadges"/>
+    <div class="desc" id="modalDesc"/>
+    <div class="ing" id="modalIng"/>
+    <div class="labnote" id="modalLab" hidden=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/></svg><span><b>Lab tested.</b> This product has been laboratory tested for quality and purity.</span></div>
+    <div class="modal-price" id="modalPrice"/>
+  </div>
+</div></div>
+
+<div class="modal" id="newcustModal" hidden=""><div class="modalbox form" role="dialog" aria-labelledby="ncTitle">
+  <button class="x" id="closeNewcust" type="button" aria-label="Close">×</button>
+  <form id="ncForm" novalidate="">
+    <div class="eyebrow">New customer account</div>
+    <h2 id="ncTitle">Open a wholesale account.</h2>
+    <p class="sub">A few details about your business and we'll continue on WhatsApp with pricing, the catalog and your point of contact.</p>
+    <div class="fields">
+      <label>Full name<input id="ncName" name="name" type="text" autocomplete="name" required=""/></label>
+      <label>Business name<input id="ncBiz" name="business" type="text" autocomplete="organization" required=""/></label>
+      <label>Phone number<input id="ncPhone" name="phone" type="tel" autocomplete="tel" placeholder="+961 ..." required=""/></label>
+      <label>Location<input id="ncLoc" name="location" type="text" placeholder="City / area" required=""/></label>
+      <label class="full">Type of business<select id="ncType" name="type" required=""><option value="">Select one</option><option>Supermarket or grocery</option><option>Health food or organic store</option><option>Café, restaurant or bakery</option><option>Hotel or catering</option><option>Pharmacy</option><option>Online shop</option><option>Distributor or reseller</option><option>Other</option></select></label>
+      <label class="full">VAT registration number<input id="ncVat" name="vat" type="text" inputmode="numeric" autocomplete="off"/></label>
+      <label class="full">About your business <span class="opt">(optional)</span><textarea id="ncAbout" name="about" rows="3" maxlength="400" placeholder="Number of locations, products you're interested in, expected volumes..."/></label>
+    </div>
+    <p class="err" id="ncErr" hidden="">Please fill in the required fields.</p>
+    <button class="btn wa" id="ncSubmit" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp</button>
+    <p class="note">Opens WhatsApp with your details pre-filled for our wholesale team (+961 78 879 350). Nothing is sent until you press send.</p>
+  </form>
+</div></div>
+
+<div class="toast" id="toast" role="status"/>
+
+
+<div id="smbData" hidden="hidden" t-out="json.dumps(data)"/>
+<script src="/smb/wholesale.js?v=701fa2f6"></script>
+</body>
+</html>
+</t>
