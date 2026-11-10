@@ -108,4 +108,10 @@ const log = {};
   const sd = await rpc('delivery.carrier', 'search_read', [[['name', '=', 'Standard delivery'], ['website_published', '=', true]]], { fields: ['id'] });
   if (sd.length) { await rpc('delivery.carrier', 'write', [sd.map(x => x.id), { website_published: false }]); log.standardDelivery = 'unpublished'; } else log.standardDelivery = 'already unpublished';
 }
+// 8. the "pay on delivery" confirmation method must be allowed by the delivery method
+{
+  const cs = await rpc('delivery.carrier', 'search_read', [[['name', 'in', ['Delivery or pickup arranged by our team', 'Standard delivery']]]], { fields: ['id', 'allow_cash_on_delivery'] });
+  const ids = cs.filter(c => !c.allow_cash_on_delivery).map(c => c.id);
+  if (ids.length) { await rpc('delivery.carrier', 'write', [ids, { allow_cash_on_delivery: true }]); log.cod = 'allowed on ' + ids.length; } else log.cod = 'already allowed';
+}
 window.__step33 = log;
