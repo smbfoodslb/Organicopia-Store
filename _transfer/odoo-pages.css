@@ -1,0 +1,39 @@
+/* SMB Foods — styling for the Odoo-rendered pages (cart, checkout, login, portal, shop). Loaded from website custom head code. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+:root{--smb-green:#143D36;--smb-green-2:#1d5247;--smb-leaf:#439E70;--smb-leaf-soft:#E3F1E9;--smb-paper:#F4F5F2;--smb-line:#DCE1DD;--smb-ink:#16221F;--smb-muted:#5A6965}
+#wrapwrap{font-family:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:var(--smb-ink)}
+#wrapwrap h1,#wrapwrap h2,#wrapwrap h3,#wrapwrap h4,#wrapwrap .h1,#wrapwrap .h2,#wrapwrap .h3,#wrapwrap .h4,#wrapwrap .display-1,#wrapwrap .display-2,#wrapwrap .display-3{font-family:'DM Serif Display',Georgia,'Times New Roman',serif;font-weight:400;letter-spacing:-.01em;color:var(--smb-green)}
+#wrapwrap>main{background:var(--smb-paper)}
+#wrapwrap .btn{border-radius:8px;font-weight:600}
+#wrapwrap .btn-primary,#wrapwrap .btn-primary:focus{background:var(--smb-green);border-color:var(--smb-green);color:#fff}
+#wrapwrap .btn-primary:hover{background:var(--smb-green-2);border-color:var(--smb-green-2)}
+#wrapwrap .btn-outline-primary{color:var(--smb-green);border-color:var(--smb-green)}
+#wrapwrap .btn-outline-primary:hover{background:var(--smb-green);color:#fff}
+#wrapwrap .btn-secondary,#wrapwrap .btn-light{border-radius:8px}
+#wrapwrap a{color:var(--smb-green)}
+#wrapwrap .form-control,#wrapwrap .form-select{border:1.5px solid var(--smb-line);border-radius:8px;background:#fff}
+#wrapwrap .form-control:focus,#wrapwrap .form-select:focus{border-color:var(--smb-leaf);box-shadow:0 0 0 3px rgba(67,158,112,.18)}
+#wrapwrap .card{border:1px solid var(--smb-line);border-radius:12px}
+#wrapwrap .badge.text-bg-primary,#wrapwrap .bg-primary{background:var(--smb-green)!important}
+#wrapwrap .text-primary{color:var(--smb-green)!important}
+#wrapwrap .border-primary{border-color:var(--smb-green)!important}
+/* things a wholesale customer does not need */
+#wrapwrap .o_wsale_my_wish,#wrapwrap .o_add_wishlist,#wrapwrap .o_add_wishlist_dyn,#wrapwrap .o_wsale_product_btn .o_add_wishlist{display:none!important}
+#wrapwrap .o_login_auth,#wrapwrap .oe_login_form a[href="/web/reset_password"]{display:none!important}
+#wrapwrap .oe_signup_form,#wrapwrap a[href="/web/signup"]{display:none!important}
+/* cart & checkout */
+#wrapwrap .oe_cart .o_cart_product .h6,#wrapwrap .oe_cart .o_cart_product h6{font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--smb-ink)}
+#wrapwrap .o_wizard,#wrapwrap .wizard{font-weight:500}
+#wrapwrap .o_wizard .o_wizard_step.active,#wrapwrap .o_wizard .o_wizard_step.active a{color:var(--smb-green)}
+#wrapwrap #o_wsale_total_accordion,#wrapwrap .o_total_card{border:1px solid var(--smb-line);border-radius:12px;background:#fff}
+#wrapwrap .oe_cart .o_cart_summary,#wrapwrap #cart_total{border-radius:12px}
+#wrapwrap .alert-info{background:var(--smb-leaf-soft);border-color:#cfe6d9;color:var(--smb-green)}
+/* login box */
+#wrapwrap .oe_website_login_container{max-width:460px;margin:40px auto 60px;background:#fff;border:1px solid var(--smb-line);border-radius:16px;padding:32px 28px 24px}
+#wrapwrap .oe_website_login_container .oe_login_form .form-label{font-weight:600;font-size:13px}
+#wrapwrap .smb-login-help{font-size:13px;color:var(--smb-muted);margin:14px 0 0;text-align:center;line-height:1.55}
+#wrapwrap .smb-login-help a{font-weight:600}
+/* portal */
+#wrapwrap .o_portal_my_home .o_portal_category .o_portal_doc_card,#wrapwrap .o_portal_my_home .o_portal_index_card{border-radius:12px;border:1px solid var(--smb-line)}
+#wrapwrap .o_portal_navbar{background:#fff;border-bottom:1px solid var(--smb-line)}
+/* footer newsletter / social clean-up kept as theme */
