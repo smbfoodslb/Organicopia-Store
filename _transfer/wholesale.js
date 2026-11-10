@@ -11,7 +11,7 @@ const LAB_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const PRODUCTS = [], byNum = {};
 CATALOG.sections.forEach(s => s.categories.forEach(c => c.items.forEach(p => { const q = {...p, cat: c.title, sectionKey: s.key, sectionLabel: s.label}; PRODUCTS.push(q); byNum[p.num] = q })));
 const SECTIONS = CATALOG.sections.map(s => ({key: s.key, label: s.label}));
-PRODUCTS.forEach(p => { if (p.brand && p.name.toLowerCase().startsWith(p.brand.toLowerCase() + " ")) p.name = p.name.slice(p.brand.length + 1); p.status = p.oos ? "oos" : "active"; p.is_new = (p.badges || []).includes("New"); p.back_in_stock = (p.badges || []).includes("Back in stock"); p.holiday_item = (p.badges || []).includes("Holiday item") });
+PRODUCTS.forEach(p => { if (p.desc && !/^\s*</.test(p.desc)) p.desc = "<p>" + esc(p.desc) + "</p>"; if (p.brand && p.name.toLowerCase().startsWith(p.brand.toLowerCase() + " ")) p.name = p.name.slice(p.brand.length + 1); p.status = p.oos ? "oos" : "active"; p.is_new = (p.badges || []).includes("New"); p.back_in_stock = (p.badges || []).includes("Back in stock"); p.holiday_item = (p.badges || []).includes("Holiday item") });
 
 const LOCKED = () => !!(CATALOG && CATALOG.locked);
 const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
