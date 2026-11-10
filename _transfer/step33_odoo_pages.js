@@ -103,4 +103,9 @@ const log = {};
   const lb = await rpc('res.country', 'search_read', [[['code', '=', 'LB']]], { fields: ['id', 'zip_required', 'state_required'] });
   if (lb.length && (lb[0].zip_required || lb[0].state_required)) { await rpc('res.country', 'write', [[lb[0].id], { zip_required: false, state_required: false }]); log.lebanonZip = 'not required'; } else log.lebanonZip = 'already off';
 }
+// 7. only one delivery choice on the wholesale site (the retail site gets its own carrier in Phase 6)
+{
+  const sd = await rpc('delivery.carrier', 'search_read', [[['name', '=', 'Standard delivery'], ['website_published', '=', true]]], { fields: ['id'] });
+  if (sd.length) { await rpc('delivery.carrier', 'write', [sd.map(x => x.id), { website_published: false }]); log.standardDelivery = 'unpublished'; } else log.standardDelivery = 'already unpublished';
+}
 window.__step33 = log;
