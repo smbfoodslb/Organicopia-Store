@@ -98,4 +98,9 @@ const log = {};
     try { await rpc('delivery.carrier', 'create', [vals]); log.carrier = 'created'; } catch (e) { log.carrier = 'ERR ' + e.message.slice(0, 120); }
   } else log.carrier = 'exists';
 }
+// 6. Lebanon has no postal codes in practice: do not make checkout demand one
+{
+  const lb = await rpc('res.country', 'search_read', [[['code', '=', 'LB']]], { fields: ['id', 'zip_required', 'state_required'] });
+  if (lb.length && (lb[0].zip_required || lb[0].state_required)) { await rpc('res.country', 'write', [[lb[0].id], { zip_required: false, state_required: false }]); log.lebanonZip = 'not required'; } else log.lebanonZip = 'already off';
+}
 window.__step33 = log;
