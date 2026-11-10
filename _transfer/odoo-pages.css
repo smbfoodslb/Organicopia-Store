@@ -19,7 +19,9 @@
 #wrapwrap .border-primary{border-color:var(--smb-green)!important}
 /* things a wholesale customer does not need */
 #wrapwrap .o_wsale_my_wish,#wrapwrap .o_add_wishlist,#wrapwrap .o_add_wishlist_dyn,#wrapwrap .o_wsale_product_btn .o_add_wishlist{display:none!important}
-#wrapwrap .o_login_auth,#wrapwrap .oe_login_form a[href="/web/reset_password"]{display:none!important}
+#wrapwrap .o_login_auth,#wrapwrap .oe_login_form a[href="/web/reset_password"],#wrapwrap .oe_login_form .o_user_switch_btn{display:none!important}
+#wrapwrap .smb-login-title{font-size:26px;margin:0 0 4px}
+#wrapwrap .smb-login-sub{font-size:13.5px;color:var(--smb-muted);margin:0 0 18px}
 #wrapwrap .oe_signup_form,#wrapwrap a[href="/web/signup"]{display:none!important}
 /* cart & checkout */
 #wrapwrap .oe_cart .o_cart_product .h6,#wrapwrap .oe_cart .o_cart_product h6{font-family:'IBM Plex Sans',sans-serif;font-weight:600;color:var(--smb-ink)}
