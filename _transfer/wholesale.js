@@ -11,13 +11,13 @@ const LAB_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const PRODUCTS = [], byNum = {};
 CATALOG.sections.forEach(s => s.categories.forEach(c => c.items.forEach(p => { const q = {...p, cat: c.title, sectionKey: s.key, sectionLabel: s.label}; PRODUCTS.push(q); byNum[p.num] = q })));
 const SECTIONS = CATALOG.sections.map(s => ({key: s.key, label: s.label}));
-PRODUCTS.forEach(p => { if (p.desc && !/^\s*</.test(p.desc)) p.desc = "<p>" + esc(p.desc) + "</p>"; if (p.brand && p.name.toLowerCase().startsWith(p.brand.toLowerCase() + " ")) p.name = p.name.slice(p.brand.length + 1); p.status = p.oos ? "oos" : "active"; p.is_new = (p.badges || []).includes("New"); p.back_in_stock = (p.badges || []).includes("Back in stock"); p.holiday_item = (p.badges || []).includes("Holiday item") });
+PRODUCTS.forEach(p => { if (p.desc && !/^\s*</.test(p.desc)) p.desc = "<p>" + esc(p.desc) + "</p>"; if (p.brand && p.name.toLowerCase().startsWith(p.brand.toLowerCase() + " ")) p.name = p.name.slice(p.brand.length + 1); const B = p.badges || []; p.status = B.includes("Not available") ? "hold" : B.includes("Coming soon") ? "soon" : (p.oos && !B.includes("Back in stock")) ? "oos" : "active"; p.is_new = (p.badges || []).includes("New"); p.back_in_stock = (p.badges || []).includes("Back in stock"); p.holiday_item = (p.badges || []).includes("Holiday item") });
 
 const LOCKED = () => !!(CATALOG && CATALOG.locked);
 const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
 const LOGIN = "/web/login?redirect=/";
 const lockHtml = () => `<a class="lockprice" href="${LOGIN}">${LOCK_SVG}Log in to see prices</a>`;
-const purchasable = p => p.price != null && p.price > 0; // out-of-stock items stay orderable; the badge is informational
+const purchasable = p => p.status !== "soon" && p.status !== "hold" && p.price != null && p.price > 0; // out-of-stock items stay orderable; the badge is informational
 // Case-only items are charged per case; the stepper shows pieces when case_show_pieces is set (same rules as before).
 const unitPrice = p => p.price;
 const displayQty = (p, q) => q;
@@ -90,8 +90,8 @@ function cardHtml(p) {
   const hl = p.is_new ? " hl-new" : p.back_in_stock ? " hl-back" : (p.holiday_item && p.status !== "oos" && p.status !== "hold") ? " hl-holiday" : "";
   const bottom = LOCKED() ? lockHtml() : purchasable(p)
     ? `<div class="pricebox">${priceHtml(p)}${controlHtml(p)}</div>` + (q ? `<div class="qtyrow"><span class="hint">${q} piece${q > 1 ? "s" : ""}</span><span class="amt num">${money(unitPrice(p) * q)}</span></div>` : "")
-    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Temporarily unavailable." : "Pricing to follow."}</div>`;
-  return `<article class="card${hl}" data-num="${p.num}">
+    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
+  return `<article class="card${hl}${p.status === "hold" ? " is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}"><span class="ref">${esc(p.ref || "")}</span><div class="badges-tr">${tr.join("")}</div><img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/smb/placeholder.svg'"></div>
     <div class="body">${p.brand ? `<div class="brandline">${esc(p.brand)}</div>` : ""}${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tagsHtml(p)}</div>${hasDetails(p) ? `<button type="button" class="details" data-view="${p.num}">Details</button>` : ""}${bottom}</div>
   </article>`;
@@ -151,7 +151,7 @@ function renderCart() {
 
 let modalNum = null;
 function renderModalPrice() { const p = byNum[modalNum]; const q = cart[modalNum] || 0;
-  $("modalPrice").innerHTML = LOCKED() ? lockHtml() : purchasable(p) ? priceHtml(p) + controlHtml(p) + (q ? `<div class="qtyrow" style="width:100%"><span class="hint">${money(unitPrice(p) * q)} in your order</span></div>` : "") : `<div class="unavail" style="border:0;padding:0;margin:0">${p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : "Temporarily unavailable."}</div>` }
+  $("modalPrice").innerHTML = LOCKED() ? lockHtml() : purchasable(p) ? priceHtml(p) + controlHtml(p) + (q ? `<div class="qtyrow" style="width:100%"><span class="hint">${money(unitPrice(p) * q)} in your order</span></div>` : "") : `<div class="unavail" style="border:0;padding:0;margin:0">${p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : "Currently unavailable."}</div>` }
 function openProduct(num) { const p = byNum[num]; modalNum = num;
   $("modalImg").src = imgSrc(p); $("modalImg").alt = p.name;
   $("modalCat").textContent = `${p.ref || ""} · ${p.brand || ""} · ${p.cat}`.replace(/^ · /, "");
