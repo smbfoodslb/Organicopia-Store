@@ -1,0 +1,190 @@
+<t t-name="website.org_retail">
+<t t-set="env" t-value="website.env"/>
+<t t-set="locked" t-value="request.env.user._is_public()"/>
+<t t-set="_" t-value="(request.session.get('website_sale_current_pl') != 27) and request.session.update({'website_sale_current_pl': 27})"/>
+<t t-set="pl" t-value="env['product.pricelist'].sudo().browse(27)"/>
+<t t-set="root" t-value="env['product.public.category'].sudo().search([('name','=','Organicopia'),('parent_id','=',False)], limit=1)"/>
+<t t-set="allv" t-value="env['product.product'].sudo().search([('product_tmpl_id.website_published','=',True),('product_tmpl_id.public_categ_ids','child_of',root.id),('product_tmpl_id.website_id','in',[1,False])])"/>
+<t t-set="bommap" t-value="env['mrp.bom'].sudo()._bom_find(allv)"/>
+<t t-set="cats" t-value="[]"/>
+<t t-foreach="env['product.public.category'].sudo().search([('parent_id','=',root.id)], order='sequence, name')" t-as="c">
+  <t t-set="tmpls" t-value="env['product.template'].search([('website_published','=',True),('public_categ_ids','in',c.id),('website_id','in',[1,False])], order='website_sequence, name')"/>
+  <t t-set="items" t-value="[{'num': v.id, 'tid': tm.id, 'name': v.sudo().x_retail_name or tm.name, 'sub': v.sudo().x_retail_sub or ', '.join(v.product_template_variant_value_ids.mapped('name')), 'brand': tm.sudo().x_brand or '', 'tags': [s for s in (v.sudo().x_retail_tags or tm.sudo().x_size or '').split(' · ') if s], 'certs': [s for s in (tm.sudo().x_certifications or '').split(' · ') if s], 'badges': v.sudo().all_product_tag_ids.mapped('name'), 'oos': bool(c.name != 'Fresh from the Oven' and v.sudo().is_storable and v.sudo().with_context(allowed_company_ids=[1,3]).free_qty &lt;= (tm.sudo().x_web_min_stock or 0) and not (bommap.get(v) and all([l.product_id.with_context(allowed_company_ids=[1,3]).free_qty &gt; 0 for l in bommap[v].bom_line_ids if not l._skip_bom_line(v) and 'Packaging' not in l.product_id.categ_id.complete_name]))), 'usa': bool(v.sudo().is_storable and v.sudo().with_context(allowed_company_ids=[1,3]).free_qty &lt;= 0 and v.sudo().with_context(allowed_company_ids=[2]).free_qty &gt; 0), 'priced': bool(pl._get_product_rule(v, quantity=1.0)), 'tiers': [[q, v.sudo().taxes_id.compute_all(pl._get_product_price(v, q), currency=pl.currency_id, quantity=1.0, product=v)['total_included']] for q in [1, 3, 6]], 'desc': (tm.description_ecommerce or '') + (v.sudo().x_desc_variant or ''), 'country': tm.sudo().country_of_origin.name or '', 'pub': str(tm.sudo().x_published_on or ''), 'restock': str(v.sudo().x_restocked_on or ''), 'img': '/web/image/product.product/%s/image_512' % v.id} for tm in tmpls for v in tm.product_variant_ids if v.sudo().x_retail_name]"/>
+  <t t-set="_" t-value="cats.append({'title': c.name, 'desc': c.website_description or '', 'items': items})"/>
+</t>
+<t t-set="order" t-value="request.cart"/>
+<t t-set="data" t-value="{'locked': locked, 'categories': cats, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.order_line if order else []) if not l.is_delivery}, 'user': ('' if locked else (request.env.user.partner_id.name or request.env.user.name))}"/>
+&lt;!DOCTYPE html&gt;
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Organicopia — Rooted in Nature</title>
+<meta name="description" content="Organicopia: clean, thoughtfully sourced spices, cacao, seeds, oils and pantry staples for Lebanese kitchens. Shop online, pay on delivery."/>
+<link rel="icon" href="/org/favicon.svg" type="image/svg+xml"/>
+<meta name="theme-color" content="#033649"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Organicopia"/>
+<meta property="og:title" content="Organicopia — Rooted in Nature"/>
+<meta property="og:description" content="Clean, thoughtfully sourced spices, cacao, seeds, oils and pantry staples. Beyond organic, beyond the label."/>
+<meta property="og:image" content="https://www.organicopia-lb.com/org/share-card.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
+<link rel="stylesheet" href="/org/retail.css?v=93a42649"/>
+</head>
+<body>
+<div class="topbar"><div class="wrap"><span>Beyond organic · Transparent origins · Free delivery on orders of $40 and more</span><span class="who" id="who"/></div></div>
+
+<header class="site"><div class="wrap nav">
+  <a class="brand" href="#top" aria-label="Organicopia home">
+    <img class="mark logo-img" src="/org/logo-mark.svg" alt="" width="52" height="48"/>
+    <span><img class="word logo-img" src="/org/wordmark.svg" alt="Organicopia" width="150" height="40"/><span class="tag">Reconnect with the natural rhythm of life.</span></span>
+  </a>
+  <nav class="navlinks" aria-label="Main"><a href="#shop">Shop</a><a href="#standard">Our Standard</a><a href="#story">Our Story</a><a href="#order">How to Order</a><a href="#wholesale" data-wholesale="">Wholesale</a></nav>
+  <div class="nav-actions">
+    <button class="iconbtn searchjump" id="searchJump" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search</button>
+    <button class="iconbtn cartbtn" id="openCart" type="button" aria-label="Open your basket">Basket <span class="n" id="count">0</span></button>
+  </div>
+</div></header>
+
+<main id="top">
+<section class="wrap hero">
+  <div>
+    <div class="eyebrow">Rooted in Nature · Thoughtfully sourced</div>
+    <h1>Reconnect with the <em>natural rhythm</em> of life.</h1>
+    <p class="lede">Clean, carefully sourced food for families who want to shop with confidence. Every product is selected so you never have to double-check the label.</p>
+    <div class="ctas"><a class="btn" href="#shop">Shop the collection →</a><a class="btn ghost" href="#story">Our story</a></div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <svg class="leaf" viewBox="0 0 433.51 373" aria-hidden="true"><path fill="var(--cream)" d="M43.31,335.54S23.18-14.35,393.2,43.55c0,0-28.94,140.25-137.07,226.05-13.49,10.71-28.56,19.27-44.61,25.53-24.94,9.74-68.19,24.02-120.38,30.34,0,0-35.24,0-47.83,10.07Z"/></svg>
+    <div class="anim"><img id="heroAnim" src="/org/logo-animation.gif" alt="" width="480" height="480"/><img id="heroStill" class="still" src="/org/logo-lockup.svg" alt="" width="480" height="480"/></div>
+    <img class="waves" src="/org/wavy-navy.svg" alt=""/>
+    <div class="pill">Sourced with intention</div>
+  </div>
+</section>
+
+<div class="trust"><div class="wrap">
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22c5-3 8-7 8-12V5l-8-3-8 3v5c0 5 3 9 8 12Z"/><path d="m9 12 2 2 4-4"/></svg><span>We look beyond the label: ingredients, processing and quality</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg><span>Origin shown on every product</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v12H4zM8 7V5h8v2"/><path d="M8 12h8M8 15h5"/></svg><span>Three simple prices: buy 1, 3 or 6+</span></div>
+  <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg><span>Pay on delivery · Free delivery from $40</span></div>
+</div></div>
+
+<section class="wrap block" id="shop">
+  <div class="section-head"><div><div class="eyebrow">The collection</div><h2>Everyday goodness, verified for you.</h2></div><p>Spices, cacao, seeds, oils, pantry staples and small-batch bakes. Browse by shelf or search for an ingredient.</p></div>
+  <div class="toolbar">
+    <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" type="search" placeholder="Search products, origins or ingredients…" aria-label="Search products" autocomplete="off"/></div>
+    <div class="chips" id="chips" role="tablist" aria-label="Categories"/>
+  </div>
+  <div class="pricing-note"><span><b>Buy more, pay less.</b> Every product has three unit prices. Pick ×1, ×3 or ×6 and the price per piece drops. All prices include VAT.</span></div>
+  <div id="catalog"/>
+</section>
+
+<section class="standard" id="standard"><div class="wrap block">
+  <div class="section-head"><div><div class="eyebrow">The Organicopia standard</div><h2>How we decide what earns a place on your shelf.</h2></div><p>Good food begins with informed choices. A product is listed only when it clears the same four questions, every time.</p></div>
+  <div class="beyond"><div><div class="beyond-kicker">Beyond Organic. Beyond The Label.</div><h3>Organic doesn't always mean clean.</h3></div><div><p>Organic certification matters, and we respect it. But it mostly describes how food is grown, not everything that happens afterward. Even certified organic products can contain highly processed ingredients, flavour enhancers and additives.</p><p>So we look beyond the label. Before anything reaches your shelf we check the ingredients, how they are processed, what goes into manufacturing, and the overall quality of the finished product. Organic is a plus. Clean, honest and thoughtfully made is the standard.</p></div></div>
+  <div class="pillars">
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><h3>Radical transparency</h3><p>Origin, size and what is actually inside are printed on the card, not hidden in a footnote. Nothing to hide, everything to show.</p></div>
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5M4 21h16"/></svg><h3>Integrity over trends</h3><p>Products are chosen because they belong in a healthy kitchen for years, not because they are this season's superfood.</p></div>
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11h18M3 11l2 9h14l2-9M12 3v4M8 7h8"/></svg><h3>Accessibility</h3><p>Exceptional food should not be a luxury. Fair prices, honest sizes, and a discount when you stock up.</p></div>
+    <div class="pillar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.5-7 10-7 10Z"/></svg><h3>Care</h3><p>Every sourcing decision is made with families in mind. We serve people, not transactions.</p></div>
+  </div>
+  <div class="stickers">
+    <div class="sticker"><img src="/org/sticker-sourced.svg" alt="Sourced with Intention seal" width="124" height="86"/><div><h3>Sourced with Intention</h3><p>Carefully selected from trusted growers and producers abroad, checked for ingredients, processing and quality before we put our name on it.</p></div></div>
+    <div class="sticker"><img src="/org/sticker-made.svg" alt="Made with Intention seal" width="124" height="86"/><div><h3>Made with Intention</h3><p>Made by us in Lebanon, in small batches: our clarified butter ghee and the fresh-from-the-oven bakes, from organic ingredients.</p></div></div>
+  </div>
+</div></section>
+
+<section class="story" id="story">
+  <img class="waves" src="/org/wavy-navy.svg" alt="" aria-hidden="true" style="filter:brightness(0) invert(1)"/>
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Our story</div>
+      <h2>A brand built around trust, not trends.</h2>
+      <p class="big">Organicopia wasn't born because the world needed another organic food brand. It was born because buying healthy food shouldn't require becoming an investigator.</p>
+      <p>We grew out of Soul Mind Body Foods, a Lebanese family business that has spent years importing and distributing certified organic ingredients to shops, cafés and kitchens across the country. Standing between the world's best growers and Lebanese homes, we kept hearing the same question from mothers and family cooks: "Can I trust this?"</p>
+      <p>Organicopia is our answer. Every ingredient is sourced with intention. Every product is selected because it deserves a place in someone's home, not because it follows the latest wellness fad. Our ghee and our bakes are made by hand in small batches; everything else is chosen from producers we have verified ourselves, with the origin printed right on the card.</p>
+      <p>Because we aren't really selling spices, cacao or superfoods. We are curating peace of mind: the quiet confidence to fill your kitchen without hesitation, and to reconnect with the natural rhythm of life.</p>
+    </div>
+    <div class="side">
+      <div class="panel seal"><img class="seal-img" src="/org/logo-mark.svg" alt="Organicopia tree mark"/></div>
+      <div class="panel"><h3>Our philosophy</h3><p>Beyond organic. Beyond the label. Thoughtfully sourced. We value organic certification, but we never assume a product is clean just because it carries a label. We look at how it is made, what goes into it, and the quality behind every ingredient, and we only list what we can stand behind.</p></div>
+      <div class="panel"><h3>Part of the Soul Mind Body Foods family</h3><p>Our parent company supplies organic ingredients to businesses across Lebanon and believes a healthier world starts with pure ingredients. <a href="https://www.smbfoods-lb.com/#story" target="_blank" rel="noopener">Read their story →</a></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap block" id="order">
+  <div class="section-head"><div><div class="eyebrow">How to order</div><h2>Three steps, no account needed.</h2></div><p>Order online in a minute, or send your basket on WhatsApp if you prefer.</p></div>
+  <div class="steps">
+    <div class="step"><div class="num">1</div><h3>Fill your basket</h3><p>Pick ×1, ×3 or ×6 on any product. The unit price drops automatically as you add more.</p></div>
+    <div class="step"><div class="num">2</div><h3>Check out</h3><p>Review your basket, enter your name, phone and delivery address, and confirm. Prefer WhatsApp? Send the same list with one tap instead.</p></div>
+    <div class="step"><div class="num">3</div><h3>We deliver</h3><p>We confirm your order and delivery time with you, and you pay on delivery. Delivery is $3, free for orders of $40 and more.</p></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><img class="foot-logo" src="/org/wordmark.svg" alt="Organicopia" style="filter:brightness(0) saturate(100%) invert(93%) sepia(13%) saturate(426%) hue-rotate(336deg) brightness(102%) contrast(95%)"/><p style="margin-top:10px;font-family:var(--display);font-style:italic">Rooted in Nature. Made for life.</p><p>Real food, made and curated in Lebanon, shared with the people we love.</p></div>
+    <div><h4>Contact</h4><p class="contactline"><span>WhatsApp / phone: <a href="https://wa.me/96170649386" target="_blank" rel="noopener">+961 70 649 386</a></span><button class="copy" type="button" data-copy="+961 70 649 386">Copy</button></p><p class="contactline"><span>Email: info@organicopia-lb.com</span><button class="copy" type="button" data-copy="info@organicopia-lb.com">Copy</button></p><p>Lebanon</p></div>
+    <div><h4>Explore</h4><ul><li><a href="#shop">Shop the collection</a></li><li><a href="#standard">The Organicopia standard</a></li><li><a href="#story">Our story</a></li><li><a href="#wholesale" id="wholesaleLink">Wholesale Inquiries</a></li><li id="accountLi" hidden=""><a href="/my">My account</a></li><li id="logoutLi" hidden=""><a href="/web/session/logout?redirect=/">Log out</a></li></ul></div>
+  </div>
+  <div class="foot-bottom"><div class="wrap"><span>© 2026 Organicopia · Soul Mind Body Foods SARL</span><span>All prices include VAT. Pay on delivery.</span></div></div>
+</footer>
+
+<div class="overlay" id="cartOverlay" hidden=""><aside class="drawer" role="dialog" aria-label="Your basket">
+  <div class="drawer-head"><h2>Your basket</h2><button class="x" id="closeCart" type="button" aria-label="Close">×</button></div>
+  <div class="drawer-body" id="cartItems"/>
+  <div class="drawer-foot">
+    <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span id="cartTotal">$0.00</span></div><div class="fee"><span>Delivery</span><span id="cartFee">$3.00</span></div><div class="grand"><span>Total</span><span id="cartGrand">$0.00</span></div>
+    <a class="btn" id="confirm" href="/shop/cart">Check out →</a><div class="or">or</div><a class="btn wa" id="checkout" href="#" target="_blank" rel="noopener" aria-disabled="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp instead</a>
+    <p class="note">Pay on delivery. Free delivery for orders of $40 and more, $3 otherwise. We confirm every order with you before it ships.</p>
+  </div>
+</aside></div>
+
+<div class="modal" id="productModal" hidden=""><div class="modalbox" role="dialog" aria-labelledby="modalName">
+  <button class="x" id="closeModal" type="button" aria-label="Close">×</button>
+  <div class="photo"><img id="modalImg" src="" alt=""/></div>
+  <div class="content">
+    <div class="eyebrow" id="modalCat"/>
+    <h2 id="modalName"/>
+    <p class="sub" id="modalSub"/>
+    <div class="tags" id="modalTags"/>
+    <div class="badges" id="modalBadges"/>
+    <div class="desc" id="modalDesc"/>
+    <div class="ing" id="modalIng"/>
+    <div class="labnote" id="modalLab" hidden=""><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/></svg><span><b>Lab tested.</b> This product has been laboratory tested for quality and purity.</span></div>
+    <div class="modal-tiers" id="modalTiers"/>
+  </div>
+</div></div>
+
+<div class="modal" id="wholesaleModal" hidden=""><div class="modalbox form" role="dialog" aria-labelledby="whTitle">
+  <button class="x" id="closeWholesale" type="button" aria-label="Close">×</button>
+  <form id="whForm" novalidate="">
+    <div class="eyebrow">Wholesale inquiries</div>
+    <h2 id="whTitle">Stock Organicopia in your business.</h2>
+    <p class="sub">Tell us a little about you and we'll continue the conversation on WhatsApp.</p>
+    <div class="fields">
+      <label>Full name<input id="whName" name="name" type="text" autocomplete="name" required=""/></label>
+      <label>Business name<input id="whBiz" name="business" type="text" autocomplete="organization" required=""/></label>
+      <label>Phone number<input id="whPhone" name="phone" type="tel" autocomplete="tel" placeholder="+961 ..." required=""/></label>
+      <label>Location<input id="whLoc" name="location" type="text" placeholder="City / area" required=""/></label>
+      <label class="full">Reason for interest<select id="whReason" name="reason" required=""><option value="">Select one</option><option>Retail store or supermarket</option><option>Café, restaurant or bakery</option><option>Hotel or catering</option><option>Online shop</option><option>Distributor or reseller</option><option>Corporate gifting</option><option>Other</option></select></label>
+      <label class="full">About your business <span class="opt">(optional)</span><textarea id="whAbout" name="about" rows="3" maxlength="400" placeholder="What you sell, how many locations, products you're interested in..."/></label>
+    </div>
+    <p class="err" id="whErr" hidden="">Please fill in the required fields.</p>
+    <button class="btn wa" id="whSubmit" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp</button>
+    <p class="note">Opens WhatsApp with your details pre-filled for our wholesale team (+961 78 879 350). Nothing is sent until you press send.</p>
+  </form>
+</div></div>
+
+<div class="toast" id="toast" role="status"/>
+
+
+<div id="orgData" hidden="hidden" t-out="json.dumps(data)"/>
+<script src="/org/retail.js?v=93a42649"></script>
+</body>
+</html>
+</t>
