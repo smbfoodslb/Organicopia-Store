@@ -1,5 +1,6 @@
 
 const CATALOG = JSON.parse(document.getElementById("smbData").textContent);
+const packOf = p => Math.max(1, p.pack || 1);
 const LINES = {}; Object.entries(CATALOG.cart || {}).forEach(([k, v]) => { LINES[k] = v.line });
 const WHATSAPP = "96178879350";
 const $ = id => document.getElementById(id);
