@@ -10,7 +10,7 @@
   <t t-set="cats" t-value="[]"/>
   <t t-foreach="env['product.public.category'].sudo().search([('parent_id','=',sec[0])], order='sequence, name')" t-as="c">
     <t t-set="tmpls" t-value="env['product.template'].search([('website_published','=',True),('public_categ_ids','in',c.id)], order='website_sequence, name')"/>
-    <t t-set="items" t-value="[{'num': v.id, 'tid': tm.id, 'ref': v.default_code or '', 'name': tm.name, 'sub': ', '.join(v.product_template_variant_value_ids.mapped('name')), 'brand': tm.sudo().x_brand or '', 'tags': [s for s in (tm.sudo().x_size or '').split(' · ') if s], 'badges': v.sudo().all_product_tag_ids.mapped('name'), 'oos': bool('Bakery' not in c.name and v.sudo().is_storable and v.sudo().with_context(allowed_company_ids=[1,3]).free_qty &lt;= (tm.sudo().x_web_min_stock or 0) and not (bommap.get(v) and all([l.product_id.with_context(allowed_company_ids=[1,3]).free_qty &gt; 0 for l in bommap[v].bom_line_ids if not l._skip_bom_line(v) and 'Packaging' not in l.product_id.categ_id.complete_name]))), 'usa': bool(v.sudo().is_storable and v.sudo().with_context(allowed_company_ids=[1,3]).free_qty &lt;= 0 and v.sudo().with_context(allowed_company_ids=[2]).free_qty &gt; 0), 'pack': tm.sudo().x_pack_qty or 1, 'uom': v.sudo().uom_id.name or '', 'priced': bool(locked or request.pricelist._get_product_rule(v, quantity=float(tm.sudo().x_pack_qty or 1))), 'price': (None if locked else tm._get_combination_info(product_id=v.id, add_qty=(tm.sudo().x_pack_qty or 1)).get('price')), 'desc': v.sudo().x_desc_variant or tm.description_ecommerce or '', 'country': tm.sudo().country_of_origin.name or '', 'pub': str(tm.sudo().x_published_on or ''), 'restock': str(v.sudo().x_restocked_on or ''), 'img': '/web/image/product.product/%s/image_512' % v.id} for tm in tmpls for v in tm.product_variant_ids]"/>
+    <t t-set="items" t-value="[{'num': v.id, 'tid': tm.id, 'ref': v.default_code or '', 'name': tm.name, 'sub': ', '.join(v.product_template_variant_value_ids.mapped('name')), 'brand': tm.sudo().x_brand or '', 'tags': [s for s in (tm.sudo().x_size or '').split(' · ') if s], 'badges': v.sudo().all_product_tag_ids.mapped('name'), 'oos': bool('Bakery' not in c.name and v.sudo().is_storable and v.sudo().with_context(allowed_company_ids=[1,3]).free_qty &lt;= (tm.sudo().x_web_min_stock or 0) and not (bommap.get(v) and all([l.product_id.with_context(allowed_company_ids=[1,3]).free_qty &gt; 0 for l in bommap[v].bom_line_ids if not l._skip_bom_line(v) and 'Packaging' not in l.product_id.categ_id.complete_name]))), 'usa': bool(v.sudo().is_storable and v.sudo().with_context(allowed_company_ids=[1,3]).free_qty &lt;= 0 and v.sudo().with_context(allowed_company_ids=[2]).free_qty &gt; 0), 'pack': tm.sudo().x_pack_qty or 1, 'uom': v.sudo().uom_id.name or '', 'priced': bool(locked or request.pricelist._get_product_rule(v, quantity=float(tm.sudo().x_pack_qty or 1))), 'price': (None if locked else tm._get_combination_info(product_id=v.id, add_qty=(tm.sudo().x_pack_qty or 1)).get('price')), 'desc': (tm.description_ecommerce or '') + (v.sudo().x_desc_variant or ''), 'country': tm.sudo().country_of_origin.name or '', 'pub': str(tm.sudo().x_published_on or ''), 'restock': str(v.sudo().x_restocked_on or ''), 'img': '/web/image/product.product/%s/image_512' % v.id} for tm in tmpls for v in tm.product_variant_ids]"/>
     <t t-set="_" t-value="cats.append({'title': c.name, 'desc': '', 'items': items})"/>
   </t>
   <t t-set="_" t-value="sections.append({'key': sec[1], 'label': sec[2], 'categories': cats})"/>
@@ -29,7 +29,7 @@
 <link rel="icon" href="/smb/favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/smb/wholesale.css?v=adda1cbc"/>
+<link rel="stylesheet" href="/smb/wholesale.css?v=e899b6aa"/>
 </head>
 <body>
 <div class="topbar"><div class="wrap"><span>Wholesale catalog for retailers, cafés and distributors · All prices include VAT</span><span class="who" id="who"/></div></div>
@@ -190,7 +190,7 @@
 
 
 <div id="smbData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/smb/wholesale.js?v=adda1cbc"></script>
+<script src="/smb/wholesale.js?v=e899b6aa"></script>
 </body>
 </html>
 </t>
