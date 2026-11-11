@@ -6,7 +6,7 @@ const C = { allowed_company_ids: [1, 2, 3] };
 const log = {};
 // 1. public static files served at /org/<name>
 const files = [['retail.css', 'text/css'], ['retail.js', 'text/javascript'], ['org-pages.css', 'text/css'], ['favicon.svg', 'image/svg+xml'], ['placeholder.svg', 'image/svg+xml'],
-  ['logo-mark.svg', 'image/svg+xml'], ['wordmark.svg', 'image/svg+xml'], ['logo-lockup.svg', 'image/svg+xml'], ['wavy-navy.svg', 'image/svg+xml'], ['sticker-sourced.svg', 'image/svg+xml'], ['sticker-made.svg', 'image/svg+xml'], ['logo-animation.gif', 'image/gif'], ['share-card.png', 'image/png']];
+  ['logo-mark.svg', 'image/svg+xml'], ['wordmark.svg', 'image/svg+xml'], ['logo-lockup.svg', 'image/svg+xml'], ['wavy-navy.svg', 'image/svg+xml'], ['sticker-sourced.svg', 'image/svg+xml'], ['sticker-made.svg', 'image/svg+xml'], ['logo-animation.gif', 'image/gif'], ['share-card.png', 'image/png'], ['range.webp', 'image/webp']];
 const only = window.__ONLY; // optional subset
 for (const [name, mime] of files) {
   if (only && !only.includes(name)) continue;
