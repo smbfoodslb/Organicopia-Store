@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/org/retail.css?v=6b1910da"/>
+<link rel="stylesheet" href="/org/retail.css?v=9fd276dd"/>
 </head>
 <body>
 <div class="topbar"><div class="wrap"><span>Beyond organic · Transparent origins · Free delivery on orders of $40 and more</span><span class="who" id="who"/></div></div>
@@ -193,7 +193,7 @@
 
 
 <div id="orgData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/org/retail.js?v=6b1910da"></script>
+<script src="/org/retail.js?v=9fd276dd"></script>
 </body>
 </html>
 </t>

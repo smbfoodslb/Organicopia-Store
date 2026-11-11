@@ -207,7 +207,7 @@ else { const start = () => setTimeout(() => animBox.classList.add("done"), ANIM_
 // account links
 (function () {
   const locked = CATALOG.locked;
-  const who = $("who"); if (who) who.innerHTML = locked ? `<a href="${LOGIN}">Sign in</a>` : `${esc(CATALOG.user || "")} &middot; <a href="/my">My account</a>`;
+  const who = $("who"); if (who) who.innerHTML = locked ? "" : `${esc(CATALOG.user || "")} &middot; <a href="/my">My account</a>`;
   const ac = $("accountLi"); if (ac) ac.hidden = locked; const lo = $("logoutLi"); if (lo) lo.hidden = locked;
 })();
 renderCatalog(); renderCart();
