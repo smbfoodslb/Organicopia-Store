@@ -136,6 +136,10 @@ function setQty(num, q) { const prev = cart[num] || 0; const k = packOf(byNum[nu
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2000) }
 
 function orderLabel(p) { return (p.brand ? p.brand + " " : "") + p.name + (subText(p) ? " (" + subText(p) + ")" : "") }
+const LOCS = CATALOG.locations || []; let shipId = CATALOG.ship || 0;
+const currentLocation = () => LOCS.find(l => l.id === shipId) || LOCS[0] || null;
+function initLocations() { const row = $("locRow"), sel = $("locSel"); if (!row || !sel || LOCS.length < 2) return; sel.innerHTML = LOCS.map(l => `<option value="${l.id}"${l.id === shipId ? " selected" : ""}>${esc(l.name)} — ${esc(l.line)}</option>`).join(""); row.hidden = false;
+  sel.addEventListener("change", () => { shipId = +sel.value; renderCart(); rpc("/shop/update_address", { partner_id: shipId, address_type: "delivery" }).then(() => rpc("/shop/update_address", { partner_id: shipId, address_type: "billing" })).catch(() => {}); }); }
 function renderCart() {
   const nums = Object.keys(cart).map(Number).filter(n => byNum[n] && purchasable(byNum[n]));
   let total = 0, count = 0;
@@ -216,4 +220,4 @@ if (location.hash === "#new-customer") setTimeout(openNewcust, 300);
   $("statOwn").textContent = PRODUCTS.filter(p => p.brand === "Organicopia").length;
   $("statMade").textContent = PRODUCTS.filter(isMade).length;
 })();
-applyLock(); renderCatalog(); renderCart();
+applyLock(); initLocations(); renderCatalog(); renderCart();
