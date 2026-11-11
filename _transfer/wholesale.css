@@ -268,7 +268,7 @@ footer a{color:var(--band-fg)}
   .steps,.pillars,.beyond{grid-template-columns:1fr} footer .wrap{grid-template-columns:1fr}
   .brand .name{font-size:18px} .brand .mark{width:38px;height:42px} .brand .tagline{display:none}
   .grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .card .body{padding:10px 12px 12px} .card h4{font-size:16px} .price{font-size:17px} .section-head{flex-direction:column;align-items:start}
+  .card .body{padding:10px 12px 12px} .card h4{font-size:16px} .price{font-size:17px} .price small{display:block;font-size:11px;margin-top:2px} .pricebox{align-items:center;gap:6px} .qty button{width:30px;height:30px} .qty span{min-width:22px} .addbtn{width:36px;height:36px} .section-head{flex-direction:column;align-items:start}
   .modalbox{grid-template-columns:1fr} .modalbox .photo{min-height:200px} .modalbox .photo img{max-height:220px}
   .trust .wrap{grid-template-columns:1fr 1fr;font-size:12.5px} .iconbtn.pdf span{display:none} .cartbtn .tot{display:none}
   .toolbar{padding-block:8px 4px;gap:8px} .toolbar-row{gap:8px} .tabs{padding:2px;gap:2px} .tab{padding:6px 10px;font-size:12.5px} .search{padding:0 12px} .search input{padding:8px 0;font-size:14px}

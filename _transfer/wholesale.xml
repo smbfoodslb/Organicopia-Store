@@ -29,7 +29,7 @@
 <link rel="icon" href="/smb/favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/smb/wholesale.css?v=4e9b2f99"/>
+<link rel="stylesheet" href="/smb/wholesale.css?v=aecaabc5"/>
 </head>
 <body>
 <div class="topbar"><div class="wrap"><span>Wholesale catalog for retailers, cafés and distributors · All prices include VAT</span><span class="who" id="who"/></div></div>
@@ -190,7 +190,7 @@
 
 
 <div id="smbData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/smb/wholesale.js?v=4e9b2f99"></script>
+<script src="/smb/wholesale.js?v=aecaabc5"></script>
 </body>
 </html>
 </t>
