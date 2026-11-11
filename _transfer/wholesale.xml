@@ -1,6 +1,8 @@
 <t t-name="website.smb_wholesale">
 <t t-set="env" t-value="website.env"/>
 <t t-set="locked" t-value="request.env.user._is_public()"/>
+<t t-set="ppl" t-value="0 if locked else request.env.user.partner_id.property_product_pricelist.id"/>
+<t t-set="_" t-value="(ppl and request.session.get('website_sale_current_pl') != ppl) and request.session.update({'website_sale_current_pl': ppl})"/>
 <t t-set="allv" t-value="env['product.product'].sudo().search([('product_tmpl_id.website_published','=',True),('product_tmpl_id.public_categ_ids','child_of',[118,119])])"/>
 <t t-set="bommap" t-value="env['mrp.bom'].sudo()._bom_find(allv)"/>
 <t t-set="sections" t-value="[]"/>
@@ -27,7 +29,7 @@
 <link rel="icon" href="/smb/favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/smb/wholesale.css?v=226d7851"/>
+<link rel="stylesheet" href="/smb/wholesale.css?v=942256cf"/>
 </head>
 <body>
 <div class="topbar"><div class="wrap"><span>Wholesale catalog for retailers, cafés and distributors · All prices include VAT</span><span class="who" id="who"/></div></div>
@@ -188,7 +190,7 @@
 
 
 <div id="smbData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/smb/wholesale.js?v=226d7851"></script>
+<script src="/smb/wholesale.js?v=942256cf"></script>
 </body>
 </html>
 </t>
