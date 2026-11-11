@@ -11,7 +11,7 @@ const LAB_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const PRODUCTS = [], byNum = {};
 CATALOG.sections.forEach(s => s.categories.forEach(c => c.items.forEach(p => { const q = {...p, cat: c.title, sectionKey: s.key, sectionLabel: s.label}; PRODUCTS.push(q); byNum[p.num] = q })));
 const SECTIONS = CATALOG.sections.map(s => ({key: s.key, label: s.label}));
-PRODUCTS.forEach(p => { if (p.desc && !/^\s*</.test(p.desc)) p.desc = "<p>" + esc(p.desc) + "</p>"; if (p.brand && p.name.toLowerCase().startsWith(p.brand.toLowerCase() + " ")) p.name = p.name.slice(p.brand.length + 1); const B = p.badges || []; p.status = B.includes("Not available") ? "hold" : B.includes("Coming soon") ? "soon" : p.oos ? "oos" : "active"; const CN = { "United States": "USA", "Türkiye": "Turkey", "United Kingdom": "UK" }; const cAliases = new Set(["USA", "US", "United States", "Turkey", "Türkiye", "UK", "United Kingdom"]); if (p.country) { const lbl = CN[p.country] || p.country; p.tags = (p.tags || []).filter(t => t !== p.country && t !== lbl && !cAliases.has(t)); p.tags.push(lbl) } const days = d => d ? (Date.now() - new Date(d + "T00:00:00").getTime()) / 864e5 : 1e9; p.is_new = p.status === "active" && days(p.pub) <= 60; p.back_in_stock = p.status === "active" && !p.is_new && days(p.restock) <= 30; p.holiday_item = (p.badges || []).includes("Holiday item") });
+PRODUCTS.forEach(p => { if (p.desc && !/^\s*</.test(p.desc)) p.desc = "<p>" + esc(p.desc) + "</p>"; if (p.brand && p.name.toLowerCase().startsWith(p.brand.toLowerCase() + " ")) p.name = p.name.slice(p.brand.length + 1); const B = p.badges || []; if (!p.priced) p.price = null; p.status = B.includes("Not available") ? "hold" : (B.includes("Coming soon") || (p.oos && p.usa)) ? "soon" : p.oos ? "oos" : "active"; const CN = { "United States": "USA", "Türkiye": "Turkey", "United Kingdom": "UK" }; const cAliases = new Set(["USA", "US", "United States", "Turkey", "Türkiye", "UK", "United Kingdom"]); if (p.country) { const lbl = CN[p.country] || p.country; p.tags = (p.tags || []).filter(t => t !== p.country && t !== lbl && !cAliases.has(t)); p.tags.push(lbl) } const days = d => d ? (Date.now() - new Date(d + "T00:00:00").getTime()) / 864e5 : 1e9; p.is_new = p.status === "active" && days(p.pub) <= 60; p.back_in_stock = p.status === "active" && !p.is_new && days(p.restock) <= 30; p.holiday_item = (p.badges || []).includes("Holiday item") });
 
 const LOCKED = () => !!(CATALOG && CATALOG.locked);
 const LOCK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
@@ -72,7 +72,7 @@ function revealChip() {
 function setHeaderVar() { const hd = document.querySelector("header"); if (hd) document.documentElement.style.setProperty("--hd", hd.offsetHeight + "px") }
 function priceHtml(p) {
   if (p.status === "soon" || p.price == null || p.price <= 0) return `<div class="pending">Pricing to follow</div>`;
-  return `<div><div class="price num">${money(p.price)}<small> / piece</small></div></div>`;
+  return `<div><div class="price num">${money(p.price)}<small> / piece</small></div>${packOf(p) > 1 ? `<div class="case">Sold in packs of ${packOf(p)} &mdash; <b class="num">${money(p.price * packOf(p))}</b> per pack</div>` : ""}</div>`;
 }
 function controlHtml(p) {
   const q = cart[p.num] || 0;
@@ -132,7 +132,7 @@ window.addEventListener("scroll", () => { if (spyLock) return; spyLock = request
   const g = m.classList.contains("group") ? m.dataset : { sec: m.dataset.sec, cat: (CATALOG.sections.find(s => s.key === m.dataset.sec)?.categories[0]?.title) || "" };
   if (g.sec !== section || g.cat !== category) { section = g.sec; category = g.cat; renderTabs(); revealChip() } }) }, { passive: true });
 function updateCard(num) { const el = document.querySelector(`.card[data-num="${num}"]`); if (el) el.outerHTML = cardHtml(byNum[num]); if (!$("productModal").hidden && modalNum === num) renderModalPrice() }
-function setQty(num, q) { const prev = cart[num] || 0; if (q <= 0) delete cart[num]; else cart[num] = q; renderCart(); updateCard(num); syncQty(num, q, prev) }
+function setQty(num, q) { const prev = cart[num] || 0; const k = packOf(byNum[num]); q = Math.round(q / k) * k; if (q > 0 && q < k) q = k; if (q <= 0) delete cart[num]; else cart[num] = q; renderCart(); updateCard(num); syncQty(num, q, prev) }
 function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2000) }
 
 function orderLabel(p) { return (p.brand ? p.brand + " " : "") + p.name + (subText(p) ? " (" + subText(p) + ")" : "") }
@@ -174,9 +174,9 @@ document.body.addEventListener("click", e => {
   if (!t) return;
   if (t.dataset.section) { section = t.dataset.section; category = ""; query = ""; $("search").value = ""; renderCatalog(); revealChip(); spyMute = Date.now() + 1600; scrollToSection(section); return }
   if (t.dataset.cat) { category = t.dataset.cat; renderTabs(); revealChip(); scrollToGroup(section, category); return }
-  if (t.dataset.add) { const n = +t.dataset.add; setQty(n, 1); toast(`${byNum[n].name}: added`); return }
-  if (t.dataset.inc) { const n = +t.dataset.inc; setQty(n, (cart[n] || 0) + 1); return }
-  if (t.dataset.dec) { const n = +t.dataset.dec; setQty(n, (cart[n] || 0) - 1); return }
+  if (t.dataset.add) { const n = +t.dataset.add; setQty(n, packOf(byNum[n])); toast(`${byNum[n].name}: added${packOf(byNum[n]) > 1 ? " (pack of " + packOf(byNum[n]) + ")" : ""}`); return }
+  if (t.dataset.inc) { const n = +t.dataset.inc; setQty(n, (cart[n] || 0) + packOf(byNum[n])); return }
+  if (t.dataset.dec) { const n = +t.dataset.dec; setQty(n, (cart[n] || 0) - packOf(byNum[n])); return }
   if (t.dataset.remove) { setQty(+t.dataset.remove, 0); return }
   if (t.dataset.view) { openProduct(+t.dataset.view); return }
   if (t.hasAttribute("data-newcust")) { e.preventDefault(); openNewcust(); return }
