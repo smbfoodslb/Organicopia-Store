@@ -1,0 +1,13 @@
+// Step 4.5 — variant-level eCommerce description (x_desc_variant on product.product); the page uses it when set, else the template's. Four Sigmatic sachets filled. Idempotent.
+const rpc = async (model, method, args, kwargs) => { const r = await fetch('/web/dataset/call_kw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { model, method, args, kwargs: kwargs || {} } }) }); const j = await r.json(); if (j.error) throw new Error(j.error.data && j.error.data.message); return j.result; };
+const log = {};
+const ex = await rpc('ir.model.fields', 'search_count', [[['model', '=', 'product.product'], ['name', '=', 'x_desc_variant']]]);
+if (!ex) { const mid = (await rpc('ir.model', 'search_read', [[['model', '=', 'product.product']]], { fields: ['id'] }))[0].id; await rpc('ir.model.fields', 'create', [{ name: 'x_desc_variant', model_id: mid, ttype: 'html', field_description: 'Website description (this variant)', state: 'manual' }]); log.field = 'created'; } else log.field = 'exists';
+const D = (d, i) => `<p>${d}</p><p><strong>Ingredients:</strong> ${i}</p>`;
+const V = {
+  '43701': D('Four Sigmatic Balance: organic instant coffee with half the caffeine and adaptogens to help the body handle everyday stress. Single-serve 2.5 g sachet, sold in packs of 10.', 'Organic instant coffee, organic ashwagandha, organic eleuthero, organic tulsi (holy basil), organic chaga mushroom.'),
+  '43901': D('Four Sigmatic Protect: shade-grown organic Colombian instant coffee with chaga and cordyceps mushrooms. Single-serve 2.5 g sachet, sold in packs of 10.', 'Organic instant coffee, organic chaga mushroom, organic cordyceps, organic eleuthero.'),
+  '92121': D('Four Sigmatic Golden Latte: a caffeine-free turmeric latte mix with turkey tail mushroom and coconut milk. Single-serve 2.5 g sachet, sold in packs of 10.', 'Organic coconut milk powder, organic coconut palm sugar, organic turmeric powder, organic shiitake, organic ginger powder, organic tulsi, organic black pepper, organic stevia.'),
+};
+for (const [code, html] of Object.entries(V)) { const v = await rpc('product.product', 'search_read', [[['default_code', '=', code]]], { fields: ['id', 'product_tmpl_id'] }); await rpc('product.product', 'write', [[v[0].id], { x_desc_variant: html }]); log[code] = 'ok'; if (code === '43701') await rpc('product.template', 'write', [[v[0].product_tmpl_id[0]], { description_ecommerce: '<p>Four Sigmatic organic instant coffee and latte mixes in single-serve 2.5 g sachets, blended with functional mushrooms and adaptogens. Sold in packs of 10 sachets.</p>' }]); }
+window.__step45 = log;
