@@ -30,8 +30,9 @@
     var want = css(conf.bg); if (st.textContent !== want) st.textContent = want;
     setThemeColor(conf.bg);
     var nav = document.querySelector('.o_main_navbar'); if (!nav) return;
-    var brand = nav.querySelector('.o_menu_brand'), toggle = nav.querySelector('.o_menu_toggle');
-    var anchor = brand || toggle;            // inside an app: after the app name; on the home screen: after the home toggle
+    // The app name lives inside the home toggle link (which flips over on the home screen), so the label is placed
+    // as a direct child of the navbar right after that toggle: never inside a link, never mirrored.
+    var anchor = nav.querySelector(':scope > .o_menu_toggle') || nav.firstElementChild;
     var lbl = nav.querySelector('.smb-co');
     if (lbl && anchor && lbl.previousElementSibling !== anchor) { lbl.remove(); lbl = null; }
     if (!lbl && anchor) { lbl = document.createElement('span'); lbl.className = 'smb-co'; anchor.insertAdjacentElement('afterend', lbl); }
