@@ -27,7 +27,7 @@ let pg = await rpc('website.page', 'search_read', [[['url', '=', '/store'], ['we
 if (pg.length) { await rpc('website.page', 'write', [[pg[0].id], { view_id: vid, is_published: true }]); log.page = 'updated ' + pg[0].id; }
 else { log.page = 'created ' + await rpc('website.page', 'create', [{ name: 'Organicopia Store', url: '/store', view_id: vid, website_id: 1, is_published: true, header_visible: false, footer_visible: false }]); }
 // 3. website 1: homepage + head css
-const ver = (arch.match(/retail\.css\?v=([a-z0-9]+)/) || [])[1] || '1';
+const ver = Date.now().toString(36);
 await rpc('website', 'write', [[1], { homepage_url: '/store', custom_code_head: '<!-- ORG-PAGES-START --><link rel="stylesheet" href="/org/org-pages.css?v=' + ver + '"/><!-- ORG-PAGES-END -->' }], { context: C });
 log.homepage = '/store'; log.ver = ver;
 window.__deployRetail = log;
