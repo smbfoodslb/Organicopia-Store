@@ -47,3 +47,5 @@
 #wrapwrap>footer .o_footer_copyright{background:#033649;color:#F6E9D6}
 #wrapwrap .coupon_form,#wrapwrap form[name="coupon_code"],#wrapwrap .o_cart_coupon,#wrapwrap #o_wsale_coupon_form,#wrapwrap a[href="/shop/cart?reorder"],#wrapwrap .o_wsale_quick_reorder{display:none!important}
 #wrapwrap .o_wsale_my_wish,#wrapwrap .o_add_wishlist,#wrapwrap .o_add_wishlist_dyn,#wrapwrap .o_comparelist_button,#wrapwrap .o_add_compare,#wrapwrap .o_add_compare_dyn{display:none!important}
+#wrapwrap .o_wsale_coupon_toggle,#wrapwrap button.btn-link[data-bs-target*="coupon"],#wrapwrap .o_cart_coupon_toggle,#wrapwrap .coupon_form,#wrapwrap #o_wsale_offcanvas .btn-link{display:none!important}
+#wrapwrap>footer .o_footer_copyright{display:none}
