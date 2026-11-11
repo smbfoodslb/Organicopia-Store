@@ -1,6 +1,8 @@
 
 const CATALOG = JSON.parse(document.getElementById("smbData").textContent);
 const packOf = p => Math.max(1, p.pack || 1);
+const unitOf = p => (/^kg$/i.test(p.uom || "") ? "kg" : "piece");
+const qtyLabel = (p, q) => unitOf(p) === "kg" ? `${q} kg` : `${q} piece${q > 1 ? "s" : ""}`;
 const LINES = {}; Object.entries(CATALOG.cart || {}).forEach(([k, v]) => { LINES[k] = v.line });
 const WHATSAPP = "96178879350";
 const $ = id => document.getElementById(id);
@@ -73,7 +75,7 @@ function revealChip() {
 function setHeaderVar() { const hd = document.querySelector("header"); if (hd) document.documentElement.style.setProperty("--hd", hd.offsetHeight + "px") }
 function priceHtml(p) {
   if (p.status === "soon" || p.price == null || p.price <= 0) return `<div class="pending">Pricing to follow</div>`;
-  return `<div><div class="price num">${money(p.price)}<small> / piece</small></div>${packOf(p) > 1 ? `<div class="case">Sold in packs of ${packOf(p)} &mdash; <b class="num">${money(p.price * packOf(p))}</b> per pack</div>` : ""}</div>`;
+  return `<div><div class="price num">${money(p.price)}<small> / ${unitOf(p)}</small></div>${packOf(p) > 1 ? `<div class="case">Sold in packs of ${packOf(p)} &mdash; <b class="num">${money(p.price * packOf(p))}</b> per pack</div>` : ""}</div>`;
 }
 function controlHtml(p) {
   const q = cart[p.num] || 0;
@@ -90,7 +92,7 @@ function cardHtml(p) {
   if (p.holiday_item && p.status !== "oos" && p.status !== "hold") tr.push(`<span class="badge holiday">Holiday item</span>`);
   const hl = p.is_new ? " hl-new" : p.back_in_stock ? " hl-back" : (p.holiday_item && p.status !== "oos" && p.status !== "hold") ? " hl-holiday" : "";
   const bottom = LOCKED() ? lockHtml() : purchasable(p)
-    ? `<div class="pricebox">${priceHtml(p)}${controlHtml(p)}</div>` + (q ? `<div class="qtyrow"><span class="hint">${q} piece${q > 1 ? "s" : ""}</span><span class="amt num">${money(unitPrice(p) * q)}</span></div>` : "")
+    ? `<div class="pricebox">${priceHtml(p)}${controlHtml(p)}</div>` + (q ? `<div class="qtyrow"><span class="hint">${qtyLabel(p, q)}</span><span class="amt num">${money(unitPrice(p) * q)}</span></div>` : "")
     : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? "Out of stock. Message us to be notified." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
   return `<article class="card${hl}${(p.status === "oos" || p.status === "hold") ? " is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}"><span class="ref">${esc(p.ref || "")}</span><div class="badges-tr">${tr.join("")}</div><img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/smb/placeholder.svg'"></div>
@@ -145,10 +147,10 @@ function renderCart() {
   const nums = Object.keys(cart).map(Number).filter(n => byNum[n] && purchasable(byNum[n]));
   let total = 0, count = 0;
   const rows = nums.map(n => { const p = byNum[n], q = cart[n], u = unitPrice(p); total += u * q; count += q;
-    return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.ref || "")} &middot; ${esc(orderLabel(p))}</div><div class="meta">${money(u)} per piece</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">&minus;</button><span class="num">${displayQty(p, q)}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt num">${money(u * q)}</div></div>` });
+    return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.ref || "")} &middot; ${esc(orderLabel(p))}</div><div class="meta">${money(u)} per ${unitOf(p)}</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">&minus;</button><span class="num">${displayQty(p, q)}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt num">${money(u * q)}</div></div>` });
   $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">Your order is empty. Tap + on any product to add it.</p>`;
   $("count").textContent = count; $("cartTotal").textContent = money(total); $("headTotal").textContent = money(total);
-  const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `${p.ref} — ${orderLabel(p)} × ${q} — ${money(unitPrice(p) * q)}` });
+  const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `${p.ref} — ${orderLabel(p)} × ${qtyLabel(p, q)} — ${money(unitPrice(p) * q)}` });
   const msg = `Hi SMB Foods, I'd like to order:\n\n${lines.join("\n")}\n\nTotal: ${money(total)} (incl. VAT)\n\nPlease confirm stock, pricing and delivery. Thank you!`;
   const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
   const c = $("confirm"); if (c) c.classList.toggle("busy", !nums.length);
