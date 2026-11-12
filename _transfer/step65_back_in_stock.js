@@ -1,9 +1,9 @@
 // Step 6.5 — "Notify me when back in stock" via WhatsApp. Idempotent.
-// Flow: website "Notify me" form → crm.lead (tag "Back in stock", x_notify_product_id, x_notify_site)
-//   → automation A: find/create the partner by phone, create product.wishlist(stock_notification) and archive the lead
-//   → automation B (stock.move done into stock): for each wishlist waiting on the product, send the approved WhatsApp
-//     template "back_in_stock" (whatsapp.composer on product.wishlist); if no approved template/account yet, create a to-do
-//     on the product listing who to message. Either way the wishlist flag is cleared.
+// Flow: website "Notify me" form → crm.lead (x_notify_product_id, x_notify_site)
+//   → automation A: find/create the partner by phone, add it to product.stock_notification_partner_ids, tag + archive the lead
+//   → automation B (stock.move done into stock): for each partner waiting on the product, send the approved WhatsApp
+//     template "back_in_stock" (whatsapp.composer on res.partner, free text = product, site); else create a to-do
+//     on the product listing who to message. Either way the partner is removed from the list.
 const rpc = async (model, method, args, kwargs) => { const r = await fetch('/web/dataset/call_kw', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: { model, method, args, kwargs: kwargs || {} } }) }); const j = await r.json(); if (j.error) throw new Error(j.error.data && j.error.data.message); return j.result; };
 const C = { allowed_company_ids: [1, 2, 3] };
 const log = {};
@@ -22,7 +22,7 @@ for (const [name, ttype, desc, extra] of [['x_notify_product_id', 'many2one', 'N
 }
 log.tag = tagId;
 // 2. automation A — register the request
-const codeA = `# Back in stock request from the website: turn the lead into a stock-notification wishlist entry
+const codeA = `# Back in stock request from the website: register the partner on the product
 for lead in records:
     if not lead.x_notify_product_id or not lead.phone:
         continue
@@ -33,50 +33,38 @@ for lead in records:
         digits = '0' + digits
     intl = '+961' + digits.lstrip('0')
     Partner = env['res.partner'].sudo()
-    partner = Partner.search(['|', ('phone', 'ilike', digits[-7:]), ('email', '=', digits + '@smbfoods-lb.com')], limit=1)
+    partner = Partner.search([('phone_mobile_search', 'ilike', digits[-7:])], limit=1) or Partner.search([('email', '=', digits + '@smbfoods-lb.com')], limit=1)
     if not partner:
         partner = Partner.create({'name': lead.contact_name or lead.name or intl, 'phone': intl, 'company_id': False})
     elif not partner.phone:
         partner.write({'phone': intl})
-    website_id = 1 if (lead.x_notify_site or '') == 'organicopia' else 6
-    Wish = env['product.wishlist'].sudo()
-    wish = Wish.search([('partner_id', '=', partner.id), ('product_id', '=', lead.x_notify_product_id.id)], limit=1)
-    pricelist_id = 27 if website_id == 1 else 24
-    if wish:
-        wish.write({'stock_notification': True, 'active': True})
-    else:
-        Wish.create({'partner_id': partner.id, 'product_id': lead.x_notify_product_id.id, 'website_id': website_id, 'pricelist_id': pricelist_id, 'currency_id': env['product.pricelist'].sudo().browse(pricelist_id).currency_id.id, 'stock_notification': True})
+    lead.x_notify_product_id.sudo().write({'stock_notification_partner_ids': [(4, partner.id)]})
     lead.write({'partner_id': partner.id, 'active': False, 'tag_ids': [(4, TAG_ID)]})`.replace('TAG_ID', String(tagId));
 const codeB = `# Stock came in: tell everyone waiting for these products, by WhatsApp when the template is approved, otherwise as a to-do
-Wish0 = env['product.wishlist'].sudo()
-products = records.filtered(lambda m: m.location_dest_id.usage == 'internal' and m.location_id.usage != 'internal').mapped('product_id')
-if products and Wish0.search_count([('stock_notification', '=', True), ('product_id', 'in', products.ids)]):
-    Wish = env['product.wishlist'].sudo()
+products = records.filtered(lambda m: m.location_dest_id.usage == 'internal' and m.location_id.usage != 'internal').mapped('product_id').filtered(lambda p: p.stock_notification_partner_ids)
+if products:
     tpl = env['whatsapp.template'].sudo().search([('template_name', '=', 'back_in_stock'), ('status', '=', 'approved')], limit=1)
     for product in products:
         if product.with_context(allowed_company_ids=[1, 3]).free_qty <= 0:
             continue
-        wishes = Wish.search([('product_id', '=', product.id), ('stock_notification', '=', True)])
-        if not wishes:
-            continue
+        site = 'www.organicopia-lb.com' if (product.product_tmpl_id.website_id.id == 1 or not product.product_tmpl_id.website_id) else 'www.smbfoods-lb.com'
+        if product.product_tmpl_id.website_id.id == 6:
+            site = 'www.smbfoods-lb.com'
         sent, pending = [], []
-        for w in wishes:
-            if tpl and w.partner_id.phone:
+        for partner in product.stock_notification_partner_ids:
+            if tpl and partner.phone:
                 try:
-                    composer = env['whatsapp.composer'].sudo().with_context(active_model='product.wishlist', active_id=w.id).create({'res_model': 'product.wishlist', 'res_ids': str([w.id]), 'wa_template_id': tpl.id, 'phone': w.partner_id.phone})
+                    composer = env['whatsapp.composer'].sudo().with_context(active_model='res.partner', active_id=partner.id).create({'res_model': 'res.partner', 'res_ids': str([partner.id]), 'wa_template_id': tpl.id, 'phone': partner.phone, 'free_text_1': product.display_name, 'free_text_2': site})
                     composer.action_send_whatsapp_template()
-                    sent.append(w)
+                    sent.append(partner)
                 except Exception as e:
-                    pending.append(w)
+                    pending.append(partner)
             else:
-                pending.append(w)
+                pending.append(partner)
         if pending:
-            lines = ''.join('<li>%s — %s</li>' % (w.partner_id.name, w.partner_id.phone or 'no phone') for w in pending)
+            lines = ''.join('<li>%s — %s</li>' % (pp.name, pp.phone or 'no phone') for pp in pending)
             product.product_tmpl_id.activity_schedule('mail.mail_activity_data_todo', user_id=6, summary='Back in stock: message %d customer(s) on WhatsApp' % len(pending), note='<p>%s is back in stock. These customers asked to be told:</p><ul>%s</ul>' % (product.display_name, lines))
-        for w in sent:
-            w.write({'stock_notification': False})
-        for w in pending:
-            w.write({'stock_notification': False})`;
+        product.sudo().write({'stock_notification_partner_ids': [(3, pp.id) for pp in sent + pending]})`;
 async function rule(name, model, triggerFields, filterDomain, code) {
   const mid = await modelId(model);
   const old = await rpc('base.automation', 'search_read', [[['name', '=', name]]], { fields: ['id'] });
