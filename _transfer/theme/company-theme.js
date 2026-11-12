@@ -12,11 +12,18 @@
     1: { bg: '#6A4534', name: 'smbfoods', home: homeBg('%237C8466', '.26', '#FBF5EA', 'linear-gradient(180deg,#FBF5EA,#F6E9D6)', 'radial-gradient(900px 500px at 10% 0%, rgba(124,132,102,.14), transparent 60%)') }
   };
   var DEFAULT_THEME = '#714B67';
+  var locked = null;
   function currentCompany() {
-    // Odoo keeps the active companies in the "cids" cookie; the first id is the one transactions are posted to.
+    // Decided once per page load and then locked: the "cids" cookie is shared by every Odoo window, so switching
+    // company in one window must not recolour the others. Sources, most reliable first: this window's own user
+    // context (what the web client loaded), the "cids" in this window's URL, then the cookie (only at load, when it still matches this window).
+    if (locked) return locked;
+    try { var um = window.odoo && odoo.loader && odoo.loader.modules.get('@web/core/user'); var ids = um && um.user && um.user.context && um.user.context.allowed_company_ids; if (ids && ids.length) { locked = +ids[0]; return locked; } } catch (e) {}
+    var u = new URLSearchParams(location.search).get('cids');
+    if (u) { var f = u.split(/[-,]/)[0]; if (/^\d+$/.test(f)) { locked = +f; return locked; } }
     var m = document.cookie.match(/(?:^|;\s*)cids=([^;]*)/);
-    if (m) { var first = decodeURIComponent(m[1]).split(/[-,]/)[0]; if (/^\d+$/.test(first)) return +first; }
-    try { var info = window.odoo && (odoo.__session_info__ || odoo.session_info); if (info && info.user_companies) return info.user_companies.current_company; } catch (e) {}
+    if (m) { var first = decodeURIComponent(m[1]).split(/[-,]/)[0]; if (/^\d+$/.test(first)) { locked = +first; return locked; } }
+    try { var info = window.odoo && (odoo.__session_info__ || odoo.session_info); if (info && info.user_companies) { locked = info.user_companies.current_company; return locked; } } catch (e) {}
     return null;
   }
   function css(bg, home) {
@@ -47,5 +54,5 @@
     if (lbl && lbl.textContent !== conf.name) lbl.textContent = conf.name;
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply); else apply();
-  setInterval(apply, 1500); // the navbar is re-rendered on app switches; company switches reload the page
+  setInterval(apply, 1500); // the navbar is re-rendered on app switches; a company switch reloads this window only
 })();
