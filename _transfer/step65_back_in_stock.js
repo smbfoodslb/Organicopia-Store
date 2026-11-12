@@ -37,7 +37,7 @@ for lead in records:
     if not partner:
         partner = Partner.create({'name': lead.contact_name or lead.name or intl, 'phone': intl, 'company_id': False})
     elif not partner.phone:
-        partner.phone = intl
+        partner.write({'phone': intl})
     website_id = 1 if (lead.x_notify_site or '') == 'organicopia' else 6
     Wish = env['product.wishlist'].sudo()
     wish = Wish.search([('partner_id', '=', partner.id), ('product_id', '=', lead.x_notify_product_id.id)], limit=1)
