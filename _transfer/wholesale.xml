@@ -18,7 +18,7 @@
 <t t-set="order" t-value="request.cart"/>
 <t t-set="cp" t-value="request.env.user.partner_id.commercial_partner_id"/>
 <t t-set="locs" t-value="[] if locked else [{'id': p.id, 'name': p.name, 'line': ', '.join([x for x in [p.street, p.city] if x])} for p in (([c for c in cp.child_ids if c.type == 'delivery' and c.active]) or [cp] + [c for c in cp.child_ids if c.type in ('other', 'contact') and c.active]) if p.street or p.city]"/>
-<t t-set="data" t-value="{'locked': locked, 'sections': sections, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.order_line if order else [])}, 'user': ('' if locked else (request.env.user.partner_id.commercial_partner_id.name or request.env.user.name)), 'locations': locs, 'ship': (order.partner_shipping_id.id if order else (0 if locked else request.env.user.partner_id.id))}"/>
+<t t-set="data" t-value="{'locked': locked, 'sections': sections, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.order_line if order else [])}, 'user': ('' if locked else (request.env.user.partner_id.commercial_partner_id.name or request.env.user.name)), 'locations': locs, 'csrf': request.csrf_token(), 'phone': ('' if locked else (request.env.user.partner_id.phone or request.env.user.partner_id.commercial_partner_id.phone or '')), 'notify': ([] if locked else [n.id for n in env['product.product'].sudo().search([('stock_notification_partner_ids', 'in', [request.env.user.partner_id.id, request.env.user.partner_id.commercial_partner_id.id])])]), 'ship': (order.partner_shipping_id.id if order else (0 if locked else request.env.user.partner_id.id))}"/>
 &lt;!DOCTYPE html&gt;
 <html lang="en">
 <head>
@@ -29,7 +29,7 @@
 <link rel="icon" href="/smb/favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/smb/wholesale.css?v=aecaabc5"/>
+<link rel="stylesheet" href="/smb/wholesale.css?v=c35fccd1"/>
 </head>
 <body>
 <div class="topbar"><div class="wrap"><span>Wholesale catalog for retailers, cafés and distributors · All prices include VAT</span><span class="who" id="who"/></div></div>
@@ -190,7 +190,7 @@
 
 
 <div id="smbData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/smb/wholesale.js?v=aecaabc5"></script>
+<script src="/smb/wholesale.js?v=c35fccd1"></script>
 </body>
 </html>
 </t>

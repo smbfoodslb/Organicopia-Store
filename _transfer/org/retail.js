@@ -90,7 +90,9 @@ const LAB_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const subText = p => p.sub || "";
 const tagsHtml = p => (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("") + (isLab(p) ? `<span class="tag lab">${LAB_ICON}Lab tested</span>` : "") + (has(p, "Imported ingredients") ? `<span class="tag">Made With Imported Ingredients</span>` : "");
 const hasDetails = p => !!((p.desc && p.desc.replace(/<[^>]+>/g, "").trim()) || (p.certs && p.certs.length));
-const unavailText = p => p.status === "oos" ? "Currently sold out. Message us on WhatsApp to be notified." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow.";
+const NOTIFY = new Set(CATALOG.notify || []);
+const notifyHtml = p => NOTIFY.has(p.num) ? `<span class="notify-done">\u2713 We'll message you on WhatsApp when it's back</span>` : `<span>Currently sold out.</span> <button type="button" class="notify" data-notify="${p.num}">Notify me when it's back</button>`;
+const unavailText = p => p.status === "oos" ? notifyHtml(p) : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow.";
 function cardHtml(p) {
   const q = cart[p.num] || 0;
   const badge = p.status === "oos" ? `<span class="badge oos">Sold out</span>` : p.status === "soon" ? `<span class="badge soon">Coming soon</span>` : p.status === "hold" ? `<span class="badge soon">Unavailable</span>` : p.is_new ? `<span class="badge new">New</span>` : p.back_in_stock ? `<span class="badge back">Back in stock</span>` : has(p, "Holiday item") ? `<span class="badge new">Holiday</span>` : "";
@@ -162,8 +164,9 @@ function closeCart() { $("cartOverlay").hidden = true }
 
 document.querySelectorAll(".chips").forEach(el => el.addEventListener("wheel", e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth) { e.preventDefault(); el.scrollLeft += e.deltaY } }, { passive: false }));
 document.body.addEventListener("click", e => {
-  const t = e.target.closest("[data-cat],[data-set],[data-inc],[data-dec],[data-remove],[data-view],[data-copy]");
+  const t = e.target.closest("[data-cat],[data-set],[data-inc],[data-dec],[data-remove],[data-view],[data-copy],[data-notify]");
   if (!t) return;
+  if (t.dataset.notify) { openNotify(+t.dataset.notify); return }
   if (t.dataset.cat) { category = t.dataset.cat; renderChips(); scrollToGroup(category); return }
   if (t.dataset.set) { const n = +t.dataset.set, q = +t.dataset.qty; setQty(n, q); toast(`${byNum[n].name}: ${q} in basket at ${money(unitPrice(byNum[n], q))} each`); return }
   if (t.dataset.inc) { const n = +t.dataset.inc; setQty(n, (cart[n] || 0) + 1); return }
@@ -179,9 +182,24 @@ $("openCart").onclick = openCart; $("closeCart").onclick = closeCart;
 $("cartOverlay").addEventListener("click", e => { if (e.target === $("cartOverlay")) closeCart() });
 $("closeModal").onclick = closeModal;
 $("productModal").addEventListener("click", e => { if (e.target === $("productModal")) closeModal() });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); closeWholesale() } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); closeWholesale(); closeNotify() } });
 $("confirm").addEventListener("click", e => { if (!Object.keys(cart).length) { e.preventDefault(); toast("Add a product to your basket first.") } });
 $("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your basket first.") } });
+// ---- Back in stock: the request goes to Odoo as a lead; an automation registers it on the product and
+// a WhatsApp message goes out when stock arrives
+let notifyNum = null;
+function openNotify(num) { const p = byNum[num]; if (!p) return; notifyNum = num; $("ntProduct").textContent = p.name + (subText(p) ? " · " + subText(p) : ""); if (!$("ntName").value) $("ntName").value = CATALOG.user || ""; if (!$("ntPhone").value) $("ntPhone").value = CATALOG.phone || ""; $("ntErr").hidden = true; $("notifyModal").hidden = false; ($("ntName").value ? $("ntPhone") : $("ntName")).focus() }
+function closeNotify() { $("notifyModal").hidden = true; notifyNum = null }
+$("closeNotify").onclick = closeNotify;
+$("notifyModal").addEventListener("click", e => { if (e.target === $("notifyModal")) closeNotify() });
+$("ntForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const name = $("ntName").value.trim(), phone = $("ntPhone").value.trim(), p = byNum[notifyNum];
+  if (!name || phone.replace(/\D/g, "").length < 7 || !p) { $("ntErr").hidden = false; return }
+  const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("contact_name", name); fd.append("phone", phone); fd.append("name", "Back in stock: " + p.name + (subText(p) ? " (" + subText(p) + ")" : "")); fd.append("x_notify_product_id", String(p.num)); fd.append("x_notify_site", "organicopia");
+  const btn = $("ntSubmit"); btn.disabled = true;
+  fetch("/website/form/crm.lead", { method: "POST", body: fd }).then(r => r.json()).then(j => { if (!j || !j.id) throw new Error("no id"); NOTIFY.add(p.num); updateCard(p.num); closeNotify(); toast("Noted. We'll message you on WhatsApp when it's back in stock.") }).catch(() => toast("Sorry, that didn't go through. Please try again.")).finally(() => { btn.disabled = false });
+});
 // ---- Wholesale inquiry form -> WhatsApp (wholesale team)
 function openWholesale() { $("wholesaleModal").hidden = false; $("whName").focus() }
 function closeWholesale() { $("wholesaleModal").hidden = true }

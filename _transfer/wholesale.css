@@ -293,3 +293,6 @@ footer a{color:var(--band-fg)}
 .modalbox .desc ul{margin:6px 0 10px;padding-left:18px}
 .busy{opacity:.6;pointer-events:none}
 @media (max-width:720px){ .topbar .wrap{justify-content:center;text-align:center} .topbar .who{display:none} }
+
+.unavail .notify{background:none;border:0;padding:0;font:inherit;font-style:normal;font-weight:600;color:var(--green);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.unavail .notify-done{font-style:normal;color:var(--leaf);font-weight:600}

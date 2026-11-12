@@ -93,7 +93,7 @@ function cardHtml(p) {
   const hl = p.is_new ? " hl-new" : p.back_in_stock ? " hl-back" : (p.holiday_item && p.status !== "oos" && p.status !== "hold") ? " hl-holiday" : "";
   const bottom = LOCKED() ? lockHtml() : purchasable(p)
     ? `<div class="pricebox">${priceHtml(p)}${controlHtml(p)}</div>` + (q ? `<div class="qtyrow"><span class="hint">${qtyLabel(p, q)}</span><span class="amt num">${money(unitPrice(p) * q)}</span></div>` : "")
-    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? "Out of stock. Message us to be notified." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
+    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? (LOCKED() ? "Out of stock." : notifyHtml(p)) : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
   return `<article class="card${hl}${(p.status === "oos" || p.status === "hold") ? " is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}"><span class="ref">${esc(p.ref || "")}</span><div class="badges-tr">${tr.join("")}</div><img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/smb/placeholder.svg'"></div>
     <div class="body">${p.brand ? `<div class="brandline">${esc(p.brand)}</div>` : ""}${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tagsHtml(p)}</div>${bottom}</div>
@@ -143,6 +143,15 @@ const LOCS = CATALOG.locations || []; let shipId = CATALOG.ship || 0;
 const currentLocation = () => LOCS.find(l => l.id === shipId) || LOCS[0] || null;
 function initLocations() { const row = $("locRow"), sel = $("locSel"); if (!row || !sel || LOCS.length < 2) return; sel.innerHTML = LOCS.map(l => `<option value="${l.id}"${l.id === shipId ? " selected" : ""}>${esc(l.name)} — ${esc(l.line)}</option>`).join(""); row.hidden = false;
   sel.addEventListener("change", () => { shipId = +sel.value; renderCart(); rpc("/shop/update_address", { partner_id: shipId, address_type: "delivery" }).then(() => rpc("/shop/update_address", { partner_id: shipId, address_type: "billing" })).catch(() => {}); }); }
+// ---- back-in-stock requests (WhatsApp): the request goes to Odoo as a lead; an automation registers it on the product
+const NOTIFY = new Set(CATALOG.notify || []);
+const notifyHtml = p => NOTIFY.has(p.num) ? `<span class="notify-done">✓ We'll message you on WhatsApp when it's back</span>` : `<span>Out of stock.</span> <button type="button" class="notify" data-notify="${p.num}">Notify me when it's back</button>`;
+function requestNotify(num) {
+  const p = byNum[num]; if (!p || NOTIFY.has(num)) return;
+  const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("contact_name", CATALOG.user || ""); fd.append("phone", CATALOG.phone || ""); fd.append("name", "Back in stock: " + (p.ref || "") + " " + p.name); fd.append("x_notify_product_id", String(num)); fd.append("x_notify_site", "wholesale");
+  NOTIFY.add(num); updateCard(num);
+  fetch("/website/form/crm.lead", { method: "POST", body: fd }).then(r => r.json()).then(j => { if (!j || !j.id) throw new Error("no id"); toast("Noted. We'll message you on WhatsApp when it's back in stock."); }).catch(() => { NOTIFY.delete(num); updateCard(num); toast("Sorry, that didn't go through. Please try again."); });
+}
 function renderCart() {
   const nums = Object.keys(cart).map(Number).filter(n => byNum[n] && purchasable(byNum[n]));
   let total = 0, count = 0;
@@ -177,7 +186,8 @@ function closeCart() { $("cartOverlay").hidden = true }
 // Vertical wheel over the category chips scrolls them sideways (mouse users had no way to reach the hidden chips).
 document.querySelectorAll(".chips").forEach(el => el.addEventListener("wheel", e => { if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && el.scrollWidth > el.clientWidth) { e.preventDefault(); el.scrollLeft += e.deltaY } }, { passive: false }));
 document.body.addEventListener("click", e => {
-  const t = e.target.closest("[data-section],[data-cat],[data-add],[data-inc],[data-dec],[data-remove],[data-view],[data-copy],[data-newcust]");
+  const t = e.target.closest("[data-section],[data-cat],[data-add],[data-inc],[data-dec],[data-remove],[data-view],[data-copy],[data-newcust],[data-notify]");
+  if (t && t.dataset.notify) { requestNotify(+t.dataset.notify); return }
   if (!t) return;
   if (t.dataset.section) { section = t.dataset.section; category = ""; query = ""; $("search").value = ""; renderCatalog(); revealChip(); spyMute = Date.now() + 1600; scrollToSection(section); return }
   if (t.dataset.cat) { category = t.dataset.cat; renderTabs(); revealChip(); scrollToGroup(section, category); return }
