@@ -13,7 +13,7 @@
   <t t-set="_" t-value="cats.append({'title': c.name, 'desc': c.website_description or '', 'items': items})"/>
 </t>
 <t t-set="order" t-value="request.cart"/>
-<t t-set="data" t-value="{'locked': locked, 'categories': cats, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.order_line if order else []) if not l.is_delivery}, 'user': ('' if locked else (request.env.user.partner_id.name or request.env.user.name)), 'csrf': request.csrf_token(), 'phone': ('' if locked else (request.env.user.partner_id.phone or '')), 'notify': ([] if locked else [n.id for n in env['product.product'].sudo().search([('stock_notification_partner_ids', 'in', [request.env.user.partner_id.id])])])}"/>
+<t t-set="data" t-value="{'locked': locked, 'categories': cats, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.sudo().order_line if order else []) if not l.is_delivery and not l.is_reward_line and not l.display_type}, 'user': ('' if locked else (request.env.user.partner_id.name or request.env.user.name)), 'csrf': request.csrf_token(), 'phone': ('' if locked else (request.env.user.partner_id.phone or '')), 'notify': ([] if locked else [n.id for n in env['product.product'].sudo().search([('stock_notification_partner_ids', 'in', [request.env.user.partner_id.id])])])}"/>
 &lt;!DOCTYPE html&gt;
 <html lang="en">
 <head>
@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/org/retail.css?v=6af6d558"/>
+<link rel="stylesheet" href="/org/retail.css?v=6af6d5c6"/>
 </head>
 <body>
 <div class="salebar" id="saleBar" hidden="hidden"><div class="wrap"><span class="pill">Black Friday</span><span><b>25% off everything</b> · applied automatically at checkout</span><span class="count" id="saleCount"/><a href="#shop">Shop the season →</a></div></div>
@@ -215,7 +215,7 @@
 
 
 <div id="orgData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/org/retail.js?v=6af6d558"/>
+<script src="/org/retail.js?v=6af6d5c6"/>
 </body>
 </html>
 </t>
