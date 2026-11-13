@@ -140,7 +140,7 @@ function renderCart() {
   let total = 0, count = 0;
   const rows = nums.map(n => { const p = byNum[n], q = cart[n], u = unitPrice(p, q); total += u * q; count += q;
     return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(subText(p) || (p.tags || []).join(" · "))} · ${money(u)} each</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt">${money(u * q)}${savings(p, q) > 0.001 ? `<div class="save">saved ${money(savings(p, q))}</div>` : ""}</div></div>` });
-  $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">Your basket is empty. Pick a product and choose ×1, ×3 or ×6.</p>`;
+  $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">${saleOn() ? "Your basket is empty. Pick a product — 25% comes off at checkout." : "Your basket is empty. Pick a product and choose ×1, ×3 or ×6."}</p>`;
   const disc = saleOn() ? Math.round(total * SALE.pct) / 100 : 0; total -= disc;
   const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
   const fee = !nums.length ? 0 : total >= FREE_FROM ? 0 : DELIVERY_FEE;
@@ -244,6 +244,7 @@ renderCatalog(); renderCart();
   function tick() {
     const on = saleOn();
     if (bar) bar.hidden = !on; if (chip) chip.hidden = !on;
+    const tp = $("trustPrices"); if (tp) tp.textContent = on ? "Black Friday: 25% off everything, taken off at checkout" : "Three simple prices: buy 1, 3 or 6+";
     if (!on) { if (pop) pop.hidden = true; return }
     const left = SALE.end - Date.now(), d = Math.floor(left / 864e5), h = Math.floor(left % 864e5 / 36e5), m = Math.floor(left % 36e5 / 6e4);
     const el = $("saleCount"); if (el) el.textContent = d > 0 ? `${d}d ${h}h left` : h > 0 ? `${h}h ${m}m left` : `${m}m left`;
