@@ -214,7 +214,9 @@
 <div class="toast" id="toast" role="status"/>
 
 
-<div id="orgData" hidden="hidden" t-out="json.dumps(data)"/>
+<!-- data-order-id: tells Odoo's website_sale page cache this page is per-visitor (cart, pricelist, notify list) and must never be cached; the hidden sup keeps Odoo's cached-cart patch from crashing if a cached copy ever exists -->
+<sup class="my_cart_quantity d-none" aria-hidden="true">0</sup>
+<div id="orgData" hidden="hidden" data-order-id="" t-out="json.dumps(data)"/>
 <script src="/org/retail.js?v=6af6d9e9"/>
 </body>
 </html>
