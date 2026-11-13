@@ -259,3 +259,10 @@ renderCatalog(); renderCart();
     if (!seen) setTimeout(() => { pop.hidden = false; const b = pop.querySelector("[data-bf-close]"); if (b) b.focus() }, 900);
   }
 })();
+
+// keep the sticky header/toolbar below the two top bars, whatever their height (sale bar on/off, wrapping on phones)
+(function () {
+  const bars = $("bars"); if (!bars) return;
+  const set = () => document.documentElement.style.setProperty("--bars-h", bars.offsetHeight + "px");
+  set(); window.addEventListener("resize", set); if (window.ResizeObserver) new ResizeObserver(set).observe(bars); setInterval(set, 60000);
+})();
