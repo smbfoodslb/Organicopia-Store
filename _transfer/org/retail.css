@@ -341,3 +341,5 @@ footer a{color:var(--band-fg)}
 /* top bars stay fixed while scrolling (sale bar + info bar); the header and toolbar sit below them via --bars-h */
 .salebar{position:sticky;top:env(safe-area-inset-top,0px);z-index:35}
 .amt .was{font-weight:400;color:var(--muted);text-decoration:line-through;font-size:12px}
+.qtyrow .amt{flex-wrap:wrap;justify-content:flex-end;row-gap:0}
+@media (max-width:640px){.qtyrow{flex-wrap:wrap;row-gap:6px}.qtyrow .amt{flex-direction:column;align-items:flex-end;gap:0;margin-left:auto;line-height:1.25}.qtyrow .amt .save{font-size:10.5px}}
