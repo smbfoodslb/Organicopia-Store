@@ -244,6 +244,7 @@ renderCatalog(); renderCart();
   function tick() {
     const on = saleOn();
     if (bar) bar.hidden = !on; if (chip) chip.hidden = !on;
+    const pn = $("pricingNote"); if (pn) pn.innerHTML = on ? "<b>Black Friday.</b> 25% off every product until 27 November — the discount comes off automatically at checkout. All prices include VAT." : "<b>Buy more, pay less.</b> Every product has three unit prices. Pick ×1, ×3 or ×6 and the price per piece drops. All prices include VAT.";
     const tp = $("trustPrices"); if (tp) tp.textContent = on ? "Black Friday: 25% off everything, taken off at checkout" : "Three simple prices: buy 1, 3 or 6+";
     if (!on) { if (pop) pop.hidden = true; return }
     const left = SALE.end - Date.now(), d = Math.floor(left / 864e5), h = Math.floor(left % 864e5 / 36e5), m = Math.floor(left % 36e5 / 6e4);
