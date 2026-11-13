@@ -31,7 +31,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/org/retail.css?v=6af6d5c6"/>
+<link rel="stylesheet" href="/org/retail.css?v=6af6d9e9"/>
 </head>
 <body>
 <div class="salebar" id="saleBar" hidden="hidden"><div class="wrap"><span class="pill">Black Friday</span><span><b>25% off everything</b> · applied automatically at checkout</span><span class="count" id="saleCount"/><a href="#shop">Shop the season →</a></div></div>
@@ -215,7 +215,7 @@
 
 
 <div id="orgData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/org/retail.js?v=6af6d5c6"/>
+<script src="/org/retail.js?v=6af6d9e9"/>
 </body>
 </html>
 </t>
