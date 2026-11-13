@@ -18,7 +18,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/><link rel="canonical" href="https://www.organicopia-lb.com/"/>
 <title>Organicopia — Rooted in Nature</title>
 <meta name="description" content="Organicopia: clean, thoughtfully sourced spices, cacao, seeds, oils and pantry staples for Lebanese kitchens. Shop online, pay on delivery."/>
 <link rel="icon" href="/org/favicon.svg" type="image/svg+xml"/>
@@ -31,9 +31,10 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/org/retail.css?v=5ae9f9e8"/>
+<link rel="stylesheet" href="/org/retail.css?v=6af6d04e"/>
 </head>
 <body>
+<div class="salebar" id="saleBar" hidden="hidden"><div class="wrap"><span class="pill">Black Friday</span><span><b>25% off everything</b> · applied automatically at checkout</span><span class="count" id="saleCount"/><a href="#shop">Shop the season →</a></div></div>
 <div class="topbar"><div class="wrap"><span>Beyond organic · Transparent origins · Free delivery on orders of $40 and more</span><span class="who" id="who"/></div></div>
 
 <header class="site"><div class="wrap nav">
@@ -51,6 +52,7 @@
 <main id="top">
 <section class="wrap hero">
   <div>
+    <span class="sale-chip" id="saleChip" hidden="hidden">Black Friday · 25% off until 27 Nov</span>
     <div class="eyebrow">Rooted in Nature · Thoughtfully sourced</div>
     <h1>Reconnect with the <em>natural rhythm</em> of life.</h1>
     <p class="lede">Clean, carefully sourced food for families who want to shop with confidence. Every product is selected so you never have to double-check the label.</p>
@@ -58,7 +60,7 @@
   </div>
   <div class="hero-visual" aria-hidden="true">
     <svg class="leaf" viewBox="0 0 433.51 373" aria-hidden="true"><path fill="var(--cream)" d="M43.31,335.54S23.18-14.35,393.2,43.55c0,0-28.94,140.25-137.07,226.05-13.49,10.71-28.56,19.27-44.61,25.53-24.94,9.74-68.19,24.02-120.38,30.34,0,0-35.24,0-47.83,10.07Z"/></svg>
-    <div class="anim"><img id="heroAnim" src="/org/logo-animation.gif" alt="" width="480" height="480"/><img id="heroStill" class="still" src="/org/logo-lockup.svg" alt="" width="480" height="480"/></div>
+    <div class="anim"><picture><source type="image/webp" srcset="/org/logo-animation.webp"/><img id="heroAnim" src="/org/logo-animation.gif" alt="" width="480" height="480"/></picture><img id="heroStill" class="still" src="/org/logo-lockup.svg" alt="" width="480" height="480"/></div>
     <img class="waves" src="/org/wavy-navy.svg" alt=""/>
     <div class="pill">Sourced with intention</div>
   </div>
@@ -147,7 +149,7 @@
   <div class="drawer-head"><h2>Your basket</h2><button class="x" id="closeCart" type="button" aria-label="Close">×</button></div>
   <div class="drawer-body" id="cartItems"/>
   <div class="drawer-foot">
-    <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span id="cartTotal">$0.00</span></div><div class="fee"><span>Delivery</span><span id="cartFee">$3.00</span></div><div class="grand"><span>Total</span><span id="cartGrand">$0.00</span></div>
+    <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span id="cartTotal">$0.00</span></div><div class="fee sale" id="cartSaleRow" hidden="hidden"><span>Black Friday −25%</span><span id="cartSale"/></div><div class="fee"><span>Delivery</span><span id="cartFee">$3.00</span></div><div class="grand"><span>Total</span><span id="cartGrand">$0.00</span></div>
     <a class="btn" id="confirm" href="/shop/cart">Check out →</a><div class="or">or</div><a class="btn wa" id="checkout" href="#" target="_blank" rel="noopener" aria-disabled="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp instead</a>
     <p class="note">Pay on delivery. Free delivery for orders of $40 and more, $3 otherwise. We confirm every order with you before it ships.</p>
   </div>
@@ -204,11 +206,16 @@
     <p class="note">One message from Organicopia when this item is back in stock. Nothing else.</p>
   </form>
 </div></div>
+<div class="bf-modal" id="bfModal" hidden="hidden" role="dialog" aria-modal="true" aria-label="Black Friday: 25% off everything until 27 November"><div class="bf-box">
+  <button class="x" type="button" data-bf-close="" aria-label="Close">×</button>
+  <picture><source type="image/webp" srcset="/org/black-friday.webp"/><img src="/org/black-friday.jpg" alt="Organicopia Black Friday is here: 25% off Organicopia products" width="720" height="1280"/></picture>
+  <div class="act"><a class="btn" href="#shop" data-bf-shop="">Shop the season →</a><button class="btn ghost" type="button" data-bf-close="">Later</button></div>
+</div></div>
 <div class="toast" id="toast" role="status"/>
 
 
 <div id="orgData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/org/retail.js?v=5ae9f9e8"></script>
+<script src="/org/retail.js?v=6af6d04e"/>
 </body>
 </html>
 </t>

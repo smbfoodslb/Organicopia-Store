@@ -318,3 +318,22 @@ footer a{color:var(--band-fg)}
 .unavail .notify{background:none;border:0;padding:0;font:inherit;font-style:normal;font-weight:600;color:var(--fg);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .unavail .notify-done{font-style:normal;color:var(--good);font-weight:600}
 @media (max-width:720px){ .topbar .wrap{justify-content:center;text-align:center} .topbar .who{display:none} }
+
+/* ---- Black Friday 2026 ---- */
+.salebar{background:#0b3d5c;color:var(--cream);text-align:center;font-size:13px;letter-spacing:.04em;position:relative;z-index:3}
+.salebar .wrap{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:9px 0}
+.salebar .pill{background:var(--gold);color:#0b3d5c;font-weight:800;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:4px 12px;font-size:11.5px}
+.salebar .count{font-variant-numeric:tabular-nums;opacity:.85}
+.salebar a{color:var(--gold);font-weight:700;text-decoration:none;white-space:nowrap} .salebar a:hover{text-decoration:underline}
+.sale-chip{display:inline-block;background:var(--gold);color:#0b3d5c;border-radius:999px;padding:4px 12px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;margin-bottom:10px}
+.tier s{font-size:11px;color:var(--muted);text-decoration:line-through;line-height:1} .tier.active s{color:inherit;opacity:.7}
+.tier:has(s) b{color:#b4541c} .tier.active:has(s) b{color:var(--gold)}
+.fee.sale{color:#b4541c;font-weight:600}
+.bf-modal{position:fixed;inset:0;background:rgba(3,30,42,.72);z-index:70;display:grid;place-items:center;padding:16px}
+.bf-box{position:relative;width:min(380px,92vw);max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:#0b3d5c;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.bf-box img{display:block;width:100%;height:auto;max-height:calc(100vh - 150px);object-fit:cover;object-position:top}
+.bf-box .x{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#0b3d5c;font-size:22px;line-height:1;cursor:pointer;z-index:2}
+.bf-box .act{display:flex;gap:10px;padding:12px;background:#0b3d5c}
+.bf-box .act .btn{flex:1;justify-content:center;background:var(--gold);color:#0b3d5c;border-color:var(--gold);font-weight:800}
+.bf-box .act .btn.ghost{background:transparent;color:var(--cream);border-color:rgba(255,255,255,.4);font-weight:600}
+@media (max-width:640px){.salebar{font-size:12px}.salebar .wrap{gap:8px;padding:8px 0}.bf-box{width:min(340px,92vw)}}

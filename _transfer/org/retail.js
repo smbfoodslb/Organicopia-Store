@@ -12,6 +12,10 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const money = n => "$" + n.toFixed(2);
 const has = (p, b) => (p.badges || []).includes(b);
 
+// ---- Black Friday 2026: 25% off everything, applied automatically at checkout (Odoo promotion "Black Friday 2026 — 25% off", website 1). Ends 27 Nov 2026 23:59 Beirut.
+const SALE = { pct: 25, start: Date.parse("2026-11-13T00:00:00+02:00"), end: Date.parse("2026-11-27T23:59:59+02:00") };
+const saleOn = () => { const n = Date.now(); return n >= SALE.start && n <= SALE.end };
+const salePrice = x => Math.round(x * (100 - SALE.pct)) / 100;
 const PRODUCTS = [], byNum = {};
 const LINES = {}; Object.entries(CATALOG.cart || {}).forEach(([k, v]) => { LINES[k] = v.line });
 CATALOG.categories.forEach(c => c.items.forEach(p => {
@@ -19,7 +23,7 @@ CATALOG.categories.forEach(c => c.items.forEach(p => {
   if (q.brand && q.name.toLowerCase().startsWith(q.brand.toLowerCase() + " ")) q.name = q.name.slice(q.brand.length + 1);
   if (q.desc && !/^\s*</.test(q.desc)) q.desc = "<p>" + esc(q.desc) + "</p>";
   // tiers: keep ×1, then only thresholds where the unit price actually drops
-  let t = (q.priced ? q.tiers : []).filter(x => x[1] > 0).map(x => ({qty: x[0], price: Math.round(x[1] * 100) / 100}));
+  let t = (q.priced ? q.tiers : []).filter(x => x[1] > 0 && (!saleOn() || x[0] === 1)).map(x => ({qty: x[0], price: Math.round(x[1] * 100) / 100}));  // Black Friday: ×3/×6 tiers suspended (pricelist rules dated from 28 Nov)
   const kept = []; t.forEach(x => { if (!kept.length || x.price < kept[kept.length - 1].price) kept.push(x) });
   q.tiers = kept;
   const B = q.badges || [];
@@ -36,6 +40,7 @@ const purchasable = p => p.status === "active" && p.tiers.length > 0;
 const isMade = p => has(p, "Made in Lebanon");
 const isLab = p => has(p, "Lab tested");
 const imgSrc = p => p.img || "/org/placeholder.svg";
+const imgSet = p => p.img && /image_512/.test(p.img) ? ` srcset="${p.img.replace("image_512", "image_256")} 256w, ${p.img} 512w" sizes="(max-width: 640px) 45vw, 250px"` : "";
 const unitPrice = (p, q) => { if (!purchasable(p) || q <= 0) return null; let pr = p.tiers[0].price; p.tiers.forEach(t => { if (q >= t.qty) pr = t.price }); return pr };
 const savings = (p, q) => purchasable(p) && q > 0 ? Math.max(0, (p.tiers[0].price - unitPrice(p, q)) * q) : 0;
 const saveHtml = (p, q) => savings(p, q) > 0.001 ? `<span class="save">You save ${money(savings(p, q))}</span>` : "";
@@ -84,7 +89,7 @@ function renderChips() {
 }
 function tierHtml(p, q) {
   const a = activeTier(p, q);
-  return `<div class="tiers" style="grid-template-columns:repeat(${p.tiers.length},1fr)">${p.tiers.map((t, i) => `<button type="button" class="tier ${i === a ? "active" : ""}" data-set="${p.num}" data-qty="${t.qty}" aria-label="${t.qty} for ${money(t.price)} each"><small>×${t.qty}</small><b>${money(t.price)}</b></button>`).join("")}</div>`;
+  return `<div class="tiers" style="grid-template-columns:repeat(${p.tiers.length},1fr)">${p.tiers.map((t, i) => `<button type="button" class="tier ${i === a ? "active" : ""}" data-set="${p.num}" data-qty="${t.qty}" aria-label="${t.qty} for ${money(saleOn() ? salePrice(t.price) : t.price)} each"><small>×${t.qty}</small>${saleOn() ? `<s>${money(t.price)}</s><b>${money(salePrice(t.price))}</b>` : `<b>${money(t.price)}</b>`}</button>`).join("")}</div>`;
 }
 const LAB_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21h11.6a2 2 0 0 0 1.7-2.5L14 9V3"/><path d="M7.5 15h9"/></svg>`;
 const subText = p => p.sub || "";
@@ -101,17 +106,18 @@ function cardHtml(p) {
     ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.num}" aria-label="Add one">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)}</span></span></div>` : "")
     : `<div class="unavail">${unavailText(p)}</div>`;
   return `<article class="card ${p.status === "oos" ? "is-oos" : ""}" data-num="${p.num}">
-    <div class="photo" data-view="${p.num}">${badge}${made}<img src="${imgSrc(p)}" alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/org/placeholder.svg'"></div>
+    <div class="photo" data-view="${p.num}">${badge}${made}<img src="${imgSrc(p)}"${imgSet(p)} alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/org/placeholder.svg'"></div>
     <div class="body">${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tagsHtml(p)}</div>${bottom}</div>
   </article>`;
 }
+const availRank = p => (p.status === "oos" || p.status === "hold") ? 2 : p.status === "soon" ? 1 : 0;
 function renderCatalog() {
   renderChips();
   const q = query.trim().toLowerCase();
   const match = p => (!q || (p.name + " " + (p.sub || "") + " " + (p.tags || []).join(" ") + " " + (p.certs || []).join(" ") + " " + (p.desc || "").replace(/<[^>]+>/g, " ") + " " + p.cat).toLowerCase().includes(q));
   let html = "", any = false;
   CATALOG.categories.forEach(c => {
-    const items = c.items.map(i => byNum[i.num]).filter(match);
+    const items = c.items.map(i => byNum[i.num]).filter(match).sort((a, b) => availRank(a) - availRank(b));
     if (!items.length) return; any = true;
     html += `<div class="group" data-cat="${esc(c.title)}" id="${groupId(c.title)}"><div class="group-head"><h3>${esc(c.title)}</h3><span>${esc(c.desc)}</span></div><div class="grid">${items.map(cardHtml).join("")}</div></div>`;
   });
@@ -135,12 +141,14 @@ function renderCart() {
   const rows = nums.map(n => { const p = byNum[n], q = cart[n], u = unitPrice(p, q); total += u * q; count += q;
     return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(subText(p) || (p.tags || []).join(" · "))} · ${money(u)} each</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt">${money(u * q)}${savings(p, q) > 0.001 ? `<div class="save">saved ${money(savings(p, q))}</div>` : ""}</div></div>` });
   $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">Your basket is empty. Pick a product and choose ×1, ×3 or ×6.</p>`;
+  const disc = saleOn() ? Math.round(total * SALE.pct) / 100 : 0; total -= disc;
+  const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
   const fee = !nums.length ? 0 : total >= FREE_FROM ? 0 : DELIVERY_FEE;
-  $("count").textContent = count; $("cartTotal").textContent = money(total);
+  $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
   $("cartFee").innerHTML = !nums.length ? money(DELIVERY_FEE) + " · free from " + money(FREE_FROM) : fee ? money(fee) + ` <small>· free from ${money(FREE_FROM)}</small>` : "<b>Free</b>";
   $("cartGrand").textContent = money(total + fee);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
-  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total)} (incl. VAT)\nDelivery: ${fee ? money(fee) : "free"}\nTotal: ${money(total + fee)}\n\nPlease confirm availability and delivery. Thank you!`;
+  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nDelivery: ${fee ? money(fee) : "free"}\nTotal: ${money(total + fee)}\n\nPlease confirm availability and delivery. Thank you!`;
   const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
   $("confirm").classList.toggle("busy", !nums.length);
 }
@@ -218,10 +226,10 @@ $("whForm").addEventListener("submit", e => {
 });
 if (location.hash === "#wholesale") openWholesale();
 // Logo animation: the GIF plays once, then fades to the crisp SVG lockup. Reduced motion: lockup only.
-const heroAnim = $("heroAnim"), animBox = heroAnim.parentElement;
+const heroAnim = $("heroAnim"), animBox = heroAnim.closest(".anim") || heroAnim.parentElement;
 const ANIM_MS = 4300;
 if (matchMedia("(prefers-reduced-motion: reduce)").matches) { animBox.classList.add("done"); heroAnim.remove() }
-else { const start = () => setTimeout(() => animBox.classList.add("done"), ANIM_MS); heroAnim.complete ? start() : heroAnim.addEventListener("load", start, {once: true}) }
+else { let started = false; const start = () => { if (started) return; started = true; setTimeout(() => animBox.classList.add("done"), ANIM_MS) }; if (heroAnim.complete) start(); else { heroAnim.addEventListener("load", start, {once: true}); heroAnim.addEventListener("error", start, {once: true}); } setTimeout(start, 8000); /* slow connection: give the file time, but never leave the hero stuck */ }
 // account links
 (function () {
   const locked = CATALOG.locked;
@@ -229,3 +237,24 @@ else { const start = () => setTimeout(() => animBox.classList.add("done"), ANIM_
   const ac = $("accountLi"); if (ac) ac.hidden = locked; const lo = $("logoutLi"); if (lo) lo.hidden = locked;
 })();
 renderCatalog(); renderCart();
+
+// ---- Black Friday banner + popup ----
+(function () {
+  const bar = $("saleBar"), chip = $("saleChip"), pop = $("bfModal");
+  function tick() {
+    const on = saleOn();
+    if (bar) bar.hidden = !on; if (chip) chip.hidden = !on;
+    if (!on) { if (pop) pop.hidden = true; return }
+    const left = SALE.end - Date.now(), d = Math.floor(left / 864e5), h = Math.floor(left % 864e5 / 36e5), m = Math.floor(left % 36e5 / 6e4);
+    const el = $("saleCount"); if (el) el.textContent = d > 0 ? `${d}d ${h}h left` : h > 0 ? `${h}h ${m}m left` : `${m}m left`;
+  }
+  tick(); setInterval(tick, 60000);
+  if (pop && saleOn()) {
+    let seen = false; try { seen = sessionStorage.getItem("bf2026") === "1" } catch (e) {}
+    const close = () => { pop.hidden = true; try { sessionStorage.setItem("bf2026", "1") } catch (e) {} };
+    pop.addEventListener("click", e => { if (e.target === pop || e.target.closest("[data-bf-close]")) close() });
+    const go = pop.querySelector("[data-bf-shop]"); if (go) go.addEventListener("click", e => { e.preventDefault(); close(); const s = $("shop"); if (s) s.scrollIntoView({ behavior: "smooth", block: "start" }) });
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && !pop.hidden) close() });
+    if (!seen) setTimeout(() => { pop.hidden = false; const b = pop.querySelector("[data-bf-close]"); if (b) b.focus() }, 900);
+  }
+})();
