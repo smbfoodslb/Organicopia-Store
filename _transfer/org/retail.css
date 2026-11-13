@@ -320,7 +320,7 @@ footer a{color:var(--band-fg)}
 @media (max-width:720px){ .topbar .wrap{justify-content:center;text-align:center} .topbar .who{display:none} }
 
 /* ---- Black Friday 2026 ---- */
-.salebar{background:#0b3d5c;color:var(--cream);text-align:center;font-size:13px;letter-spacing:.04em;position:relative;z-index:3}
+.salebar{background:#0b3d5c;color:var(--cream);text-align:center;font-size:13px;letter-spacing:.04em}
 .salebar .wrap{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;padding:9px 0}
 .salebar .pill{background:var(--gold);color:#0b3d5c;font-weight:800;letter-spacing:.14em;text-transform:uppercase;border-radius:999px;padding:4px 12px;font-size:11.5px}
 .salebar .count{font-variant-numeric:tabular-nums;opacity:.85}
@@ -339,4 +339,5 @@ footer a{color:var(--band-fg)}
 @media (max-width:640px){.salebar{font-size:12px}.salebar .wrap{gap:8px;padding:8px 0}.bf-box{width:min(340px,92vw)}}
 
 /* top bars stay fixed while scrolling (sale bar + info bar); the header and toolbar sit below them via --bars-h */
-.bars{position:sticky;top:env(safe-area-inset-top,0px);z-index:35}
+.salebar{position:sticky;top:env(safe-area-inset-top,0px);z-index:35}
+.amt .was{font-weight:400;color:var(--muted);text-decoration:line-through;font-size:12px}

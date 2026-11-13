@@ -41,7 +41,7 @@ const isMade = p => has(p, "Made in Lebanon");
 const isLab = p => has(p, "Lab tested");
 const imgSrc = p => p.img || "/org/placeholder.svg";
 const imgSet = p => p.img && /image_512/.test(p.img) ? ` srcset="${p.img.replace("image_512", "image_256")} 256w, ${p.img} 512w" sizes="(max-width: 640px) 45vw, 250px"` : "";
-const unitPrice = (p, q) => { if (!purchasable(p) || q <= 0) return null; let pr = p.tiers[0].price; p.tiers.forEach(t => { if (q >= t.qty) pr = t.price }); return pr };
+const unitPrice = (p, q) => { if (!purchasable(p) || q <= 0) return null; let pr = p.tiers[0].price; p.tiers.forEach(t => { if (q >= t.qty) pr = t.price }); return saleOn() ? salePrice(pr) : pr };
 const savings = (p, q) => purchasable(p) && q > 0 ? Math.max(0, (p.tiers[0].price - unitPrice(p, q)) * q) : 0;
 const saveHtml = (p, q) => savings(p, q) > 0.001 ? `<span class="save">You save ${money(savings(p, q))}</span>` : "";
 const activeTier = (p, q) => { let i = -1; p.tiers.forEach((t, k) => { if (q >= t.qty) i = k }); return i };
@@ -103,7 +103,7 @@ function cardHtml(p) {
   const badge = p.status === "oos" ? `<span class="badge oos">Sold out</span>` : p.status === "soon" ? `<span class="badge soon">Coming soon</span>` : p.status === "hold" ? `<span class="badge soon">Unavailable</span>` : p.is_new ? `<span class="badge new">New</span>` : p.back_in_stock ? `<span class="badge back">Back in stock</span>` : has(p, "Holiday item") ? `<span class="badge new">Holiday</span>` : "";
   const made = isMade(p) ? `<span class="badge made">Made by us</span>` : "";
   const bottom = purchasable(p)
-    ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.num}" aria-label="Add one">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)}</span></span></div>` : "")
+    ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${p.num}" aria-label="Add one">+</button></span><span class="amt">${saveHtml(p, q)}${saleOn() ? `<s class="was">${money(p.tiers[0].price * q)}</s>` : ""}<span>${money(unitPrice(p, q) * q)}</span></span></div>` : "")
     : `<div class="unavail">${unavailText(p)}</div>`;
   return `<article class="card ${p.status === "oos" ? "is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}">${badge}${made}<img src="${imgSrc(p)}"${imgSet(p)} alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/org/placeholder.svg'"></div>
@@ -141,7 +141,7 @@ function renderCart() {
   const rows = nums.map(n => { const p = byNum[n], q = cart[n], u = unitPrice(p, q); total += u * q; count += q;
     return `<div class="line"><img src="${imgSrc(p)}" alt=""><div><div class="nm">${esc(p.name)}</div><div class="meta">${esc(subText(p) || (p.tags || []).join(" · "))} · ${money(u)} each</div><span class="qty" style="margin-top:6px"><button type="button" data-dec="${n}" aria-label="Remove one">−</button><span>${q}</span><button type="button" data-inc="${n}" aria-label="Add one">+</button></span> <button type="button" class="rm" data-remove="${n}">Remove</button></div><div class="amt">${money(u * q)}${savings(p, q) > 0.001 ? `<div class="save">saved ${money(savings(p, q))}</div>` : ""}</div></div>` });
   $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">${saleOn() ? "Your basket is empty. Pick a product — 25% comes off at checkout." : "Your basket is empty. Pick a product and choose ×1, ×3 or ×6."}</p>`;
-  const disc = saleOn() ? Math.round(total * SALE.pct) / 100 : 0; total -= disc;
+  const disc = saleOn() ? Math.round(nums.reduce((s, n) => s + savings(byNum[n], cart[n]), 0) * 100) / 100 : 0;  // unit prices are already the sale prices; disc is what was taken off
   const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
   const fee = !nums.length ? 0 : total >= FREE_FROM ? 0 : DELIVERY_FEE;
   $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
@@ -155,7 +155,7 @@ function renderCart() {
 
 let modalNum = null;
 function renderModalTiers() { const p = byNum[modalNum]; const q = cart[modalNum] || 0;
-  $("modalTiers").innerHTML = purchasable(p) ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}">−</button><span>${q}</span><button type="button" data-inc="${p.num}">+</button></span><span class="amt">${saveHtml(p, q)}<span>${money(unitPrice(p, q) * q)} in basket</span></span></div>` : "") : `<div class="unavail">${unavailText(p)}</div>` }
+  $("modalTiers").innerHTML = purchasable(p) ? tierHtml(p, q) + (q ? `<div class="qtyrow"><span class="qty"><button type="button" data-dec="${p.num}">−</button><span>${q}</span><button type="button" data-inc="${p.num}">+</button></span><span class="amt">${saveHtml(p, q)}${saleOn() ? `<s class="was">${money(p.tiers[0].price * q)}</s>` : ""}<span>${money(unitPrice(p, q) * q)} in basket</span></span></div>` : "") : `<div class="unavail">${unavailText(p)}</div>` }
 function openProduct(num) { const p = byNum[num]; modalNum = num;
   $("modalImg").src = imgSrc(p); $("modalImg").alt = p.name; $("modalCat").textContent = p.cat + (isMade(p) ? " · Made with Intention" : " · Sourced with Intention");
   $("modalName").textContent = p.name; $("modalSub").textContent = subText(p);
@@ -262,7 +262,7 @@ renderCatalog(); renderCart();
 
 // keep the sticky header/toolbar below the two top bars, whatever their height (sale bar on/off, wrapping on phones)
 (function () {
-  const bars = $("bars"); if (!bars) return;
-  const set = () => document.documentElement.style.setProperty("--bars-h", bars.offsetHeight + "px");
+  const bars = $("saleBar"); if (!bars) return;
+  const set = () => document.documentElement.style.setProperty("--bars-h", (bars.hidden ? 0 : bars.offsetHeight) + "px");
   set(); window.addEventListener("resize", set); if (window.ResizeObserver) new ResizeObserver(set).observe(bars); setInterval(set, 60000);
 })();
