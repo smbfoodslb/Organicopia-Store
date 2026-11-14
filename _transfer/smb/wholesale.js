@@ -94,7 +94,7 @@ function cardHtml(p) {
   const hl = p.is_new ? " hl-new" : p.back_in_stock ? " hl-back" : (p.holiday_item && p.status !== "oos" && p.status !== "hold") ? " hl-holiday" : "";
   const bottom = LOCKED() ? lockHtml() : purchasable(p)
     ? `<div class="pricebox">${priceHtml(p)}${controlHtml(p)}</div>` + (q ? `<div class="qtyrow"><span class="hint">${qtyLabel(p, q)}</span><span class="amt num">${money(unitPrice(p) * q)}</span></div>` : "")
-    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${p.status === "oos" ? (LOCKED() ? "Out of stock." : notifyHtml(p)) : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."}</div>`;
+    : `<div class="pricebox">${priceHtml(p)}</div><div class="unavail">${unavailText(p)}</div>`;
   return `<article class="card${hl}${(p.status === "oos" || p.status === "hold") ? " is-oos" : ""}" data-num="${p.num}">
     <div class="photo" data-view="${p.num}"><span class="ref">${esc(p.ref || "")}</span><div class="badges-tr">${tr.join("")}</div><img src="${imgSrc(p)}"${imgSet(p)} alt="${esc(p.name)}" loading="lazy" width="400" height="400" onerror="this.onerror=null;this.src='/smb/placeholder.svg'"></div>
     <div class="body">${p.brand ? `<div class="brandline">${esc(p.brand)}</div>` : ""}${hasDetails(p) ? `<h4><button type="button" class="namebtn" data-view="${p.num}">${esc(p.name)}</button></h4>` : `<h4>${esc(p.name)}</h4>`}<p class="sub">${esc(subText(p))}</p><div class="tags">${tagsHtml(p)}</div>${bottom}</div>
@@ -147,7 +147,9 @@ function initLocations() { const row = $("locRow"), sel = $("locSel"); if (!row 
   sel.addEventListener("change", () => { shipId = +sel.value; renderCart(); rpc("/shop/update_address", { partner_id: shipId, address_type: "delivery" }).then(() => rpc("/shop/update_address", { partner_id: shipId, address_type: "billing" })).catch(() => {}); }); }
 // ---- back-in-stock requests (WhatsApp): the request goes to Odoo as a lead; an automation registers it on the product
 const NOTIFY = new Set(CATALOG.notify || []);
-const notifyHtml = p => NOTIFY.has(p.num) ? `<span class="notify-done">✓ We'll message you on WhatsApp when it's back</span>` : `<span>Out of stock.</span> <button type="button" class="notify" data-notify="${p.num}">Notify me when it's back</button>`;
+const notifyHtml = (p, label) => NOTIFY.has(p.num) ? `<span class="notify-done">✓ We'll message you on WhatsApp when it's back</span>` : `<span>${label}</span> <button type="button" class="notify" data-notify="${p.num}">Notify me when it's back</button>`;
+// 14 Nov 2026: the notify button on sold-out, "Coming soon" and "Not available" items alike (logged-in customers only; visitors see the text)
+const unavailText = p => { const label = p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow."; return (LOCKED() || !(p.status === "oos" || p.status === "soon" || p.status === "hold")) ? label : notifyHtml(p, label); };
 function requestNotify(num) {
   const p = byNum[num]; if (!p || NOTIFY.has(num)) return;
   const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("contact_name", CATALOG.user || ""); fd.append("phone", CATALOG.phone || ""); fd.append("name", "Back in stock: " + (p.ref || "") + " " + p.name); fd.append("x_notify_product_id", String(num)); fd.append("x_notify_site", "wholesale");
@@ -169,7 +171,7 @@ function renderCart() {
 
 let modalNum = null;
 function renderModalPrice() { const p = byNum[modalNum]; const q = cart[modalNum] || 0;
-  $("modalPrice").innerHTML = LOCKED() ? lockHtml() : purchasable(p) ? priceHtml(p) + controlHtml(p) + (q ? `<div class="qtyrow" style="width:100%"><span class="hint">${money(unitPrice(p) * q)} in your order</span></div>` : "") : `<div class="unavail" style="border:0;padding:0;margin:0">${p.status === "oos" ? "Out of stock." : p.status === "soon" ? "Coming soon." : "Currently unavailable."}</div>` }
+  $("modalPrice").innerHTML = LOCKED() ? lockHtml() : purchasable(p) ? priceHtml(p) + controlHtml(p) + (q ? `<div class="qtyrow" style="width:100%"><span class="hint">${money(unitPrice(p) * q)} in your order</span></div>` : "") : `<div class="unavail" style="border:0;padding:0;margin:0">${unavailText(p)}</div>` }
 function openProduct(num) { const p = byNum[num]; modalNum = num;
   $("modalImg").src = imgSrc(p); $("modalImg").alt = p.name;
   $("modalCat").textContent = `${p.ref || ""} · ${p.brand || ""} · ${p.cat}`.replace(/^ · /, "");
