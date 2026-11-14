@@ -96,8 +96,8 @@ const subText = p => p.sub || "";
 const tagsHtml = p => (p.tags || []).map(t => `<span class="tag">${esc(t)}</span>`).join("") + (isLab(p) ? `<span class="tag lab">${LAB_ICON}Lab tested</span>` : "") + (has(p, "Imported ingredients") ? `<span class="tag">Made With Imported Ingredients</span>` : "");
 const hasDetails = p => !!((p.desc && p.desc.replace(/<[^>]+>/g, "").trim()) || (p.certs && p.certs.length));
 const NOTIFY = new Set(CATALOG.notify || []);
-const notifyHtml = p => NOTIFY.has(p.num) ? `<span class="notify-done">\u2713 We'll message you on WhatsApp when it's back</span>` : `<span>Currently sold out.</span> <button type="button" class="notify" data-notify="${p.num}">Notify me when it's back</button>`;
-const unavailText = p => p.status === "oos" ? notifyHtml(p) : p.status === "soon" ? "Coming soon." : p.status === "hold" ? "Currently unavailable." : "Pricing to follow.";
+const notifyHtml = (p, label) => NOTIFY.has(p.num) ? `<span class="notify-done">\u2713 We'll message you on WhatsApp when it's back</span>` : `<span>${label}</span> <button type="button" class="notify" data-notify="${p.num}">Notify me when it's back</button>`;
+const unavailText = p => p.status === "oos" ? notifyHtml(p, "Currently sold out.") : p.status === "soon" ? notifyHtml(p, "Coming soon.") : p.status === "hold" ? notifyHtml(p, "Currently unavailable.") : "Pricing to follow.";  // 14 Nov 2026: the notify button also on "Coming soon" and "Not available" items
 function cardHtml(p) {
   const q = cart[p.num] || 0;
   const badge = p.status === "oos" ? `<span class="badge oos">Sold out</span>` : p.status === "soon" ? `<span class="badge soon">Coming soon</span>` : p.status === "hold" ? `<span class="badge soon">Unavailable</span>` : p.is_new ? `<span class="badge new">New</span>` : p.back_in_stock ? `<span class="badge back">Back in stock</span>` : has(p, "Holiday item") ? `<span class="badge new">Holiday</span>` : "";
