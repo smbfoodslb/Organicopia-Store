@@ -346,3 +346,19 @@ footer a{color:var(--band-fg)}
 .qtyrow .amt{flex:1 0 100%;display:flex;flex-direction:row;flex-wrap:wrap;justify-content:flex-end;align-items:baseline;gap:6px;margin-left:0;line-height:1.25}
 .qtyrow .amt .save{width:100%;text-align:right;font-size:11px;white-space:normal}
 @media (max-width:640px){.qtyrow .amt .save{font-size:10.5px}}
+
+/* 14 Nov 2026 — phones only (<=720px): the sale bar scrolls away with the page instead of staying fixed, and "Our Standard" moves below the shop so the products come first (customer feedback: too much above the products). Desktop unchanged. */
+@media (max-width:720px){
+  .salebar{position:static}
+  header.site{top:env(safe-area-inset-top,0px)}
+  .toolbar{top:calc(env(safe-area-inset-top,0px) + 73px)}
+  .group{scroll-margin-top:150px}
+  main#top{display:flex;flex-direction:column}
+  main#top>.hero{order:1}
+  main#top>.trust{order:2}
+  main#top>#shop{order:3}
+  main#top>#standard{order:4}
+  main#top>#story{order:5}
+  main#top>#order{order:6}
+  main#top>*{width:100%}
+}
