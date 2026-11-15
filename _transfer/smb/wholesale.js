@@ -117,9 +117,10 @@ function renderCatalog() {
 function applyLock() {
   const locked = LOCKED();
   const oc = $("openCart");
-  if (oc && locked && !$("loginBtn")) { oc.hidden = true; oc.insertAdjacentHTML("beforebegin", `<a class="iconbtn cartbtn" id="loginBtn" href="${LOGIN}">${LOCK_SVG}Log in for prices</a>`) }
+  document.body.classList.toggle("is-locked", !!locked); { const na = $("newAcct"); if (na) na.hidden = !locked; }  /* 15 Nov 2026: "Open an account" button for visitors */
+  if (oc && locked && !$("loginBtn")) { oc.hidden = true; oc.insertAdjacentHTML("beforebegin", `<a class="iconbtn cartbtn" id="loginBtn" href="${LOGIN}">${LOCK_SVG}Log in<span class="lbl-long">&nbsp;for prices</span></a>`) }
   const lo = $("logoutLi"); if (lo) lo.hidden = locked; const ac = $("accountLi"); if (ac) ac.hidden = locked;
-  const who = $("who"); if (who) who.innerHTML = locked ? `<a href="${LOGIN}">Customer login</a>` : `${esc(CATALOG.user || "")} &middot; <a href="/my">My account</a>`;
+  const who = $("who"); if (who) who.innerHTML = locked ? `<a href="#new-customer" data-newcust="">Open an account</a> &middot; <a href="${LOGIN}">Customer login</a>` : `${esc(CATALOG.user || "")} &middot; <a href="/my">My account</a>`;
 }
 const groupId = (sec, title) => "cat-" + (sec + "-" + title).toLowerCase().replace(/[^a-z0-9]+/g, "-");
 function scrollToGroup(sec, title) { const el = document.getElementById(groupId(sec, title)); if (!el) return; spyMute = Date.now() + 1600; window.scrollTo({ top: Math.max(0, el.getBoundingClientRect().top + window.scrollY - stickyOffset()), behavior: "smooth" }) }
