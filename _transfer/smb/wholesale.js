@@ -118,7 +118,7 @@ function applyLock() {
   const locked = LOCKED();
   const oc = $("openCart");
   document.body.classList.toggle("is-locked", !!locked); { const na = $("newAcct"); if (na) na.hidden = !locked; }  /* 15 Nov 2026: "Open an account" button for visitors */
-  if (oc && locked && !$("loginBtn")) { oc.hidden = true; oc.insertAdjacentHTML("beforebegin", `<a class="iconbtn cartbtn" id="loginBtn" href="${LOGIN}">${LOCK_SVG}Log in<span class="lbl-long">&nbsp;for prices</span></a>`) }
+  if (oc && locked && !$("loginBtn")) { oc.hidden = true; oc.insertAdjacentHTML("beforebegin", `<a class="iconbtn cartbtn" id="loginBtn" href="${LOGIN}">${LOCK_SVG}<span>Log in<span class="lbl-long"> for prices</span></span></a>`) }
   const lo = $("logoutLi"); if (lo) lo.hidden = locked; const ac = $("accountLi"); if (ac) ac.hidden = locked;
   const who = $("who"); if (who) who.innerHTML = locked ? `<a href="#new-customer" data-newcust="">Open an account</a> &middot; <a href="${LOGIN}">Customer login</a>` : `${esc(CATALOG.user || "")} &middot; <a href="/my">My account</a>`;
 }
