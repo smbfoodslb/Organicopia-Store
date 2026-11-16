@@ -225,6 +225,12 @@ $("whForm").addEventListener("submit", e => {
   closeWholesale(); toast("Opening WhatsApp with your inquiry…");
 });
 if (location.hash === "#wholesale") openWholesale();
+// built-in /shop/<product> pages redirect here as /store#p<template id>: scroll to that product and open it
+(function () { const m = /^#p(\d+)$/.exec(location.hash); if (!m) return;
+  const p = PRODUCTS.find(x => String(x.tid) === m[1]); if (!p) return;
+  const el = document.querySelector(`.card[data-num="${p.num}"]`); if (el) el.scrollIntoView({block: "center"});
+  openProduct(p.num); try { history.replaceState(null, "", location.pathname + location.search) } catch (e) {}
+})();
 // Logo animation: the GIF plays once, then fades to the crisp SVG lockup. Reduced motion: lockup only.
 const heroAnim = $("heroAnim"), animBox = heroAnim.closest(".anim") || heroAnim.parentElement;
 const ANIM_MS = 4300;
