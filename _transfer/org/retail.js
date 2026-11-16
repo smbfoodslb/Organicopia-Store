@@ -6,7 +6,7 @@ const CATALOG = JSON.parse(document.getElementById("orgData").textContent);
 const WHATSAPP = "96170649386";
 const WHOLESALE_WA = "96178879350";
 const LOGIN = "/web/login?redirect=/";
-const DELIVERY_FEE = 3, FREE_FROM = 40;
+const DELIVERY_FEE = 4, FREE_FROM = 40;
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = n => "$" + n.toFixed(2);
