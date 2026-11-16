@@ -227,10 +227,10 @@ $("ncForm").addEventListener("submit", e => {
   const v = id => $(id).value.trim();
   // Odoo first (a pending "Wholesale request" lead the team approves), then WhatsApp as before; the lead is never blocking
   try {
-    const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("name", "Wholesale account request"); fd.append("contact_name", v("ncName")); fd.append("partner_name", v("ncBiz")); fd.append("phone", v("ncPhone")); fd.append("x_req_type", v("ncType")); fd.append("x_req_location", v("ncLoc")); fd.append("x_req_vat", v("ncVat")); fd.append("description", v("ncAbout"));
+    const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("name", "Wholesale account request"); fd.append("contact_name", v("ncName")); fd.append("partner_name", v("ncBiz")); fd.append("phone", v("ncPhone")); fd.append("email_from", v("ncEmail")); fd.append("x_req_type", v("ncType")); fd.append("x_req_location", v("ncLoc")); fd.append("x_req_vat", v("ncVat")); fd.append("description", v("ncAbout"));
     fetch("/website/form/crm.lead", { method: "POST", body: fd }).catch(() => {});
   } catch (e) {}
-  const msg = `Hello SMB Foods, I'd like to open a wholesale account.\n\nName: ${v("ncName")}\nBusiness: ${v("ncBiz")}\nType: ${v("ncType")}\nPhone: ${v("ncPhone")}\nLocation: ${v("ncLoc")}${v("ncVat") ? "\nVAT registration no.: " + v("ncVat") : ""}${v("ncAbout") ? "\nAbout the business: " + v("ncAbout") : ""}\n\nPlease get in touch. Thank you!`;
+  const msg = `Hello SMB Foods, I'd like to open a wholesale account.\n\nName: ${v("ncName")}\nBusiness: ${v("ncBiz")}\nType: ${v("ncType")}\nPhone: ${v("ncPhone")}\nEmail: ${v("ncEmail")}\nLocation: ${v("ncLoc")}${v("ncVat") ? "\nVAT registration no.: " + v("ncVat") : ""}${v("ncAbout") ? "\nAbout the business: " + v("ncAbout") : ""}\n\nPlease get in touch. Thank you!`;
   const a = document.createElement("a"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
   closeNewcust(); toast("Opening WhatsApp with your details…");
 });
