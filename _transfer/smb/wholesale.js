@@ -235,6 +235,12 @@ $("ncForm").addEventListener("submit", e => {
   closeNewcust(); toast("Opening WhatsApp with your details…");
 });
 if (location.hash === "#new-customer") setTimeout(openNewcust, 300);
+// built-in /shop/<product> pages redirect here as /wholesale#p<template id>: scroll to that product and open it
+(function () { const m = /^#p(\d+)$/.exec(location.hash); if (!m) return;
+  const p = PRODUCTS.find(x => String(x.tid) === m[1]); if (!p) return;
+  const el = document.querySelector(`.card[data-num="${p.num}"]`); if (el) el.scrollIntoView({block: "center"});
+  openProduct(p.num); try { history.replaceState(null, "", location.pathname + location.search) } catch (e) {}
+})();
 
 // ---- hero stats
 (function stats() {
