@@ -309,6 +309,10 @@ footer a{color:var(--band-fg)}
 .drawer-foot .total{display:flex;justify-content:space-between;font-weight:600}
 .drawer-foot .fee{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
 .drawer-foot .fee b{color:var(--good)}
+.freebar{font-size:13px;color:var(--muted)}
+.freebar b{color:var(--fg)}
+.freebar .track{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}
+.freebar .track i{display:block;height:100%;width:0;border-radius:999px;background:var(--good);transition:width .3s}
 .drawer-foot .grand{display:flex;justify-content:space-between;font-size:18px;font-weight:600;padding-top:8px;border-top:1px dashed var(--line)}
 .card .photo img{background:#fff}
 .modalbox .desc p{margin:0 0 10px}

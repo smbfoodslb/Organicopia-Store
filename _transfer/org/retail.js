@@ -145,7 +145,12 @@ function renderCart() {
   const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
   const fee = !nums.length ? 0 : total >= FREE_FROM ? 0 : DELIVERY_FEE;
   $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
-  $("cartFee").innerHTML = !nums.length ? money(DELIVERY_FEE) + " · free from " + money(FREE_FROM) : fee ? money(fee) + ` <small>· free from ${money(FREE_FROM)}</small>` : "<b>Free</b>";
+  $("cartFee").innerHTML = !nums.length ? money(DELIVERY_FEE) : fee ? money(fee) : "<b>Free</b>";
+  // 17 Nov 2026: a bar shows how far the basket is from free delivery (clearer than "$4, free from $40")
+  let fb = $("freeBar"); if (!fb) { fb = document.createElement("div"); fb.id = "freeBar"; fb.className = "freebar"; fb.innerHTML = '<div class="t"></div><div class="track"><i></i></div>'; const g = $("cartGrand").parentNode; g.parentNode.insertBefore(fb, g) }
+  const left = FREE_FROM - total;
+  fb.firstChild.innerHTML = !nums.length ? `Free delivery from ${money(FREE_FROM)}` : left > 0.004 ? `Add <b>${money(left)}</b> more for free delivery` : "<b>You have free delivery</b>";
+  fb.lastChild.firstChild.style.width = Math.max(0, Math.min(100, total / FREE_FROM * 100)) + "%";
   $("cartGrand").textContent = money(total + fee);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
   const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nDelivery: ${fee ? money(fee) : "free"}\nTotal: ${money(total + fee)}\n\nPlease confirm availability and delivery. Thank you!`;

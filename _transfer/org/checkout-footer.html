@@ -1,0 +1,164 @@
+
+<!-- ORG-CHECKOUT-START -->
+<script>
+(function(){
+  if (location.pathname.indexOf('/shop/address') !== 0) return;
+  var PLACEHOLDER = '@no-email.invalid'; // Odoo insists on an email; a reserved .invalid address is dropped again once the order is placed
+  function label(el){ var box = el.closest('div'); return box && box.querySelector('label'); }
+  function form(){ return document.querySelector('form.address_autoformat') || document.querySelector('form[action*="/shop/address"]'); }
+  function sync(){ var f = form(); if (!f) return;
+    var p = f.querySelector('input[name="phone"]'); if (p && !p.required) { p.required = true; }
+    var e = f.querySelector('input[name="email"]'); if (e && !e.required) { e.required = true; } // 16 Nov 2026: email is required again - the order confirmation goes by email
+    var c = f.querySelector('select[name="country_id"]'); if (c && !c.value && !f.dataset.orgCountry) { f.dataset.orgCountry = '1'; var o = [].slice.call(c.options).find(function(x){ return x.textContent.trim() === 'Lebanon'; }); if (o) { c.value = o.value; c.dispatchEvent(new Event('change', {bubbles: true})); } }
+    // Odoo re-marks required fields after the country loads, so the labels are kept in step with the live "required" flags
+    [].slice.call(f.querySelectorAll('input, select, textarea')).forEach(function(i){ if (i.type === 'hidden' || i.name === 'country_id') return; var l = label(i); if (!l) return;
+      var mk = l.querySelector('.s_website_form_mark'), opt = l.querySelector('.org-opt');
+      if (i.required) { if (opt) opt.remove(); if (!mk) l.insertAdjacentHTML('beforeend', ' <span class="s_website_form_mark">*</span>'); }
+      else { if (mk) mk.remove(); if (!opt) l.insertAdjacentHTML('beforeend', ' <span class="org-opt text-muted small">(optional)</span>'); }
+    });
+    if (!f.dataset.org) { f.dataset.org = '1';
+      function fill(){ /* 16 Nov 2026: no placeholder email any more - the customer must enter one */ }
+      // the Confirm button sits outside the form (in the order summary), so listen on the whole page
+      document.addEventListener('click', function(ev){ if (ev.target.closest('button, [type="submit"], a.btn')) fill(); }, true);
+      document.addEventListener('submit', fill, true);
+      document.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') fill(); }, true);
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', sync); else sync();
+  new MutationObserver(sync).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['required'] });
+  var n = 0, t = setInterval(function(){ sync(); if (++n > 40) clearInterval(t); }, 500);
+})();
+</script>
+<!-- ORG-CHECKOUT-END -->
+
+<script>
+/* SMB, 17 Nov 2026 - one-page retail checkout: "Check out" in the store, then ONE page (details, Delivery or Pickup,
+   totals), then "Confirm order" and the order is placed.
+   Odoo still has its three pages underneath (/shop/address, /shop/checkout, /shop/payment). The customer fills
+   /shop/address; the other two are passed automatically while a "Placing your order" screen is shown.
+   The chosen method travels in sessionStorage key smbCo = {m: carrier id, t: time}; it is honoured for 10 minutes.
+   Carriers: 4 = Delivery ($4.00, free from $40), 5 = Pickup at our shop (New Rawda), free.
+   If anything fails, the ordinary Odoo page is shown and the customer finishes by hand - nothing is lost. */
+(function () {
+  var p = location.pathname, DELIVERY = '4', PICKUP = '5', FEE = 4, FREE_FROM = 40, KEY = 'smbCo';
+  var MAP = 'https://maps.app.goo.gl/a3Eh8v68L6VqcUJJ7';
+  var get = function () { try { var f = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return f && Date.now() - f.t < 600000 ? f : null; } catch (e) { return null; } };
+  var put = function (m) { try { sessionStorage.setItem(KEY, JSON.stringify({ m: m, t: Date.now() })); return true; } catch (e) { return false; } };
+  var drop = function () { try { sessionStorage.removeItem(KEY); } catch (e) {} };
+  var call = function (url, params) { return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: params }) }).then(function (r) { return r.json(); }).then(function (j) { if (j.error || !j.result || !j.result.success) throw new Error('refused'); return j.result; }); };
+  var num = function (h) { return parseFloat(String(h == null ? '' : h).replace(/<[^>]*>/g, '').replace(/[^\d.\-]/g, '')) || 0; };
+  var money = function (v) { return '$' + v.toFixed(2); };
+  var veil = function () { var v = document.createElement('div'); v.id = 'smbVeil'; v.setAttribute('style', 'position:fixed;inset:0;z-index:99999;background:#fbf3e6;color:#033649;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600'); v.textContent = 'Placing your order…'; document.body.appendChild(v); return v; };
+  var flow = get();
+
+  if (p === '/shop/checkout') {
+    if (flow && /[?&]try_skip_step=true/.test(location.search)) {
+      /* arriving from the details page: store the chosen method, go on to the last page */
+      var v1 = veil();
+      call('/shop/set_delivery_method', { dm_id: parseInt(flow.m, 10) }).then(function () { location.replace('/shop/payment'); }).catch(function () { drop(); v1.remove(); });
+    } else if (/[?&]from=store/.test(location.search)) {
+      /* a customer whose details are already saved: open the same one page, filled in */
+      var ed = document.querySelector('main a[href*="/shop/address?"][href*="partner_id="]');
+      if (ed) { var m0 = document.querySelector('main'); if (m0) m0.style.visibility = 'hidden'; location.replace(ed.getAttribute('href')); }
+    }
+  }
+
+  if (p === '/shop/payment' && flow) {
+    /* last page: one payment method (pay on delivery), already selected - press its Confirm for the customer */
+    drop(); var v2 = veil(), n2 = 0, clicks = 0;
+    var t2 = setInterval(function () {
+      n2++;
+      var b = [].slice.call(document.querySelectorAll('[name="o_payment_submit_button"]')).filter(function (x) { return x.offsetParent !== null; })[0];
+      var r = document.querySelector('input[name="o_payment_radio"]:checked');
+      if (b && r && !b.disabled && ((clicks === 0 && n2 >= 8) || (clicks === 1 && n2 >= 40))) { clicks++; b.click(); }
+      if (n2 > 100) { clearInterval(t2); v2.remove(); }
+    }, 150);
+  }
+
+  if (/^\/shop\/(address|checkout|payment|cart)/.test(p)) {
+    var names = { 'Address': 'Your details', 'Payment': 'Confirm' };
+    document.querySelectorAll('main p.text-center.mb-0 > span').forEach(function (s) {
+      var txt = s.textContent.trim();
+      if (names[txt]) s.textContent = names[txt];
+      else if (txt === 'Order' && p !== '/shop/cart') { var box = s.closest('.d-flex'); if (box) { var nx = box.nextElementSibling; box.style.setProperty('display', 'none', 'important'); if (nx && !nx.textContent.trim()) nx.style.setProperty('display', 'none', 'important'); } }
+    });
+  }
+
+  if (p === '/shop/address') {
+    var st = document.createElement('style');
+    st.textContent = 'form .s_website_form_mark{display:none!important}' +
+      '.smb-bad{border-color:#c0392b!important;box-shadow:0 0 0 2px rgba(192,57,43,.2)!important}.smb-missing{color:#c0392b;font-size:13px;margin-top:4px}' +
+      'form[action*="/shop/address"]{padding-bottom:260px}' +
+      '#smbShip{margin:0 0 18px}#smbShip .smb-h,#smbSum .smb-h{font-weight:600;margin:0 0 8px}' +
+      '.smb-opt{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1.5px solid #e2d4bd;border-radius:12px;background:#fff;margin:0 0 8px;cursor:pointer}' +
+      '.smb-opt.on{border-color:#033649;box-shadow:0 0 0 1px #033649}.smb-opt input{margin-top:4px}.smb-opt span{display:flex;flex-direction:column;flex:1}.smb-opt small{color:#5b6a68}' +
+      '.smb-bar{margin:12px 0 0;font-size:14px}.smb-track{height:8px;border-radius:999px;background:#e2d4bd;overflow:hidden;margin-top:6px}.smb-track i{display:block;height:100%;width:0;border-radius:999px;background:#5d7a3a;transition:width .3s}' +
+      '#smbSum{margin:18px 0 0;padding:14px;border:1px solid #e2d4bd;border-radius:12px;background:#fff}#smbSum .r{display:flex;justify-content:space-between;padding:2px 0}#smbSum .tot{font-weight:600;font-size:18px;border-top:1px dashed #e2d4bd;margin-top:6px;padding-top:8px}#smbSum p{margin:8px 0 0;font-size:13px;color:#5b6a68}';
+    document.head.appendChild(st);
+    var opt = function () { document.querySelectorAll('form label').forEach(function (l) { if (l.querySelector('.org-opt')) l.classList.add('label-optional'); }); };
+    opt(); setTimeout(opt, 600); setTimeout(opt, 2000);
+    var form = document.querySelector('form[action*="/shop/address"]');
+    if (form) {
+      /* ---- Delivery or Pickup, free-delivery bar, totals ---- */
+      var sel = flow && flow.m === PICKUP ? PICKUP : DELIVERY;
+      var ship = document.createElement('div'); ship.id = 'smbShip';
+      ship.innerHTML = '<div class="smb-h">How would you like to get your order?</div>' +
+        '<label class="smb-opt"><input type="radio" name="smb_m" value="' + DELIVERY + '"/><span><b>Delivery</b><small id="smbDelTxt"></small></span></label>' +
+        '<label class="smb-opt"><input type="radio" name="smb_m" value="' + PICKUP + '"/><span><b>Pickup at our shop in New Rawda</b><small>Free · <a href="' + MAP + '" target="_blank" rel="noopener">See on the map</a></small></span></label>' +
+        '<div class="smb-bar" id="smbBar"><div id="smbBarTxt"></div><div class="smb-track"><i id="smbBarFill"></i></div></div>';
+      form.parentNode.insertBefore(ship, form);
+      var sum = document.createElement('div'); sum.id = 'smbSum';
+      sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
+      form.appendChild(sum);
+      var id = function (x) { return document.getElementById(x); };
+      var goods = (function () { var t = num((id('amount_total_summary') || {}).innerHTML), d = document.querySelector('[name="o_order_delivery"] .monetary_field:not(.d-none)'); return Math.max(0, t - (d ? num(d.innerHTML) : 0)); })();
+      var paint = function (g, del, tot) {
+        var pick = sel === PICKUP, left = FREE_FROM - g;
+        id('smbSub').textContent = money(g); id('smbDelLbl').textContent = pick ? 'Pickup' : 'Delivery'; id('smbDel').textContent = del > 0 ? money(del) : 'Free'; id('smbTot').textContent = money(tot);
+        id('smbPay').textContent = pick ? 'You pay when you pick up your order.' : 'You pay on delivery.';
+        id('smbDelTxt').textContent = left > 0.004 ? money(FEE) + ' · Greater Beirut' : 'Free';
+        id('smbBar').style.display = pick ? 'none' : '';
+        id('smbBarTxt').innerHTML = left > 0.004 ? 'Add <b>' + money(left) + '</b> more for free delivery' : '<b>You have free delivery</b>';
+        id('smbBarFill').style.width = Math.max(0, Math.min(100, g / FREE_FROM * 100)) + '%';
+        var s = id('amount_total_summary'); if (s) s.textContent = money(tot);
+      };
+      var rows = ['div_street', 'div_street2', 'div_city', 'div_zip', 'div_country', 'div_state'], AUTO = { street: 'Pickup at our shop', city: 'New Rawda' };
+      var choose = function (m) {
+        sel = m; var pick = m === PICKUP;
+        ship.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === m; l.classList.toggle('on', i.value === m); });
+        rows.forEach(function (r) { var e = id(r); if (e) e.style.display = pick ? 'none' : ''; });
+        Object.keys(AUTO).forEach(function (k) { var i = form.querySelector('[name="' + k + '"]'); if (!i) return;
+          if (pick && !i.value.trim()) i.value = AUTO[k]; else if (!pick && i.value === AUTO[k]) i.value = ''; });
+        var fee = m === PICKUP || goods >= FREE_FROM ? 0 : FEE; paint(goods, fee, goods + fee);
+        call('/shop/set_delivery_method', { dm_id: parseInt(m, 10) }).then(function (r) { if (sel !== m) return; var tot = num(r.amount_total), del = num(r.amount_delivery); goods = Math.round((tot - del) * 100) / 100; paint(goods, del, tot); }).catch(function () {});
+      };
+      ship.addEventListener('change', function (ev) { if (ev.target.name === 'smb_m') choose(ev.target.value); });
+      choose(sel);
+      document.querySelectorAll('[name="website_sale_main_button"] span').forEach(function (s) { if (s.textContent.trim() === 'Confirm') s.textContent = 'Confirm order'; });
+      var wz = document.querySelector('main p.text-center.mb-0 > span'); wz = wz && wz.closest('.col-12'); if (wz && !wz.querySelector('form')) wz.style.display = 'none';
+
+      /* ---- a required field left empty used to fail silently (it sat under the fixed Confirm bar) ---- */
+      var show = function () {
+        form.querySelectorAll('.smb-missing').forEach(function (x) { x.remove(); });
+        form.querySelectorAll('.smb-bad').forEach(function (x) { x.classList.remove('smb-bad'); });
+        var bad = form.querySelector('input:invalid, select:invalid, textarea:invalid'); if (!bad) return;
+        form.querySelectorAll('input:invalid, select:invalid, textarea:invalid').forEach(function (el) { el.classList.add('smb-bad'); });
+        var m = document.createElement('div'); m.className = 'smb-missing';
+        m.textContent = bad.validity.valueMissing ? 'Please fill in this field.' : (bad.type === 'email' ? 'Please enter a valid email address.' : 'Please check this field.');
+        bad.insertAdjacentElement('afterend', m);
+        try { bad.focus({ preventScroll: true }); } catch (e) {}
+        setTimeout(function () { bad.scrollIntoView({ block: 'center', behavior: 'instant' }); }, 50);
+      };
+      document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest('[name="website_sale_main_button"]'); if (!btn) return;
+        if (!form.checkValidity()) { ev.preventDefault(); ev.stopPropagation(); show(); }
+        else put(sel);
+      }, true);
+      form.addEventListener('input', function (ev) {
+        var el = ev.target; if (el.classList && el.classList.contains('smb-bad') && el.checkValidity()) {
+          el.classList.remove('smb-bad'); var n = el.nextElementSibling; if (n && n.classList.contains('smb-missing')) n.remove(); }
+      });
+    }
+  }
+})();
+</script>
