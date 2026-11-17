@@ -136,6 +136,8 @@
       choose(sel);
       document.querySelectorAll('[name="website_sale_main_button"] span').forEach(function (s) { if (s.textContent.trim() === 'Confirm') s.textContent = 'Confirm order'; });
       var wz = document.querySelector('main p.text-center.mb-0 > span'); wz = wz && wz.closest('.col-12'); if (wz && !wz.querySelector('form')) wz.style.display = 'none';
+      document.querySelectorAll('main .alert-warning').forEach(function (x) { x.style.display = 'none'; }); /* Odoo's "you are editing your delivery and billing addresses" notice */
+      var h4 = document.querySelector('main h4.mb-3'); if (h4) h4.textContent = 'Checkout';
 
       /* ---- a required field left empty used to fail silently (it sat under the fixed Confirm bar) ---- */
       var show = function () {
