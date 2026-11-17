@@ -100,7 +100,8 @@
       '.smb-bar{margin:12px 0 0;font-size:14px}.smb-track{height:8px;border-radius:999px;background:#e2d4bd;overflow:hidden;margin-top:6px}.smb-track i{display:block;height:100%;width:0;border-radius:999px;background:#5d7a3a;transition:width .3s}' +
       '#smbSum{margin:18px 0 0;padding:14px;border:1px solid #e2d4bd;border-radius:12px;background:#fff}#smbSum .r{display:flex;justify-content:space-between;padding:2px 0}#smbSum .tot{font-weight:600;font-size:18px;border-top:1px dashed #e2d4bd;margin-top:6px;padding-top:8px}#smbSum p{margin:8px 0 0;font-size:13px;color:#5b6a68}';
     document.head.appendChild(st);
-    var opt = function () { document.querySelectorAll('form label').forEach(function (l) { if (l.querySelector('.org-opt')) l.classList.add('label-optional'); }); };
+    /* a label is 'optional' only while it carries the (optional) note - a field that becomes required later (Governorate, or the fields Odoo marks after loading) gets its star back */
+    var opt = function () { document.querySelectorAll('form[action*="/shop/address"] label').forEach(function (l) { l.classList.toggle('label-optional', !!l.querySelector('.org-opt')); }); };
     opt(); setTimeout(opt, 600); setTimeout(opt, 2000);
     var form = document.querySelector('form[action*="/shop/address"]');
     if (form) {
@@ -165,8 +166,8 @@
         gov(); refresh();
       };
       form.addEventListener('change', function (ev) { if (ev.target.name === 'state_id') refresh(); });
-      new MutationObserver(gov).observe(form, { childList: true, subtree: true, attributes: true, attributeFilter: ['required'] });
-      setTimeout(function () { gov(); refresh(); }, 1200);
+      new MutationObserver(function () { gov(); opt(); }).observe(form, { childList: true, subtree: true, attributes: true, attributeFilter: ['required'] });
+      setTimeout(function () { gov(); refresh(); opt(); }, 1200); setTimeout(opt, 3000); setTimeout(opt, 6000);
       ship.addEventListener('change', function (ev) { if (ev.target.name === 'smb_m') choose(ev.target.value); });
       choose(sel);
       document.querySelectorAll('[name="website_sale_main_button"] span').forEach(function (s) { if (s.textContent.trim() === 'Confirm') s.textContent = 'Confirm order'; });
