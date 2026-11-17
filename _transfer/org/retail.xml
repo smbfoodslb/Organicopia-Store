@@ -34,6 +34,7 @@
 <link rel="stylesheet" href="/org/retail.css?v=24d00950"/>
 <!-- Odoo Analytics (Plausible), 15 Nov 2026: same tag as website.layout, so /store counts in Website > Reporting > Analytics; skipped for editors -->
 <script t-if="request.website.plausible_shared_key and not editable" id="plausible_script" name="plausible" defer="defer" t-att-data-domain="request.website.plausible_site" t-att-src="request.website._get_plausible_script_url()"/>
+
 </head>
 <body>
 <div class="salebar" id="saleBar" hidden="hidden"><div class="wrap"><span class="pill">Black Friday</span><span><b>25% off everything</b> · applied automatically at checkout</span><span class="count" id="saleCount"/><a href="#shop">Shop the season →</a></div></div>
