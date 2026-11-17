@@ -145,15 +145,17 @@ function renderCart() {
   const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
   const fee = !nums.length ? 0 : total >= FREE_FROM ? 0 : DELIVERY_FEE;
   $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
-  $("cartFee").innerHTML = !nums.length ? money(DELIVERY_FEE) : fee ? money(fee) : "<b>Free</b>";
-  // 17 Nov 2026: a bar shows how far the basket is from free delivery (clearer than "$4, free from $40")
-  let fb = $("freeBar"); if (!fb) { fb = document.createElement("div"); fb.id = "freeBar"; fb.className = "freebar"; fb.innerHTML = '<div class="t"></div><div class="track"><i></i></div>'; const g = $("cartGrand").parentNode; g.parentNode.insertBefore(fb, g) }
+  // 17 Nov 2026: the basket shows the goods total only (what the customer pays after the discount, VAT included) and a bar
+  // measuring that same number against the free-delivery mark. The delivery fee is shown at checkout, where Delivery or
+  // Pickup is chosen - adding it here pushed the total over $40 while the bar still asked for more.
+  const cf = $("cartFee"); if (cf) cf.parentNode.hidden = true;
+  let fb = $("freeBar"); if (!fb) { fb = document.createElement("div"); fb.id = "freeBar"; fb.className = "freebar"; fb.innerHTML = '<div class="t"></div><div class="track"><i></i></div>'; const g = $("cartGrand").parentNode; g.parentNode.insertBefore(fb, g.nextSibling) }
   const left = FREE_FROM - total;
-  fb.firstChild.innerHTML = !nums.length ? `Free delivery from ${money(FREE_FROM)}` : left > 0.004 ? `Add <b>${money(left)}</b> more for free delivery` : "<b>You have free delivery</b>";
-  fb.lastChild.firstChild.style.width = Math.max(0, Math.min(100, total / FREE_FROM * 100)) + "%";
-  $("cartGrand").textContent = money(total + fee);
+  fb.querySelector(".t").innerHTML = !nums.length ? `Free delivery from ${money(FREE_FROM)}` : left > 0.004 ? `${money(total)} of ${money(FREE_FROM)} · add <b>${money(left)}</b> more for free delivery` : "<b>You have free delivery</b>";
+  fb.querySelector("i").style.width = Math.max(0, Math.min(100, total / FREE_FROM * 100)) + "%";
+  $("cartGrand").textContent = money(total);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
-  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nDelivery: ${fee ? money(fee) : "free"}\nTotal: ${money(total + fee)}\n\nPlease confirm availability and delivery. Thank you!`;
+  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nTotal: ${money(total)}\nDelivery: ${fee ? money(fee) + ", free from " + money(FREE_FROM) + " (or pickup at the shop)" : "free"}\n\nPlease confirm availability and delivery. Thank you!`;
   const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
   $("confirm").classList.toggle("busy", !nums.length);
 }

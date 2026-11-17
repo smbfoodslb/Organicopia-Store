@@ -119,7 +119,7 @@
         id('smbPay').textContent = pick ? 'You pay when you pick up your order.' : 'You pay on delivery.';
         id('smbDelTxt').textContent = left > 0.004 ? money(FEE) + ' · Greater Beirut' : 'Free';
         id('smbBar').style.display = pick ? 'none' : '';
-        id('smbBarTxt').innerHTML = left > 0.004 ? 'Add <b>' + money(left) + '</b> more for free delivery' : '<b>You have free delivery</b>';
+        id('smbBarTxt').innerHTML = left > 0.004 ? money(g) + ' of ' + money(FREE_FROM) + ' \u00b7 add <b>' + money(left) + '</b> more for free delivery' : '<b>You have free delivery</b>';
         id('smbBarFill').style.width = Math.max(0, Math.min(100, g / FREE_FROM * 100)) + '%';
         var s = id('amount_total_summary'); if (s) s.textContent = money(tot);
       };
