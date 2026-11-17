@@ -52,8 +52,9 @@
   var flow = get();
 
   if (p === '/shop/checkout') {
-    if (flow && /[?&]try_skip_step=true/.test(location.search)) {
-      /* arriving from the details page: store the chosen method, go on to the last page */
+    if (flow && !/[?&]from=store/.test(location.search)) {
+      /* arriving from the details page (Odoo sends a new customer to /shop/checkout?try_skip_step=true and a
+         returning one to plain /shop/checkout): store the chosen method, go on to the last page */
       var v1 = veil();
       call('/shop/set_delivery_method', { dm_id: parseInt(flow.m, 10) }).then(function () { location.replace('/shop/payment'); }).catch(function () { drop(); v1.remove(); });
     } else if (/[?&]from=store/.test(location.search)) {
