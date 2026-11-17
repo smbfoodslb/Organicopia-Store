@@ -37,10 +37,14 @@
    Odoo still has its three pages underneath (/shop/address, /shop/checkout, /shop/payment). The customer fills
    /shop/address; the other two are passed automatically while a "Placing your order" screen is shown.
    The chosen method travels in sessionStorage key smbCo = {m: carrier id, t: time}; it is honoured for 10 minutes.
-   Carriers: 4 = Delivery ($4.00, free from $40), 5 = Pickup at our shop (New Rawda), free.
+   Carriers: 4 = Delivery, Beirut & Greater Beirut ($3.00), 6 = Delivery, other governorates ($5.00), both free from
+   $40 of goods; 5 = Pickup at our shop (New Rawda), free. The governorate picked on the page decides between 4 and 6
+   (states 1895/1896 = Beirut = the $3 zone). Odoo lists every governorate twice (English, Arabic): the page shows
+   each once, 'English · Arabic', and keeps the English record.
    If anything fails, the ordinary Odoo page is shown and the customer finishes by hand - nothing is lost. */
 (function () {
-  var p = location.pathname, DELIVERY = '4', PICKUP = '5', FEE = 4, FREE_FROM = 40, KEY = 'smbCo';
+  var p = location.pathname, DELIVERY = 'D', BEIRUT = '4', OUTSIDE = '6', PICKUP = '5', FEES = { '4': 3, '6': 5 }, BEIRUT_STATES = ['1895', '1896'], FREE_FROM = 40, KEY = 'smbCo';
+  var NAMES = { '1895': 'Beirut & Greater Beirut', '1899': 'Mount Lebanon (outside Greater Beirut)' }, AR = /[\u0600-\u06FF]/;
   var MAP = 'https://maps.app.goo.gl/a3Eh8v68L6VqcUJJ7';
   var get = function () { try { var f = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return f && Date.now() - f.t < 600000 ? f : null; } catch (e) { return null; } };
   var put = function (m) { try { sessionStorage.setItem(KEY, JSON.stringify({ m: m, t: Date.now() })); return true; } catch (e) { return false; } };
@@ -110,29 +114,59 @@
       form.parentNode.insertBefore(ship, form);
       var sum = document.createElement('div'); sum.id = 'smbSum';
       sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
-      form.appendChild(sum);
+      /* phones: under the form. Desktop: in Odoo's right-hand card, in place of its own totals (which do not follow the choice) */
+      var oc = document.querySelector('.o_total_card .o_cart_total');
+      if (oc && oc.offsetParent !== null) { oc.style.display = 'none'; oc.parentNode.insertBefore(sum, oc); sum.style.margin = '0 0 14px'; } else form.appendChild(sum);
       var id = function (x) { return document.getElementById(x); };
       var goods = (function () { var t = num((id('amount_total_summary') || {}).innerHTML), d = document.querySelector('[name="o_order_delivery"] .monetary_field:not(.d-none)'); return Math.max(0, t - (d ? num(d.innerHTML) : 0)); })();
       var paint = function (g, del, tot) {
         var pick = sel === PICKUP, left = FREE_FROM - g;
-        id('smbSub').textContent = money(g); id('smbDelLbl').textContent = pick ? 'Pickup' : 'Delivery'; id('smbDel').textContent = del > 0 ? money(del) : 'Free'; id('smbTot').textContent = money(tot);
+        id('smbSub').textContent = money(g); id('smbDelLbl').textContent = pick ? 'Pickup' : 'Delivery'; id('smbDel').textContent = del === null ? 'Choose your governorate' : del > 0 ? money(del) : 'Free'; id('smbTot').textContent = money(tot);
         id('smbPay').textContent = pick ? 'You pay when you pick up your order.' : 'You pay on delivery.';
-        id('smbDelTxt').textContent = left > 0.004 ? money(FEE) + ' · Greater Beirut' : 'Free';
+        id('smbDelTxt').textContent = left > 0.004 ? money(FEES[BEIRUT]) + ' Beirut & Greater Beirut \u00b7 ' + money(FEES[OUTSIDE]) + ' other governorates' : 'Free';
         id('smbBar').style.display = pick ? 'none' : '';
         id('smbBarTxt').innerHTML = left > 0.004 ? money(g) + ' of ' + money(FREE_FROM) + ' \u00b7 add <b>' + money(left) + '</b> more for free delivery' : '<b>You have free delivery</b>';
         id('smbBarFill').style.width = Math.max(0, Math.min(100, g / FREE_FROM * 100)) + '%';
         var s = id('amount_total_summary'); if (s) s.textContent = money(tot);
       };
       var rows = ['div_street', 'div_street2', 'div_city', 'div_zip', 'div_country', 'div_state'], AUTO = { street: 'Pickup at our shop', city: 'New Rawda' };
+      var stateSel = function () { return form.querySelector('select[name="state_id"]'); };
+      var zone = function () { var s = stateSel(), v = s && s.value; return !v ? null : BEIRUT_STATES.indexOf(v) >= 0 ? BEIRUT : OUTSIDE; };
+      /* "State / Province" becomes "Governorate": required for delivery, one line per governorate */
+      var gov = function () {
+        var s = stateSel(); if (!s) return;
+        var l = id('div_state') && id('div_state').querySelector('label');
+        if (l) [].slice.call(l.childNodes).forEach(function (n) { if (n.nodeType === 3 && /State/.test(n.nodeValue)) n.nodeValue = 'Governorate '; });
+        [].slice.call(s.options).forEach(function (o) {
+          if (!o.value) { if (!/governorate/.test(o.textContent)) o.textContent = 'Choose your governorate…'; return; }
+          if (!AR.test(o.textContent)) return;
+          var en = s.querySelector('option[value="' + (parseInt(o.value, 10) - 1) + '"]');
+          if (!en || en === o) return;                       /* already merged, or no English twin */
+          if (o.selected) s.value = en.value;
+          if (!AR.test(en.textContent)) en.textContent = (NAMES[en.value] || en.textContent.trim()) + ' \u00b7 ' + o.textContent.trim();
+          o.remove();
+        });
+        var need = sel !== PICKUP; if (s.required !== need) s.required = need;
+      };
+      var seq = 0;
+      var refresh = function () {
+        var pick = sel === PICKUP, c = pick ? PICKUP : zone();
+        var fee = pick || goods >= FREE_FROM ? 0 : (c ? FEES[c] : null); paint(goods, fee, goods + (fee || 0));
+        if (!c) return;
+        var tag = ++seq;
+        call('/shop/set_delivery_method', { dm_id: parseInt(c, 10) }).then(function (r) { if (tag !== seq) return; var tot = num(r.amount_total), del = num(r.amount_delivery); goods = Math.round((tot - del) * 100) / 100; paint(goods, del, tot); }).catch(function () {});
+      };
       var choose = function (m) {
         sel = m; var pick = m === PICKUP;
         ship.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === m; l.classList.toggle('on', i.value === m); });
         rows.forEach(function (r) { var e = id(r); if (e) e.style.display = pick ? 'none' : ''; });
         Object.keys(AUTO).forEach(function (k) { var i = form.querySelector('[name="' + k + '"]'); if (!i) return;
           if (pick && !i.value.trim()) i.value = AUTO[k]; else if (!pick && i.value === AUTO[k]) i.value = ''; });
-        var fee = m === PICKUP || goods >= FREE_FROM ? 0 : FEE; paint(goods, fee, goods + fee);
-        call('/shop/set_delivery_method', { dm_id: parseInt(m, 10) }).then(function (r) { if (sel !== m) return; var tot = num(r.amount_total), del = num(r.amount_delivery); goods = Math.round((tot - del) * 100) / 100; paint(goods, del, tot); }).catch(function () {});
+        gov(); refresh();
       };
+      form.addEventListener('change', function (ev) { if (ev.target.name === 'state_id') refresh(); });
+      new MutationObserver(gov).observe(form, { childList: true, subtree: true, attributes: true, attributeFilter: ['required'] });
+      setTimeout(function () { gov(); refresh(); }, 1200);
       ship.addEventListener('change', function (ev) { if (ev.target.name === 'smb_m') choose(ev.target.value); });
       choose(sel);
       document.querySelectorAll('[name="website_sale_main_button"] span').forEach(function (s) { if (s.textContent.trim() === 'Confirm') s.textContent = 'Confirm order'; });
@@ -155,7 +189,7 @@
       document.addEventListener('click', function (ev) {
         var btn = ev.target.closest('[name="website_sale_main_button"]'); if (!btn) return;
         if (!form.checkValidity()) { ev.preventDefault(); ev.stopPropagation(); show(); }
-        else put(sel);
+        else put(sel === PICKUP ? PICKUP : zone());
       }, true);
       form.addEventListener('input', function (ev) {
         var el = ev.target; if (el.classList && el.classList.contains('smb-bad') && el.checkValidity()) {

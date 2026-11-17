@@ -6,7 +6,7 @@ const CATALOG = JSON.parse(document.getElementById("orgData").textContent);
 const WHATSAPP = "96170649386";
 const WHOLESALE_WA = "96178879350";
 const LOGIN = "/web/login?redirect=/";
-const DELIVERY_FEE = 4, FREE_FROM = 40;
+const DELIVERY_FEE = 3, FREE_FROM = 40; // 17 Nov 2026: $3 Beirut & Greater Beirut, $5 other governorates - the fee itself is shown at checkout
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = n => "$" + n.toFixed(2);
@@ -155,7 +155,7 @@ function renderCart() {
   fb.querySelector("i").style.width = Math.max(0, Math.min(100, total / FREE_FROM * 100)) + "%";
   $("cartGrand").textContent = money(total);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
-  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nTotal: ${money(total)}\nDelivery: ${fee ? money(fee) + ", free from " + money(FREE_FROM) + " (or pickup at the shop)" : "free"}\n\nPlease confirm availability and delivery. Thank you!`;
+  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nTotal: ${money(total)}\nDelivery: ${fee ? "$3 Beirut & Greater Beirut, $5 other governorates, free from " + money(FREE_FROM) + " (or pickup at the shop)" : "free"}\n\nPlease confirm availability and delivery. Thank you!`;
   const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
   $("confirm").classList.toggle("busy", !nums.length);
 }
