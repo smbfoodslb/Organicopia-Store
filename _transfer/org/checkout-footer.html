@@ -147,6 +147,8 @@
           if (!AR.test(en.textContent)) en.textContent = (NAMES[en.value] || en.textContent.trim()) + ' \u00b7 ' + o.textContent.trim();
           o.remove();
         });
+        if (!id('smbGovHint')) { var h = document.createElement('small'); h.id = 'smbGovHint'; h.className = 'text-muted'; h.style.display = 'block'; h.style.marginTop = '4px';
+          h.textContent = 'Greater Beirut covers Beirut and nearby areas such as Hazmieh, Jdeideh, Zalka and Jal el Dib. For Antelias, Baabda, Hadath, Khalde and beyond, choose Mount Lebanon.'; s.insertAdjacentElement('afterend', h); }
         var need = sel !== PICKUP; if (s.required !== need) s.required = need;
       };
       var seq = 0;
