@@ -1,0 +1,33 @@
+<form string="Sales Order" create="0" edit="0" delete="0">
+  <div invisible="company_id != 1" style="background:#6b3a2a;color:#ffffff;font-size:20px;font-weight:700;padding:10px 18px;letter-spacing:.5px;">COMPANY: smbfoods</div>
+  <div invisible="company_id != 3" style="background:#123d36;color:#ffffff;font-size:20px;font-weight:700;padding:10px 18px;letter-spacing:.5px;">COMPANY: SMBF — SOUL MIND BODY FOODS SARL</div>
+  <sheet>
+    <div class="oe_title"><h1><field name="name" readonly="1"/></h1></div>
+    <group>
+      <group><field name="partner_id" readonly="1"/><field name="partner_shipping_id" readonly="1"/><field name="client_order_ref" readonly="1"/></group>
+      <group><field name="date_order" readonly="1"/><field name="commitment_date" readonly="1"/><field name="state" readonly="1"/><field name="invoice_status" readonly="1"/><field name="company_id" readonly="1" groups="base.group_multi_company"/></group>
+    </group>
+    <notebook>
+      <page string="Order Lines">
+        <field name="order_line" readonly="1">
+          <list create="0" edit="0" delete="0">
+            <field name="product_id"/>
+            <field name="name"/>
+            <field name="product_uom_qty" string="Ordered"/>
+            <field name="qty_delivered" string="Delivered"/>
+            <field name="qty_invoiced" string="Invoiced"/>
+            <field name="product_uom_id" string="Unit"/>
+            <field name="price_unit"/>
+            <field name="price_subtotal"/>
+          </list>
+        </field>
+        <group class="oe_subtotal_footer">
+          <field name="amount_untaxed" readonly="1"/>
+          <field name="amount_tax" readonly="1"/>
+          <field name="amount_total" readonly="1" class="oe_subtotal_footer_separator"/>
+        </group>
+        <field name="note" readonly="1" placeholder="No note"/>
+      </page>
+    </notebook>
+  </sheet>
+</form>
