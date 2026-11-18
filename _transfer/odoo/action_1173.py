@@ -55,6 +55,25 @@ for order in records:
                 want = round(s.price_total / s.product_uom_qty, 3) if s.product_uom_qty else 0.0
                 if abs(d.price_unit - want) > 0.0005 or d.discount or d.tax_ids:
                     d.write({'price_unit': want, 'discount': 0.0, 'tax_ids': [(6, 0, [])]})
+            # discounts (promotion, coupon, points) go onto the goods lines as a Disc.% - the way the owner wants them
+            # on orders and invoices - and the discount lines stay at 0.00 as a record (same rule as the automation
+            # "Confirmed order: discounts as a % on every line").
+            dlines = env['sale.order.line']
+            glines = env['sale.order.line']
+            for s, d in zip(src, dst):
+                if s.reward_id and s.reward_id.reward_type == 'discount' and s.price_total < 0:
+                    dlines |= d
+                elif not s.reward_id and not s.is_delivery and s.price_total > 0:
+                    glines |= d
+            base = sum(glines.mapped('price_total'))
+            off = -sum(dlines.mapped('price_total'))
+            if dlines and base > 0 and 0 < off <= base:
+                dlines.write({'price_unit': 0.0})
+                nominal = round(off / base * 200.0) / 200.0
+                for k in (1.0 - nominal, 1.0 - off / base):
+                    glines.write({'discount': round(100.0 - 100.0 * k, 2)})
+                    if abs(round(order.amount_total - new.amount_total, 2)) < 0.005:
+                        break
         diff = round(order.amount_total - new.amount_total, 2)
         if abs(diff) >= 0.005:
             rp = env['product.product'].sudo().search([('default_code', '=', ROUND_CODE)], limit=1)
