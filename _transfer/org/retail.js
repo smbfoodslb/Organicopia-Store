@@ -176,7 +176,7 @@ function renderCart() {
   $("cartGrand").textContent = money(pay);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
   const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}${cdisc ? coupons.map(c => `\n${c.name || "Coupon"}${c.code ? " (" + c.code + ")" : ""}: −${money(c.amount)}`).join("") : ""}\nTotal: ${money(pay)}\nDelivery: ${fee ? "$3 Beirut & Greater Beirut, $5 other governorates, free from " + money(FREE_FROM) + " (or pickup at the shop)" : "free"}\n\nPlease confirm availability and delivery. Thank you!`;
-  const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
+  const a = $("checkout"); if (a) { a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true") }  // 18 Nov 2026: the "Send on WhatsApp" button was removed from the page (orders sent that way never reached Odoo)
   $("confirm").classList.toggle("busy", !nums.length);
 }
 
@@ -219,7 +219,7 @@ $("closeModal").onclick = closeModal;
 $("productModal").addEventListener("click", e => { if (e.target === $("productModal")) closeModal() });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); closeWholesale(); closeNotify() } });
 $("confirm").addEventListener("click", e => { if (!Object.keys(cart).length) { e.preventDefault(); toast("Add a product to your basket first.") } });
-$("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your basket first.") } });
+if ($("checkout")) $("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your basket first.") } });
 // ---- Back in stock: the request goes to Odoo as a lead; an automation registers it on the product and
 // a WhatsApp message goes out when stock arrives
 let notifyNum = null;

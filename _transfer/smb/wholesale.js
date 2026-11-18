@@ -166,7 +166,7 @@ function renderCart() {
   $("count").textContent = count; $("cartTotal").textContent = money(total); $("headTotal").textContent = money(total);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `${p.ref} — ${orderLabel(p)} × ${qtyLabel(p, q)} — ${money(unitPrice(p) * q)}` });
   const msg = `Hi SMB Foods, I'd like to order:\n\n${lines.join("\n")}\n\nTotal: ${money(total)} (incl. VAT)\n\nPlease confirm stock, pricing and delivery. Thank you!`;
-  const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
+  const a = $("checkout"); if (a) { a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true") }  // 18 Nov 2026: the "Send on WhatsApp" button was removed from the page (orders sent that way never reached Odoo)
   const c = $("confirm"); if (c) c.classList.toggle("busy", !nums.length);
 }
 
@@ -212,7 +212,7 @@ $("cartOverlay").addEventListener("click", e => { if (e.target === $("cartOverla
 $("closeModal").onclick = closeModal;
 $("productModal").addEventListener("click", e => { if (e.target === $("productModal")) closeModal() });
 document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeCart(); closeNewcust() } });
-$("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your order first.") } });
+if ($("checkout")) $("checkout").addEventListener("click", e => { if ($("checkout").getAttribute("aria-disabled") === "true") { e.preventDefault(); toast("Add a product to your order first.") } });
 
 // ---- New customer form -> WhatsApp
 function openNewcust() { $("newcustModal").hidden = false; $("ncName").focus() }
