@@ -21,10 +21,16 @@ for order in records:
     before = order.amount_total
     keep = 1.0 - off / base
     order = order.with_context(smb_fold=True, smb_delivery_auto=True)
-    for l in goods.with_context(smb_fold=True):
-        l.write({'discount': round(100.0 - (100.0 - l.discount) * keep, 2)})
     disc_lines.with_context(smb_fold=True).write({'price_unit': 0.0})
-    diff = round(before - order.amount_total, 2)
+    start = dict((l.id, l.discount) for l in goods)
+    # try the round figure first (25.00 rather than 25.01); keep it only if the total still matches to the cent
+    nominal = round((1.0 - keep) * 200.0) / 200.0
+    for k in (1.0 - nominal, keep):
+        for l in goods.with_context(smb_fold=True):
+            l.write({'discount': round(100.0 - (100.0 - start[l.id]) * k, 2)})
+        diff = round(before - order.amount_total, 2)
+        if abs(diff) < 0.005:
+            break
     if abs(diff) >= 0.005:
         rp = env['product.product'].sudo().search([('default_code', '=', ROUND_CODE)], limit=1)
         if rp:
