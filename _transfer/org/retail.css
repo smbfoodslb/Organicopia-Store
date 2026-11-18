@@ -309,6 +309,9 @@ footer a{color:var(--band-fg)}
 .drawer-foot .total{display:flex;justify-content:space-between;font-weight:600}
 .drawer-foot .fee{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
 .drawer-foot .fee b{color:var(--good)}
+.rewards{font-size:12.5px;line-height:1.5;color:var(--muted);text-align:center}
+.rewards b{display:block;color:var(--fg)}
+.rewards a,.linkbtn{color:var(--fg);font-weight:600;text-decoration:underline;background:none;border:0;padding:0;font:inherit;cursor:pointer}
 .coupon{display:flex;gap:8px}
 .coupon[hidden]{display:none}
 .coupon input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;padding:10px 14px;background:var(--surface);color:var(--fg);font:inherit;font-size:14px;text-transform:uppercase}

@@ -8,8 +8,12 @@ const CATALOG = JSON.parse(document.getElementById("orgData").textContent);
 // when a code is already on the basket, or for testing with localStorage.orgCouponTest = "1".
 const COUPON_BOX_FROM = Date.parse("2026-11-28T00:00:00+02:00");
 let coupons = CATALOG.coupon || [], couponTimer = 0;
+// ---- Organicopia Rewards (18 Nov 2026): 5 points per $1 paid, 100 points = $1, used in steps of 500 points ($5). Odoo holds
+// the balance and applies the points (reward CATALOG.rewards.reward); the basket shows the balance and offers to use them.
+let REWARDS = CATALOG.rewards || { member: false, points: 0, reward: 0 };
+const PTS_RATE = 5, PTS_STEP = 500;
 const couponBoxOn = () => { if (Date.now() >= COUPON_BOX_FROM || coupons.length) return true; try { return localStorage.getItem("orgCouponTest") === "1" } catch (e) { return false } };
-const couponRefresh = () => fetch("/store", { credentials: "same-origin" }).then(r => r.text()).then(h => { const el = new DOMParser().parseFromString(h, "text/html").getElementById("orgData"); if (el) { coupons = JSON.parse(el.textContent).coupon || []; renderCart() } }).catch(() => {});
+const couponRefresh = () => fetch("/store", { credentials: "same-origin" }).then(r => r.text()).then(h => { const el = new DOMParser().parseFromString(h, "text/html").getElementById("orgData"); if (el) { const fresh = JSON.parse(el.textContent); coupons = fresh.coupon || []; REWARDS = fresh.rewards || REWARDS; renderCart() } }).catch(() => {});
 const couponSoon = () => { clearTimeout(couponTimer); couponTimer = setTimeout(couponRefresh, 700) };
 const WHATSAPP = "96170649386";
 const WHOLESALE_WA = "96178879350";
@@ -155,6 +159,10 @@ function renderCart() {
   const cdisc = nums.length ? Math.round(coupons.reduce((s, c) => s + c.amount, 0) * 100) / 100 : 0, pay = Math.max(0, Math.round((total - cdisc) * 100) / 100);
   const cr = $("cartCoupons"); if (cr) cr.innerHTML = nums.length ? coupons.map(c => `<div class="fee sale"><span>${esc(c.name || "Coupon")}${c.code ? " · " + esc(c.code) : ""}</span><span>−${money(c.amount)}</span></div>`).join("") : "";
   const cbox = $("couponForm"); if (cbox) cbox.hidden = !couponBoxOn();
+  const rb = $("rewardsBox"); if (rb) { const earn = Math.round(pay * PTS_RATE), nf = n => Math.round(n).toLocaleString("en-US"), used = coupons.some(c => c.kind === "points");
+    rb.innerHTML = !REWARDS.member
+      ? `<b>Organicopia Rewards</b>Earn 5 points for every $1. 100 points = $1 off.${nums.length ? ` This order would earn ${nf(earn)} points.` : ""} <a href="/web/signup?redirect=/store">Create a free account</a> or <a href="/web/login?redirect=/store">sign in</a>.`
+      : `<b>Organicopia Rewards</b>You have ${nf(REWARDS.points)} points (${money(REWARDS.points / 100)}).${nums.length ? ` This order earns ${nf(earn)} points.` : ""}` + (used ? "" : REWARDS.points >= PTS_STEP ? (nums.length ? ` <button type="button" class="linkbtn" id="usePoints">Use my points</button>` : "") : ` Points can be used from ${PTS_STEP} points ($5).`) }
   const fee = !nums.length ? 0 : pay >= FREE_FROM ? 0 : DELIVERY_FEE;
   $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
   // 17 Nov 2026: the basket shows the goods total only (what the customer pays after the discount, VAT included) and a bar
@@ -262,6 +270,9 @@ else { let started = false; const start = () => { if (started) return; started =
   const ac = $("accountLi"); if (ac) ac.hidden = locked; const lo = $("logoutLi"); if (lo) lo.hidden = locked;
 })();
 renderCatalog(); renderCart();
+{ const rbox = $("rewardsBox");
+  if (rbox) rbox.addEventListener("click", ev => { if (!ev.target.closest("#usePoints")) return; rbox.classList.add("busy");
+    syncChain = syncChain.then(() => fetch("/shop/claimreward?reward_id=" + REWARDS.reward, { credentials: "same-origin" })).then(() => couponRefresh()).then(() => { if (!coupons.some(c => c.kind === "points")) toast("Your points could not be applied to this basket.") }).catch(() => toast("Could not apply your points. Please try again.")).then(() => rbox.classList.remove("busy")) }) }
 { const cform = $("couponForm");
   if (cform) cform.addEventListener("submit", ev => { ev.preventDefault();
     const inp = $("couponCode"), msg = $("couponMsg"), code = inp.value.trim().toUpperCase(); if (!code) return;
