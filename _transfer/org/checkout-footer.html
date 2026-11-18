@@ -47,7 +47,9 @@
   var NAMES = { '1895': 'Beirut & Greater Beirut', '1899': 'Mount Lebanon (outside Greater Beirut)' }, AR = /[\u0600-\u06FF]/;
   var MAP = 'https://maps.app.goo.gl/a3Eh8v68L6VqcUJJ7';
   var get = function () { try { var f = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return f && Date.now() - f.t < 600000 ? f : null; } catch (e) { return null; } };
-  var put = function (m) { try { sessionStorage.setItem(KEY, JSON.stringify({ m: m, t: Date.now() })); return true; } catch (e) { return false; } };
+  var put = function (m, d) { try { sessionStorage.setItem(KEY, JSON.stringify({ m: m, t: Date.now(), d: d || 0 })); return true; } catch (e) { return false; } };
+  /* total of the discounts Odoo reports for the order (promotion, coupon) */
+  var disc = function (r) { return Math.round((r.discount_reward_amounts || []).reduce(function (s, x) { return s + Math.abs(num(x)); }, 0) * 100) / 100; };
   var drop = function () { try { sessionStorage.removeItem(KEY); } catch (e) {} };
   var call = function (url, params) { return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: params }) }).then(function (r) { return r.json(); }).then(function (j) { if (j.error || !j.result || !j.result.success) throw new Error('refused'); return j.result; }); };
   var num = function (h) { return parseFloat(String(h == null ? '' : h).replace(/<[^>]*>/g, '').replace(/[^\d.\-]/g, '')) || 0; };
@@ -60,7 +62,16 @@
       /* arriving from the details page (Odoo sends a new customer to /shop/checkout?try_skip_step=true and a
          returning one to plain /shop/checkout): store the chosen method, go on to the last page */
       var v1 = veil();
-      call('/shop/set_delivery_method', { dm_id: parseInt(flow.m, 10) }).then(function () { location.replace('/shop/payment'); }).catch(function () { drop(); v1.remove(); });
+      call('/shop/set_delivery_method', { dm_id: parseInt(flow.m, 10) }).then(function (r) {
+        /* a coupon can be withdrawn once the phone number is known (one use per number): tell the customer before submitting */
+        if (flow.d && disc(r) < flow.d - 0.004) {
+          v1.innerHTML = '<div style="max-width:420px;padding:24px;text-align:center;font-weight:400;font-size:16px"><p style="font-weight:600;font-size:18px">Your coupon code could not be applied</p><p>It has already been used with this phone number. Your total is now <b>' + money(num(r.amount_total)) + '</b>.</p><p><button type="button" id="smbGo" class="btn btn-primary w-100" style="margin-bottom:10px">Confirm order</button><a href="/store" id="smbBack">Back to the store</a></p></div>';
+          document.getElementById('smbGo').addEventListener('click', function () { location.replace('/shop/payment'); });
+          document.getElementById('smbBack').addEventListener('click', drop);
+          return;
+        }
+        location.replace('/shop/payment');
+      }).catch(function () { drop(); v1.remove(); });
     } else if (/[?&]from=store/.test(location.search)) {
       /* a customer whose details are already saved: open the same one page, filled in */
       var ed = document.querySelector('main a[href*="/shop/address?"][href*="partner_id="]');
@@ -114,7 +125,7 @@
         '<div class="smb-bar" id="smbBar"><div id="smbBarTxt"></div><div class="smb-track"><i id="smbBarFill"></i></div></div>';
       form.parentNode.insertBefore(ship, form);
       var sum = document.createElement('div'); sum.id = 'smbSum';
-      sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
+      sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div class="r" id="smbDiscRow" style="display:none"><span>Discounts included</span><span id="smbDisc"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
       /* phones: under the form. Desktop: in Odoo's right-hand card, in place of its own totals (which do not follow the choice) */
       var oc = document.querySelector('.o_total_card .o_cart_total');
       if (oc && oc.offsetParent !== null) { oc.style.display = 'none'; oc.parentNode.insertBefore(sum, oc); sum.style.margin = '0 0 14px'; } else form.appendChild(sum);
@@ -151,13 +162,14 @@
           h.textContent = 'Greater Beirut covers Beirut and nearby areas such as Hazmieh, Jdeideh, Zalka and Jal el Dib. For Antelias, Baabda, Hadath, Khalde and beyond, choose Mount Lebanon.'; s.insertAdjacentElement('afterend', h); }
         var need = sel !== PICKUP; if (s.required !== need) s.required = need;
       };
-      var seq = 0;
+      var seq = 0, lastDisc = 0;
       var refresh = function () {
         var pick = sel === PICKUP, c = pick ? PICKUP : zone();
         var fee = pick || goods >= FREE_FROM ? 0 : (c ? FEES[c] : null); paint(goods, fee, goods + (fee || 0));
         if (!c) return;
         var tag = ++seq;
-        call('/shop/set_delivery_method', { dm_id: parseInt(c, 10) }).then(function (r) { if (tag !== seq) return; var tot = num(r.amount_total), del = num(r.amount_delivery); goods = Math.round((tot - del) * 100) / 100; paint(goods, del, tot); }).catch(function () {});
+        call('/shop/set_delivery_method', { dm_id: parseInt(c, 10) }).then(function (r) { if (tag !== seq) return; var tot = num(r.amount_total), del = num(r.amount_delivery); goods = Math.round((tot - del) * 100) / 100; paint(goods, del, tot);
+          lastDisc = disc(r); id('smbDiscRow').style.display = lastDisc > 0 ? '' : 'none'; id('smbDisc').textContent = '\u2212' + money(lastDisc); }).catch(function () {});
       };
       var choose = function (m) {
         sel = m; var pick = m === PICKUP;
@@ -192,7 +204,7 @@
       document.addEventListener('click', function (ev) {
         var btn = ev.target.closest('[name="website_sale_main_button"]'); if (!btn) return;
         if (!form.checkValidity()) { ev.preventDefault(); ev.stopPropagation(); show(); }
-        else put(sel === PICKUP ? PICKUP : zone());
+        else put(sel === PICKUP ? PICKUP : zone(), lastDisc);
       }, true);
       form.addEventListener('input', function (ev) {
         var el = ev.target; if (el.classList && el.classList.contains('smb-bad') && el.checkValidity()) {

@@ -31,7 +31,7 @@ for order in records:
         if l.is_delivery:
             vals['is_delivery'] = True
         lines.append((0, 0, vals))
-    SO = env['sale.order'].with_company(1).with_context(allowed_company_ids=[1, 3], default_company_id=1, smb_delivery_auto=True)
+    SO = env['sale.order'].with_company(1).with_context(allowed_company_ids=[1, 3], default_company_id=1, smb_delivery_auto=True, smb_move=True)
     vals = {
         'company_id': 1,
         'partner_id': order.partner_id.id,

@@ -309,6 +309,13 @@ footer a{color:var(--band-fg)}
 .drawer-foot .total{display:flex;justify-content:space-between;font-weight:600}
 .drawer-foot .fee{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
 .drawer-foot .fee b{color:var(--good)}
+.coupon{display:flex;gap:8px}
+.coupon[hidden]{display:none}
+.coupon input{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:999px;padding:10px 14px;background:var(--surface);color:var(--fg);font:inherit;font-size:14px;text-transform:uppercase}
+.coupon input::placeholder{text-transform:none}
+.drawer-foot .coupon .btn{width:auto;padding:10px 18px}
+.drawer-foot .note.ok{color:var(--good)}
+.drawer-foot .note.bad{color:var(--bad)}
 .freebar{font-size:13px;color:var(--muted)}
 .freebar b{color:var(--fg)}
 .freebar .track{height:8px;border-radius:999px;background:var(--line);overflow:hidden;margin-top:6px}

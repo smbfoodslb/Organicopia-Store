@@ -3,6 +3,14 @@ basket come from Odoo (embedded in #orgData; the basket is the website sale orde
 quantity; the unit price is whatever the pricelist gives at that quantity. Checkout goes to Odoo's cart;
 WhatsApp is the alternative. */
 const CATALOG = JSON.parse(document.getElementById("orgData").textContent);
+// ---- coupon codes (18 Nov 2026): Odoo applies and prices a code; the basket only shows what the server says (CATALOG.coupon =
+// the code-based discount lines of the cart). The box appears from COUPON_BOX_FROM (HOLIDAY10 starts that day), or earlier
+// when a code is already on the basket, or for testing with localStorage.orgCouponTest = "1".
+const COUPON_BOX_FROM = Date.parse("2026-11-28T00:00:00+02:00");
+let coupons = CATALOG.coupon || [], couponTimer = 0;
+const couponBoxOn = () => { if (Date.now() >= COUPON_BOX_FROM || coupons.length) return true; try { return localStorage.getItem("orgCouponTest") === "1" } catch (e) { return false } };
+const couponRefresh = () => fetch("/store", { credentials: "same-origin" }).then(r => r.text()).then(h => { const el = new DOMParser().parseFromString(h, "text/html").getElementById("orgData"); if (el) { coupons = JSON.parse(el.textContent).coupon || []; renderCart() } }).catch(() => {});
+const couponSoon = () => { clearTimeout(couponTimer); couponTimer = setTimeout(couponRefresh, 700) };
 const WHATSAPP = "96170649386";
 const WHOLESALE_WA = "96178879350";
 const LOGIN = "/web/login?redirect=/";
@@ -62,7 +70,7 @@ function syncQty(num, q, prev) {
     if (w) { toast(w); if (prev > 0) cart[num] = prev; else delete cart[num]; renderCart(); updateCard(num); return }
     const ln = r && r.notification_info && r.notification_info.lines && r.notification_info.lines[0];
     if (ln) LINES[num] = ln.id;
-  }).catch(e => { toast("Could not update your basket. Please try again."); console.error(e) });
+  }).then(() => { if (coupons.length) couponSoon() }).catch(e => { toast("Could not update your basket. Please try again."); console.error(e) });
 }
 
 let query = "", cats = CATALOG.categories.filter(c => c.items.length).map(c => c.title), category = cats[0] || "";
@@ -143,19 +151,23 @@ function renderCart() {
   $("cartItems").innerHTML = rows.length ? rows.join("") : `<p style="padding:28px 0;color:var(--muted)">${saleOn() ? "Your basket is empty. Pick a product — 25% comes off at checkout." : "Your basket is empty. Pick a product and choose ×1, ×3 or ×6."}</p>`;
   const disc = saleOn() ? Math.round(nums.reduce((s, n) => s + savings(byNum[n], cart[n]), 0) * 100) / 100 : 0;  // unit prices are already the sale prices; disc is what was taken off
   const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
-  const fee = !nums.length ? 0 : total >= FREE_FROM ? 0 : DELIVERY_FEE;
+  // code-based discounts come from the server; "pay" is the goods total after them, and every threshold below measures it
+  const cdisc = nums.length ? Math.round(coupons.reduce((s, c) => s + c.amount, 0) * 100) / 100 : 0, pay = Math.max(0, Math.round((total - cdisc) * 100) / 100);
+  const cr = $("cartCoupons"); if (cr) cr.innerHTML = nums.length ? coupons.map(c => `<div class="fee sale"><span>${esc(c.name || "Coupon")}${c.code ? " · " + esc(c.code) : ""}</span><span>−${money(c.amount)}</span></div>`).join("") : "";
+  const cbox = $("couponForm"); if (cbox) cbox.hidden = !couponBoxOn();
+  const fee = !nums.length ? 0 : pay >= FREE_FROM ? 0 : DELIVERY_FEE;
   $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
   // 17 Nov 2026: the basket shows the goods total only (what the customer pays after the discount, VAT included) and a bar
   // measuring that same number against the free-delivery mark. The delivery fee is shown at checkout, where Delivery or
   // Pickup is chosen - adding it here pushed the total over $40 while the bar still asked for more.
   const cf = $("cartFee"); if (cf) cf.parentNode.hidden = true;
   let fb = $("freeBar"); if (!fb) { fb = document.createElement("div"); fb.id = "freeBar"; fb.className = "freebar"; fb.innerHTML = '<div class="t"></div><div class="track"><i></i></div>'; const g = $("cartGrand").parentNode; g.parentNode.insertBefore(fb, g.nextSibling) }
-  const left = FREE_FROM - total;
-  fb.querySelector(".t").innerHTML = !nums.length ? `Free delivery from ${money(FREE_FROM)}` : left > 0.004 ? `${money(total)} of ${money(FREE_FROM)} · add <b>${money(left)}</b> more for free delivery` : "<b>You have free delivery</b>";
-  fb.querySelector("i").style.width = Math.max(0, Math.min(100, total / FREE_FROM * 100)) + "%";
-  $("cartGrand").textContent = money(total);
+  const left = FREE_FROM - pay;
+  fb.querySelector(".t").innerHTML = !nums.length ? `Free delivery from ${money(FREE_FROM)}` : left > 0.004 ? `${money(pay)} of ${money(FREE_FROM)} · add <b>${money(left)}</b> more for free delivery` : "<b>You have free delivery</b>";
+  fb.querySelector("i").style.width = Math.max(0, Math.min(100, pay / FREE_FROM * 100)) + "%";
+  $("cartGrand").textContent = money(pay);
   const lines = nums.map(n => { const p = byNum[n], q = cart[n]; return `• ${q} × ${p.name}${subText(p) ? " (" + subText(p) + ")" : ""} — ${money(unitPrice(p, q) * q)}` });
-  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}\nTotal: ${money(total)}\nDelivery: ${fee ? "$3 Beirut & Greater Beirut, $5 other governorates, free from " + money(FREE_FROM) + " (or pickup at the shop)" : "free"}\n\nPlease confirm availability and delivery. Thank you!`;
+  const msg = `Hello Organicopia! I'd like to order:\n${lines.join("\n")}\n\nSubtotal: ${money(total + disc)} (incl. VAT)${disc ? `\nBlack Friday −${SALE.pct}%: −${money(disc)}` : ""}${cdisc ? coupons.map(c => `\n${c.name || "Coupon"}${c.code ? " (" + c.code + ")" : ""}: −${money(c.amount)}`).join("") : ""}\nTotal: ${money(pay)}\nDelivery: ${fee ? "$3 Beirut & Greater Beirut, $5 other governorates, free from " + money(FREE_FROM) + " (or pickup at the shop)" : "free"}\n\nPlease confirm availability and delivery. Thank you!`;
   const a = $("checkout"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.setAttribute("aria-disabled", nums.length ? "false" : "true");
   $("confirm").classList.toggle("busy", !nums.length);
 }
@@ -250,6 +262,16 @@ else { let started = false; const start = () => { if (started) return; started =
   const ac = $("accountLi"); if (ac) ac.hidden = locked; const lo = $("logoutLi"); if (lo) lo.hidden = locked;
 })();
 renderCatalog(); renderCart();
+{ const cform = $("couponForm");
+  if (cform) cform.addEventListener("submit", ev => { ev.preventDefault();
+    const inp = $("couponCode"), msg = $("couponMsg"), code = inp.value.trim().toUpperCase(); if (!code) return;
+    const say = (t, ok) => { msg.textContent = t; msg.hidden = false; msg.className = "note " + (ok ? "ok" : "bad") };
+    if (!Object.keys(cart).length) { say("Add something to your basket first."); return }
+    cform.classList.add("busy");
+    syncChain = syncChain.then(() => fetch("/shop/pricelist?promo=" + encodeURIComponent(code), { credentials: "same-origin" })).then(r => r.text()).then(h => {
+      const doc = new DOMParser().parseFromString(h, "text/html"), ok = doc.querySelector("main .alert-success"), bad = doc.querySelector("main .alert-danger");
+      if (ok && !bad) { say("Code " + code + " applied.", true); inp.value = "" } else say(bad ? bad.textContent.replace(/\s+/g, " ").trim() : "This code could not be applied.");
+      return couponRefresh() }).catch(() => say("Could not check the code. Please try again.")).then(() => cform.classList.remove("busy")) }) }
 
 // ---- Black Friday banner + popup ----
 (function () {
