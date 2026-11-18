@@ -83,6 +83,12 @@ for order in records:
         if abs(round(order.amount_total - new.amount_total, 2)) >= 0.005:
             raise UserError("Not moved: the smbfoods total (%.2f) would not match the website total (%.2f)." % (new.amount_total, order.amount_total))
     if retail:
+        # Rewards points spent on this order: SMBF never confirmed it, so Odoo has not taken them from the card yet,
+        # and the smbfoods copy is not linked to the program - take them now and write it in the card's history.
+        for s in order.order_line.filtered(lambda l: l.reward_id and l.coupon_id and l.points_cost > 0 and l.reward_id.program_id.program_type == 'loyalty'):
+            s.coupon_id.sudo().write({'points': s.coupon_id.points - s.points_cost})
+            env['loyalty.history'].sudo().create({'card_id': s.coupon_id.id, 'order_model': 'sale.order', 'order_id': new.id, 'description': 'Rewards: spent on %s' % new.name, 'used': s.points_cost})
+    if retail:
         new.message_post(body='Moved from SMBF quotation %s (customer %s). Total kept at %.2f, VAT included in the line prices.' % (order.name, order.partner_id.name, order.amount_total))
     else:
         new.message_post(body='Moved from SMBF quotation %s (wholesale, customer %s). Prices without VAT.' % (order.name, order.partner_id.name))
