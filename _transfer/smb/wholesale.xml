@@ -149,7 +149,7 @@
   <div class="drawer-foot">
     <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span class="num" id="cartTotal">$0.00</span></div>
     <label class="locrow" id="locRow" hidden=""><span>Deliver to</span><select id="locSel"/></label><a class="btn primary" id="confirm" href="/shop/cart">Review &amp; confirm order →</a>
-    <p class="note">Your order is saved to your account as you add items. Our team confirms stock, pricing and delivery either way.</p>
+    <p class="note">Your order is saved to your account as you add items. Our team confirms stock, pricing and delivery.</p>
   </div>
 </aside></div>
 
