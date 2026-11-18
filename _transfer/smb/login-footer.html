@@ -1,0 +1,53 @@
+
+<!-- SMB-LOGIN-START -->
+<script>
+(function(){
+  if (location.pathname !== '/web/login') return;
+  function init(){
+    var input = document.getElementById('login');
+    var form = input && input.closest('form');
+    if (!input || !form || input.dataset.smbPhone) return;
+    input.dataset.smbPhone = '1';
+    var label = form.querySelector('label[for="login"]');
+    if (label) label.textContent = 'Phone number';
+    input.type = 'text'; input.setAttribute('inputmode','tel'); input.autocomplete = 'username';
+    input.placeholder = 'e.g. 70123456';
+    var v = input.value || '';
+    if (/@smbfoods-lb\.com$/i.test(v)) input.value = v.replace(/@smbfoods-lb\.com$/i,'');
+    var hint = document.createElement('div');
+    hint.className = 'small text-muted mt-1';
+    hint.textContent = 'Use the phone number registered with SMB Foods.';
+    input.insertAdjacentElement('afterend', hint);
+    var title = document.createElement('h2'); title.className = 'smb-login-title'; title.textContent = 'Wholesale customer login';
+    var sub = document.createElement('p'); sub.className = 'smb-login-sub'; sub.textContent = 'Prices and ordering are for registered SMB Foods wholesale customers.';
+    form.insertAdjacentElement('beforebegin', sub); form.insertAdjacentElement('beforebegin', title);
+    var help = document.createElement('p');
+    help.className = 'smb-login-help';
+    help.innerHTML = 'Forgot your password? Message our wholesale team on WhatsApp: <a href="https://wa.me/96178879350" target="_blank" rel="noopener">+961 78 879 350</a>';
+    form.insertAdjacentElement('afterend', help);
+    /* 15 Nov 2026: a clear way in for new customers */
+    var neu = document.createElement('a');
+    neu.className = 'smb-login-new'; neu.href = '/wholesale#new-customer';
+    neu.textContent = 'New customer? Open a wholesale account';
+    neu.style.cssText = 'display:block;text-align:center;margin:22px 0 12px;padding:11px 16px;border:1.5px solid #143D36;border-radius:8px;color:#143D36;font-weight:600;text-decoration:none';
+    form.insertAdjacentElement('afterend', neu);
+    /* 18 Nov 2026: staff (the shop tablet) sign in with an e-mail address; the phone keypad of a tablet has no letters */
+    var staff = document.createElement('a');
+    staff.href = '#'; staff.textContent = 'Team member? Sign in with email';
+    staff.style.cssText = 'display:block;text-align:center;margin:14px 0 0;font-size:13px;color:#143D36';
+    staff.addEventListener('click', function(ev){ ev.preventDefault(); if (label) label.textContent = 'Email'; input.type = 'email'; input.setAttribute('inputmode','email'); input.placeholder = 'name@smbfoods-lb.com'; hint.textContent = ''; input.value = ''; input.focus(); });
+    form.insertAdjacentElement('afterend', staff);
+    form.addEventListener('submit', function(){
+      var val = (input.value || '').trim();
+      if (val && val.indexOf('@') === -1) {
+        var digits = val.replace(/[^0-9]/g,'');
+        if (digits.indexOf('961') === 0 && digits.length > 8) digits = digits.slice(3);
+        if (digits.length === 7) digits = '0' + digits;
+        input.value = digits + '@smbfoods-lb.com';
+      }
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+<!-- SMB-LOGIN-END -->
