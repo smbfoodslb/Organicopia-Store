@@ -169,7 +169,10 @@
         if (!c) return;
         var tag = ++seq;
         call('/shop/set_delivery_method', { dm_id: parseInt(c, 10) }).then(function (r) { if (tag !== seq) return; var tot = num(r.amount_total), del = num(r.amount_delivery); goods = Math.round((tot - del) * 100) / 100; paint(goods, del, tot);
-          lastDisc = disc(r); id('smbDiscRow').style.display = lastDisc > 0 ? '' : 'none'; id('smbDisc').textContent = '\u2212' + money(lastDisc); }).catch(function () {});
+          lastDisc = disc(r);
+          /* shown amount: the discount lines of Odoo's own order summary (VAT included); the figure in the answer is without VAT */
+          var shown = 0, tb = document.querySelector('.o_cart_products_table'); if (tb) tb.querySelectorAll('[data-reward-type] .oe_currency_value').forEach(function (x) { shown += Math.abs(num(x.textContent)); });
+          id('smbDiscRow').style.display = lastDisc > 0 && shown > 0 ? '' : 'none'; id('smbDisc').textContent = '\u2212' + money(shown); }).catch(function () {});
       };
       var choose = function (m) {
         sel = m; var pick = m === PICKUP;

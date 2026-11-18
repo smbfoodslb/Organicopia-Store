@@ -271,7 +271,8 @@ renderCatalog(); renderCart();
     syncChain = syncChain.then(() => fetch("/shop/pricelist?promo=" + encodeURIComponent(code), { credentials: "same-origin" })).then(r => r.text()).then(h => {
       const doc = new DOMParser().parseFromString(h, "text/html"), ok = doc.querySelector("main .alert-success"), bad = doc.querySelector("main .alert-danger");
       if (ok && !bad) { say("Code " + code + " applied.", true); inp.value = "" } else say(bad ? bad.textContent.replace(/\s+/g, " ").trim() : "This code could not be applied.");
-      return couponRefresh() }).catch(() => say("Could not check the code. Please try again.")).then(() => cform.classList.remove("busy")) }) }
+      // one use per phone number: the server withdraws such a code right after "applying" it
+      return couponRefresh().then(() => { if (ok && !bad && !coupons.some(c => c.code === code)) say("This code has already been used with this phone number.") }) }).catch(() => say("Could not check the code. Please try again.")).then(() => cform.classList.remove("busy")) }) }
 
 // ---- Black Friday banner + popup ----
 (function () {
