@@ -58,8 +58,9 @@ for order in records:
             # discounts (promotion, coupon, points) go onto the goods lines as a Disc.% - the way the owner wants them
             # on orders and invoices - and the discount lines stay at 0.00 as a record (same rule as the automation
             # "Confirmed order: discounts as a % on every line").
-            dlines = env['sale.order.line']
-            glines = env['sale.order.line']
+            # (recordsets taken from the NEW order's environment: it carries both companies, the user's screen may show only SMBF)
+            dlines = new.env['sale.order.line']
+            glines = new.env['sale.order.line']
             for s, d in zip(src, dst):
                 if s.reward_id and s.reward_id.reward_type == 'discount' and s.price_total < 0:
                     dlines |= d
