@@ -244,12 +244,16 @@ $("wholesaleModal").addEventListener("click", e => { if (e.target === $("wholesa
 $("whForm").addEventListener("submit", e => {
   e.preventDefault();
   const f = $("whForm"); f.querySelectorAll("input,select,textarea").forEach(x => x.classList.add("touched"));
-  if (!f.checkValidity()) { $("whErr").hidden = false; f.querySelector(":invalid")?.focus(); return }
+  if (!f.checkValidity()) { $("whErr").textContent = "Please fill in the required fields."; $("whErr").hidden = false; f.querySelector(":invalid")?.focus(); return }
   $("whErr").hidden = true;
   const v = id => $(id).value.trim();
-  const msg = `Hello Organicopia, I'm interested in wholesale.\n\nName: ${v("whName")}\nBusiness: ${v("whBiz")}\nPhone: ${v("whPhone")}\nLocation: ${v("whLoc")}\nInterest: ${v("whReason")}${v("whAbout") ? "\nAbout the business: " + v("whAbout") : ""}\n\nPlease get in touch. Thank you!`;
-  const a = document.createElement("a"); a.href = "https://wa.me/" + WHOLESALE_WA + "?text=" + encodeURIComponent(msg); a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
-  closeWholesale(); toast("Opening WhatsApp with your inquiry…");
+  // 18 Nov 2026: the inquiry is saved in Odoo (a pending "Wholesale request" lead, same list as the SMB Foods site) instead of
+  // opening WhatsApp - before this it was never recorded anywhere. The form stays open with a message if the save fails.
+  const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("name", "Wholesale account request"); fd.append("contact_name", v("whName")); fd.append("partner_name", v("whBiz")); fd.append("phone", v("whPhone")); fd.append("email_from", v("whEmail")); fd.append("x_req_type", "Organicopia site: " + v("whReason")); fd.append("x_req_location", v("whLoc")); fd.append("description", v("whAbout"));
+  const btn = $("whSubmit"); btn.disabled = true;
+  fetch("/website/form/crm.lead", { method: "POST", body: fd }).then(r => r.json()).then(j => { if (!j || !j.id) throw new Error("no id"); f.reset(); f.querySelectorAll(".touched").forEach(x => x.classList.remove("touched")); closeWholesale(); toast("Request sent. Our wholesale team will contact you shortly.") })
+    .catch(() => { $("whErr").textContent = "Sorry, your request did not go through. Please try again, or call us on +961 78 879 350."; $("whErr").hidden = false })
+    .then(() => { btn.disabled = false });
 });
 if (location.hash === "#wholesale") openWholesale();
 // built-in /shop/<product> pages redirect here as /store#p<template id>: scroll to that product and open it

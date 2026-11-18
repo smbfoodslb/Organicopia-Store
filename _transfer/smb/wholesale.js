@@ -222,17 +222,16 @@ $("newcustModal").addEventListener("click", e => { if (e.target === $("newcustMo
 $("ncForm").addEventListener("submit", e => {
   e.preventDefault();
   const f = $("ncForm"); f.querySelectorAll("input,select,textarea").forEach(x => x.classList.add("touched"));
-  if (!f.checkValidity()) { $("ncErr").hidden = false; f.querySelector(":invalid")?.focus(); return }
+  if (!f.checkValidity()) { $("ncErr").textContent = "Please fill in the required fields."; $("ncErr").hidden = false; f.querySelector(":invalid")?.focus(); return }
   $("ncErr").hidden = true;
   const v = id => $(id).value.trim();
-  // Odoo first (a pending "Wholesale request" lead the team approves), then WhatsApp as before; the lead is never blocking
-  try {
-    const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("name", "Wholesale account request"); fd.append("contact_name", v("ncName")); fd.append("partner_name", v("ncBiz")); fd.append("phone", v("ncPhone")); fd.append("email_from", v("ncEmail")); fd.append("x_req_type", v("ncType")); fd.append("x_req_location", v("ncLoc")); fd.append("x_req_vat", v("ncVat")); fd.append("description", v("ncAbout"));
-    fetch("/website/form/crm.lead", { method: "POST", body: fd }).catch(() => {});
-  } catch (e) {}
-  const msg = `Hello SMB Foods, I'd like to open a wholesale account.\n\nName: ${v("ncName")}\nBusiness: ${v("ncBiz")}\nType: ${v("ncType")}\nPhone: ${v("ncPhone")}\nEmail: ${v("ncEmail")}\nLocation: ${v("ncLoc")}${v("ncVat") ? "\nVAT registration no.: " + v("ncVat") : ""}${v("ncAbout") ? "\nAbout the business: " + v("ncAbout") : ""}\n\nPlease get in touch. Thank you!`;
-  const a = document.createElement("a"); a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(msg); a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove();
-  closeNewcust(); toast("Opening WhatsApp with your details…");
+  // 18 Nov 2026: the request is saved in Odoo only (a pending "Wholesale request" lead the team approves) - no WhatsApp step.
+  // If the save fails the form stays open with a message, so a request is never lost silently.
+  const fd = new FormData(); fd.append("csrf_token", CATALOG.csrf || ""); fd.append("name", "Wholesale account request"); fd.append("contact_name", v("ncName")); fd.append("partner_name", v("ncBiz")); fd.append("phone", v("ncPhone")); fd.append("email_from", v("ncEmail")); fd.append("x_req_type", v("ncType")); fd.append("x_req_location", v("ncLoc")); fd.append("x_req_vat", v("ncVat")); fd.append("description", v("ncAbout"));
+  const btn = $("ncSubmit"); btn.disabled = true;
+  fetch("/website/form/crm.lead", { method: "POST", body: fd }).then(r => r.json()).then(j => { if (!j || !j.id) throw new Error("no id"); f.reset(); f.querySelectorAll(".touched").forEach(x => x.classList.remove("touched")); closeNewcust(); toast("Request sent. Our wholesale team will contact you shortly.") })
+    .catch(() => { $("ncErr").textContent = "Sorry, your request did not go through. Please try again, or call us on +961 78 879 350."; $("ncErr").hidden = false })
+    .then(() => { btn.disabled = false });
 });
 if (location.hash === "#new-customer") setTimeout(openNewcust, 300);
 // built-in /shop/<product> pages redirect here as /wholesale#p<template id>: scroll to that product and open it

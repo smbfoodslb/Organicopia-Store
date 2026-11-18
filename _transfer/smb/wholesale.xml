@@ -130,7 +130,7 @@
     <div class="step"><div class="num">2</div><h3>Confirm your order</h3><p>Review your order, confirm it, and it lands with our team as a sales order.</p></div>
     <div class="step"><div class="num">3</div><h3>We confirm</h3><p>Our team replies to confirm stock, final pricing and delivery or pickup for your location.</p></div>
   </div>
-  <div class="cta-band" id="new-customer"><div><h3>New to SMB Foods?</h3><p>Tell us about your business and we'll set you up on WhatsApp with pricing, a catalog and a point of contact.</p></div><button class="btn" type="button" data-newcust="">Open an account →</button></div>
+  <div class="cta-band" id="new-customer"><div><h3>New to SMB Foods?</h3><p>Tell us about your business and we'll set you up with pricing, a catalog and a point of contact.</p></div><button class="btn" type="button" data-newcust="">Open an account →</button></div>
 </section>
 </main>
 
@@ -174,7 +174,7 @@
   <form id="ncForm" novalidate="">
     <div class="eyebrow">New customer account</div>
     <h2 id="ncTitle">Open a wholesale account.</h2>
-    <p class="sub">A few details about your business and we'll continue on WhatsApp with pricing, the catalog and your point of contact.</p>
+    <p class="sub">A few details about your business and our team will contact you with pricing, the catalog and your point of contact.</p>
     <div class="fields">
       <label>Full name (first and last)<input id="ncName" name="name" type="text" autocomplete="name" required="" pattern="\S+\s+\S+.*" title="First and last name"/></label>
       <label>Business name<input id="ncBiz" name="business" type="text" autocomplete="organization" required=""/></label>
@@ -186,8 +186,8 @@
       <label class="full">About your business <span class="opt">(optional)</span><textarea id="ncAbout" name="about" rows="3" maxlength="400" placeholder="Number of locations, products you're interested in, expected volumes..."/></label>
     </div>
     <p class="err" id="ncErr" hidden="">Please fill in the required fields.</p>
-    <button class="btn wa" id="ncSubmit" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12Z"/></svg>Send on WhatsApp</button>
-    <p class="note">Opens WhatsApp with your details pre-filled for our wholesale team (+961 78 879 350). Nothing is sent until you press send.</p>
+    <button class="btn primary" id="ncSubmit" type="submit">Send request</button>
+    <p class="note">Your request goes straight to our wholesale team (+961 78 879 350).</p>
   </form>
 </div></div>
 
@@ -195,7 +195,7 @@
 
 
 <div id="smbData" hidden="hidden" t-out="json.dumps(data)"/>
-<script src="/smb/wholesale.js?v=fcd128f1"/>
+<script src="/smb/wholesale.js?v=e5029baf"/>
 </body>
 </html>
 </t>
