@@ -1,0 +1,6 @@
+<data inherit_id="mail.mail_notification_layout_with_responsible_signature">
+  <xpath expr="//t[@t-set='show_header']" position="after">
+    <!-- SMB, 21 Nov 2026: the "we received your order" email carries no "View Quotation" button and no Odoo footer -->
+    <t t-if="record and record._name == 'sale.order' and message and 'we received your order' in (message.subject or '')" t-set="show_header" t-value="False"/>
+  </xpath>
+</data>

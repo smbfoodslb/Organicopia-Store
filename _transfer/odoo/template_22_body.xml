@@ -1,3 +1,5 @@
+<div style="margin: 0px; padding: 0px;">
+<t t-set="transaction_sudo" t-value="object.get_portal_last_transaction()"/>
 <t t-if="transaction_sudo and transaction_sudo.state == 'pending' and transaction_sudo.provider_code == 'custom' and object.website_id.id == 1">
 <!-- SMB, 21 Nov 2026: Organicopia retail order email - line by line, branded, no PDF -->
 <t t-set="o_lines" t-value="object.order_line.filtered(lambda l: not l.display_type)"/>
@@ -91,3 +93,60 @@ Need to change something? Reply to this email or message us on WhatsApp at +961 
 </td></tr>
 </table>
 </t>
+<t t-else="">
+    <p style="margin: 0px; padding: 0px; font-size: 12px;">
+        <t t-if="transaction_sudo and transaction_sudo.state == 'pending' and transaction_sudo.provider_code == 'custom'">
+            <!-- SMB, 16 Nov 2026: pay-on-delivery website orders - no "payment pending" wording -->
+            Hello <t t-out="object.partner_id.name or ''"/>,
+            <br/><br/>
+            Thank you for your order <span style="font-weight:bold;" t-out="object.name or ''">S00049</span>
+            of <span style="font-weight:bold;" t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 10.00</span>. We have received it.
+            <br/><br/>
+            <t t-foreach="object.order_line.filtered(lambda l: not l.display_type)" t-as="line">
+                <t t-out="'%g' % line.product_uom_qty"/> x <t t-out="(line.name or '').split('\n')[0].split('] ', 1)[-1]"/><br/>
+            </t>
+            <br/>
+            Our team will contact you to confirm stock, final pricing and delivery. You pay on delivery.
+            <br/><br/>
+            Thank you,<br/>SMB Foods
+        </t>
+        <t t-else="">
+        Hello,
+        <br/><br/>
+        A payment with reference
+        <span style="font-weight:bold;" t-out="transaction_sudo.reference or ''">SOOO49</span>
+        amounting
+        <span style="font-weight:bold;" t-out="format_amount(transaction_sudo.amount, object.currency_id) or ''">$ 10.00</span>
+        for your order
+        <span style="font-weight:bold;" t-out="object.name or ''">S00049</span>
+        <t t-if="transaction_sudo and transaction_sudo.state == 'pending'">
+            is pending.
+            <br/>
+            <t t-if="object.currency_id.compare_amounts(object.amount_paid + transaction_sudo.amount, object.amount_total) &gt;= 0 and object.state in ('draft', 'sent')">
+                Your order will be confirmed once the payment is confirmed.
+            </t>
+            <t t-else="">
+                Once confirmed,
+                <span style="font-weight:bold;" t-out="format_amount(object.amount_total - object.amount_paid - transaction_sudo.amount, object.currency_id) or ''">$ 10.00</span>
+                will remain to be paid.
+            </t>
+        </t>
+        <t t-else="">
+            has been confirmed.
+            <t t-if="object.currency_id.compare_amounts(object.amount_paid, object.amount_total) &lt; 0">
+                <br/>
+                <span style="font-weight:bold;" t-out="format_amount(object.amount_total - object.amount_paid, object.currency_id) or ''">$ 10.00</span>
+                remains to be paid.
+            </t>
+        </t>
+        <br/><br/>
+        Thank you for your trust!
+        <br/>
+        Do not hesitate to contact us if you have any questions.
+        <t t-if="not is_html_empty(object.user_id.signature)" data-o-mail-quote-container="1">
+            <div data-o-mail-quote="1">--<br data-o-mail-quote="1"/><t t-out="object.user_id.signature or ''" data-o-mail-quote="1">Mitchell Admin</t></div>
+        </t>
+        </t>
+    </p>
+</t>
+</div>
