@@ -79,11 +79,11 @@ Pay on delivery
 <tr><td align="center" style="padding:26px 32px 6px 32px;">
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;"><tr>
 <td align="center" style="background-color:#033649;border-radius:999px;">
-<a href="https://wa.me/96179005668" style="display:inline-block;padding:13px 28px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#F6E9D6;text-decoration:none;">Message us on WhatsApp</a>
+<a href="https://wa.me/96170649386" style="display:inline-block;padding:13px 28px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#F6E9D6;text-decoration:none;">Message us on WhatsApp</a>
 </td></tr></table>
 </td></tr>
 <tr><td align="center" style="padding:10px 40px 28px 40px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:21px;color:#5b6a68;">
-Need to change something? Reply to this email or message us on WhatsApp at +961 79 005 668.
+Need to change something? Reply to this email or message us on WhatsApp at +961 70 649 386.
 </td></tr>
 <tr><td align="center" style="padding:20px 32px 22px 32px;background-color:#033649;border-radius:0 0 13px 13px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:20px;color:#F6E9D6;">
 <span style="font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:15px;font-style:italic;">Rooted in Nature. Sourced with Intention.</span><br/>
@@ -93,24 +93,99 @@ Need to change something? Reply to this email or message us on WhatsApp at +961 
 </td></tr>
 </table>
 </t>
+<t t-elif="transaction_sudo and transaction_sudo.state == 'pending' and transaction_sudo.provider_code == 'custom'">
+<!-- SMB, 21 Nov 2026: SMB Foods wholesale order email - line by line, branded, no PDF -->
+<t t-set="o_lines" t-value="object.order_line.filtered(lambda l: not l.display_type)"/>
+<t t-set="o_items" t-value="o_lines.filtered(lambda l: not l.is_delivery and not l.reward_id)"/>
+<t t-set="o_rewards" t-value="o_lines.filtered(lambda l: l.reward_id)"/>
+<t t-set="o_ship" t-value="object.partner_shipping_id or object.partner_id"/>
+<t t-set="f_body" t-value="&quot;font-family:Poppins,'Helvetica Neue',Helvetica,Arial,sans-serif;&quot;"/>
+<t t-set="f_disp" t-value="&quot;font-family:'DM Serif Display',Georgia,'Times New Roman',serif;&quot;"/>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#eef6f4;margin:0;padding:0;border-collapse:collapse;">
+<tr><td align="center" style="padding:24px 10px;">
+<table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#ffffff;border:1px solid #cfe3df;border-radius:12px;border-collapse:separate;">
+<tr><td align="center" style="padding:28px 32px 26px 32px;background-color:#123d36;border-radius:11px 11px 0 0;">
+<a href="https://www.smbfoods-lb.com" style="text-decoration:none;"><img src="https://www.smbfoods-lb.com/smb/email-logo.png" width="120" alt="SMB - Soul Mind Body Foods" style="width:120px;height:auto;border:0;"/></a>
+<div t-attf-style="padding-top:18px;{{ f_body }}font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#3fa06f;">Order <t t-out="object.name or ''">S00049</t></div>
+<div t-attf-style="padding-top:4px;{{ f_disp }}font-size:30px;line-height:38px;color:#b1ddd8;">Thank you for your order</div>
+</td></tr>
+<tr><td align="center" t-attf-style="padding:24px 40px 4px 40px;{{ f_body }}font-size:15px;line-height:24px;color:#1c2b28;">
+Hello <t t-out="(object.partner_id.name or '').split(' ')[0]"/>, we have received your order.
+Our team will contact you to confirm stock, final pricing and delivery. You pay on delivery.
+</td></tr>
+<tr><td style="padding:24px 32px 0 32px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+<tr><td colspan="3" t-attf-style="padding:0 0 10px 0;border-bottom:2px solid #3fa06f;{{ f_disp }}font-size:20px;color:#123d36;">Order summary</td></tr>
+<t t-foreach="o_items" t-as="line">
+<tr>
+<td width="60" valign="middle" style="width:60px;padding:12px 0;border-bottom:1px dotted #b9d3cd;">
+<img t-if="line.product_id.is_published" t-att-src="'https://www.smbfoods-lb.com/web/image/product.product/%s/image_128' % line.product_id.id" width="48" height="48" alt="" style="width:48px;height:48px;border-radius:6px;border:1px solid #cfe3df;display:block;background-color:#ffffff;"/>
+</td>
+<td valign="middle" t-attf-style="padding:12px 8px 12px 0;border-bottom:1px dotted #b9d3cd;{{ f_body }}font-size:14px;line-height:20px;color:#1c2b28;">
+<span style="font-weight:600;" t-out="(line.name or '').split('\n')[0].split('] ', 1)[-1]"/><br/>
+<span style="font-size:13px;color:#5a6965;">Qty <t t-out="'%g' % line.product_uom_qty"/></span>
+</td>
+<td align="right" valign="middle" t-attf-style="padding:12px 0;border-bottom:1px dotted #b9d3cd;{{ f_body }}font-size:14px;color:#1c2b28;white-space:nowrap;" t-out="format_amount(line.price_total, object.currency_id)"/>
+</tr>
+</t>
+<t t-foreach="o_rewards" t-as="line">
+<tr>
+<td colspan="2" t-attf-style="padding:10px 8px 0 0;{{ f_body }}font-size:14px;color:#3fa06f;" t-out="(line.name or '').split('\n')[0]"/>
+<td align="right" t-attf-style="padding:10px 0 0 0;{{ f_body }}font-size:14px;color:#3fa06f;white-space:nowrap;"><t t-if="line.price_total &lt; 0">− </t><t t-out="format_amount(abs(line.price_total), object.currency_id)"/></td>
+</tr>
+</t>
+<t t-foreach="o_lines.filtered(lambda l: l.is_delivery)" t-as="line">
+<tr>
+<td colspan="2" t-attf-style="padding:10px 8px 0 0;{{ f_body }}font-size:14px;color:#5a6965;" t-out="(line.name or '').split('\n')[0]"/>
+<td align="right" t-attf-style="padding:10px 0 0 0;{{ f_body }}font-size:14px;color:#5a6965;white-space:nowrap;" t-out="format_amount(line.price_total, object.currency_id)"/>
+</tr>
+</t>
+<tr>
+<td colspan="2" t-attf-style="padding:14px 8px 0 0;{{ f_disp }}font-size:20px;color:#123d36;">Total <span t-attf-style="{{ f_body }}font-size:12px;color:#5a6965;">VAT included</span></td>
+<td align="right" t-attf-style="padding:14px 0 0 0;{{ f_disp }}font-size:22px;color:#123d36;white-space:nowrap;" t-out="format_amount(object.amount_total, object.currency_id)"/>
+</tr>
+</table>
+</td></tr>
+<tr><td style="padding:26px 32px 0 32px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#eef6f4;border-left:4px solid #3fa06f;border-radius:6px;border-collapse:separate;">
+<tr><td t-attf-style="padding:18px 20px 4px 20px;{{ f_disp }}font-size:20px;color:#123d36;">Your details</td></tr>
+<tr><td t-attf-style="padding:6px 20px 0 20px;{{ f_body }}font-size:14px;line-height:22px;color:#1c2b28;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#3fa06f;">Name and phone</span><br/>
+<t t-out="o_ship.name or object.partner_id.name or ''"/><t t-if="object.x_shop_phone"> · <t t-out="object.x_shop_phone"/></t>
+</td></tr>
+<tr t-if="o_ship.street or o_ship.city"><td t-attf-style="padding:12px 20px 0 20px;{{ f_body }}font-size:14px;line-height:22px;color:#1c2b28;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#3fa06f;">Address</span><br/>
+<t t-out="', '.join([p for p in [o_ship.street, o_ship.street2, o_ship.city] if p])"/>
+</td></tr>
+<tr><td t-attf-style="padding:12px 20px 0 20px;{{ f_body }}font-size:14px;line-height:22px;color:#1c2b28;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#3fa06f;">Delivery</span><br/>
+<t t-if="object.carrier_id" t-out="object.carrier_id.name"/><t t-else="">Arranged by our team</t>
+</td></tr>
+<tr><td t-attf-style="padding:12px 20px 18px 20px;{{ f_body }}font-size:14px;line-height:22px;color:#1c2b28;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#3fa06f;">Payment</span><br/>
+Pay on delivery
+</td></tr>
+</table>
+</td></tr>
+<tr><td align="center" style="padding:26px 32px 6px 32px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;"><tr>
+<td align="center" style="background-color:#123d36;border-radius:6px;">
+<a href="https://wa.me/96178879350" t-attf-style="display:inline-block;padding:13px 28px;{{ f_body }}font-size:14px;font-weight:600;color:#b1ddd8;text-decoration:none;">Message us on WhatsApp</a>
+</td></tr></table>
+</td></tr>
+<tr><td align="center" t-attf-style="padding:10px 40px 28px 40px;{{ f_body }}font-size:13px;line-height:21px;color:#5a6965;">
+Need to change something? Reply to this email or message us on WhatsApp at +961 78 879 350.
+</td></tr>
+<tr><td align="center" t-attf-style="padding:20px 32px 22px 32px;background-color:#123d36;border-radius:0 0 11px 11px;{{ f_body }}font-size:12px;line-height:20px;color:#b1ddd8;">
+<span t-attf-style="{{ f_disp }}font-size:17px;">Soul Mind Body Foods</span><br/>
+<a href="mailto:sales@smbfoods-lb.com" style="color:#b1ddd8;text-decoration:none;">sales@smbfoods-lb.com</a>  |  +961 78 879 350  |  <a href="https://www.smbfoods-lb.com" style="color:#b1ddd8;text-decoration:none;">www.smbfoods-lb.com</a>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</t>
 <t t-else="">
     <p style="margin: 0px; padding: 0px; font-size: 12px;">
-        <t t-if="transaction_sudo and transaction_sudo.state == 'pending' and transaction_sudo.provider_code == 'custom'">
-            <!-- SMB, 16 Nov 2026: pay-on-delivery website orders - no "payment pending" wording -->
-            Hello <t t-out="object.partner_id.name or ''"/>,
-            <br/><br/>
-            Thank you for your order <span style="font-weight:bold;" t-out="object.name or ''">S00049</span>
-            of <span style="font-weight:bold;" t-out="format_amount(object.amount_total, object.currency_id) or ''">$ 10.00</span>. We have received it.
-            <br/><br/>
-            <t t-foreach="object.order_line.filtered(lambda l: not l.display_type)" t-as="line">
-                <t t-out="'%g' % line.product_uom_qty"/> x <t t-out="(line.name or '').split('\n')[0].split('] ', 1)[-1]"/><br/>
-            </t>
-            <br/>
-            Our team will contact you to confirm stock, final pricing and delivery. You pay on delivery.
-            <br/><br/>
-            Thank you,<br/>SMB Foods
-        </t>
-        <t t-else="">
         Hello,
         <br/><br/>
         A payment with reference
@@ -145,7 +220,6 @@ Need to change something? Reply to this email or message us on WhatsApp at +961 
         Do not hesitate to contact us if you have any questions.
         <t t-if="not is_html_empty(object.user_id.signature)" data-o-mail-quote-container="1">
             <div data-o-mail-quote="1">--<br data-o-mail-quote="1"/><t t-out="object.user_id.signature or ''" data-o-mail-quote="1">Mitchell Admin</t></div>
-        </t>
         </t>
     </p>
 </t>
