@@ -38,7 +38,7 @@ We will contact you by phone to confirm your order and the delivery time. You pa
 <t t-foreach="o_rewards" t-as="line">
 <tr>
 <td colspan="2" style="padding:10px 8px 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#7C8466;" t-out="(line.name or '').split('\n')[0]"/>
-<td align="right" style="padding:10px 0 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#7C8466;white-space:nowrap;" t-out="format_amount(line.price_total, object.currency_id)"/>
+<td align="right" style="padding:10px 0 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#7C8466;white-space:nowrap;"><t t-if="line.price_total &lt; 0">&#8722; </t><t t-out="format_amount(abs(line.price_total), object.currency_id)"/></td>
 </tr>
 </t>
 <t t-foreach="o_lines.filtered(lambda l: l.is_delivery)" t-as="line">
