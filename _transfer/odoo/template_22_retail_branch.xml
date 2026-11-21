@@ -1,0 +1,93 @@
+<t t-if="transaction_sudo and transaction_sudo.state == 'pending' and transaction_sudo.provider_code == 'custom' and object.website_id.id == 1">
+<!-- SMB, 21 Nov 2026: Organicopia retail order email - line by line, branded, no PDF -->
+<t t-set="o_lines" t-value="object.order_line.filtered(lambda l: not l.display_type)"/>
+<t t-set="o_items" t-value="o_lines.filtered(lambda l: not l.is_delivery and not l.reward_id)"/>
+<t t-set="o_rewards" t-value="o_lines.filtered(lambda l: l.reward_id)"/>
+<t t-set="o_ship" t-value="object.partner_shipping_id or object.partner_id"/>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#F6E9D6;margin:0;padding:0;border-collapse:collapse;">
+<tr><td align="center" style="padding:24px 10px;">
+<table role="presentation" width="600" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:600px;background-color:#FFFDF9;border:1px solid #e2d4bd;border-radius:14px;border-collapse:separate;">
+<tr><td align="center" style="padding:30px 32px 6px 32px;">
+<a href="https://www.organicopia-lb.com/store" style="text-decoration:none;"><img src="https://www.organicopia-lb.com/org/email-logo.png" width="230" alt="Organicopia" style="width:230px;max-width:70%;height:auto;border:0;"/></a>
+</td></tr>
+<tr><td align="center" style="padding:14px 32px 0 32px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#7C8466;">
+Order <t t-out="object.name or ''">S00049</t>
+</td></tr>
+<tr><td align="center" style="padding:6px 32px 0 32px;font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:30px;line-height:38px;color:#033649;">
+Thank you for your order
+</td></tr>
+<tr><td align="center" style="padding:14px 40px 4px 40px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#033649;">
+Hello <t t-out="(object.partner_id.name or '').split(' ')[0]"/>, we have received your order.
+We will contact you by phone to confirm your order and the delivery time. You pay on delivery.
+</td></tr>
+<tr><td style="padding:26px 32px 0 32px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
+<tr><td colspan="3" style="padding:0 0 10px 0;border-bottom:2px solid #033649;font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:19px;color:#033649;">Order summary</td></tr>
+<t t-foreach="o_items" t-as="line">
+<tr>
+<td width="60" valign="middle" style="width:60px;padding:12px 0;border-bottom:1px solid #e2d4bd;">
+<img t-if="line.product_id.is_published" t-att-src="'https://www.organicopia-lb.com/web/image/product.product/%s/image_128' % line.product_id.id" width="48" height="48" alt="" style="width:48px;height:48px;border-radius:8px;border:1px solid #e2d4bd;display:block;background-color:#FBF5EA;"/>
+</td>
+<td valign="middle" style="padding:12px 8px 12px 0;border-bottom:1px solid #e2d4bd;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#033649;">
+<span style="font-weight:600;" t-out="(line.name or '').split('\n')[0].split('] ', 1)[-1]"/><br/>
+<span style="font-size:13px;color:#5b6a68;">Qty <t t-out="'%g' % line.product_uom_qty"/></span>
+</td>
+<td align="right" valign="middle" style="padding:12px 0;border-bottom:1px solid #e2d4bd;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#033649;white-space:nowrap;" t-out="format_amount(line.price_total, object.currency_id)"/>
+</tr>
+</t>
+<t t-foreach="o_rewards" t-as="line">
+<tr>
+<td colspan="2" style="padding:10px 8px 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#7C8466;" t-out="(line.name or '').split('\n')[0]"/>
+<td align="right" style="padding:10px 0 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#7C8466;white-space:nowrap;" t-out="format_amount(line.price_total, object.currency_id)"/>
+</tr>
+</t>
+<t t-foreach="o_lines.filtered(lambda l: l.is_delivery)" t-as="line">
+<tr>
+<td colspan="2" style="padding:10px 8px 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5b6a68;" t-out="(line.name or '').split('\n')[0]"/>
+<td align="right" style="padding:10px 0 0 0;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;color:#5b6a68;white-space:nowrap;" t-out="format_amount(line.price_total, object.currency_id)"/>
+</tr>
+</t>
+<tr>
+<td colspan="2" style="padding:14px 8px 0 0;font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:20px;color:#033649;">Total <span style="font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;color:#5b6a68;">VAT included</span></td>
+<td align="right" style="padding:14px 0 0 0;font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:22px;color:#033649;white-space:nowrap;" t-out="format_amount(object.amount_total, object.currency_id)"/>
+</tr>
+</table>
+</td></tr>
+<tr><td style="padding:26px 32px 0 32px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background-color:#FBF5EA;border:1px solid #e2d4bd;border-radius:10px;border-collapse:separate;">
+<tr><td style="padding:18px 20px 4px 20px;font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:19px;color:#033649;">Your details</td></tr>
+<tr><td style="padding:6px 20px 0 20px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#033649;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#7C8466;">Name and phone</span><br/>
+<t t-out="o_ship.name or object.partner_id.name or ''"/><t t-if="object.x_shop_phone"> · <t t-out="object.x_shop_phone"/></t>
+</td></tr>
+<tr t-if="o_ship.street or o_ship.city"><td style="padding:12px 20px 0 20px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#033649;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#7C8466;">Address</span><br/>
+<t t-out="', '.join([p for p in [o_ship.street, o_ship.street2, o_ship.city] if p])"/>
+</td></tr>
+<tr t-if="object.carrier_id"><td style="padding:12px 20px 0 20px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#033649;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#7C8466;">Delivery or pickup</span><br/>
+<t t-out="object.carrier_id.name"/>
+</td></tr>
+<tr><td style="padding:12px 20px 18px 20px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#033649;">
+<span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#7C8466;">Payment</span><br/>
+Pay on delivery
+</td></tr>
+</table>
+</td></tr>
+<tr><td align="center" style="padding:26px 32px 6px 32px;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;"><tr>
+<td align="center" style="background-color:#033649;border-radius:999px;">
+<a href="https://wa.me/96179005668" style="display:inline-block;padding:13px 28px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#F6E9D6;text-decoration:none;">Message us on WhatsApp</a>
+</td></tr></table>
+</td></tr>
+<tr><td align="center" style="padding:10px 40px 28px 40px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:21px;color:#5b6a68;">
+Need to change something? Reply to this email or message us on WhatsApp at +961 79 005 668.
+</td></tr>
+<tr><td align="center" style="padding:20px 32px 22px 32px;background-color:#033649;border-radius:0 0 13px 13px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:20px;color:#F6E9D6;">
+<span style="font-family:'Gilda Display',Georgia,'Times New Roman',serif;font-size:15px;font-style:italic;">Rooted in Nature. Sourced with Intention.</span><br/>
+<a href="https://www.organicopia-lb.com/store" style="color:#EFB453;text-decoration:none;">www.organicopia-lb.com</a>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</t>
