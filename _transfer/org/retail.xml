@@ -35,7 +35,8 @@
 <link rel="stylesheet" href="/org/retail.css?v=fec2482a"/>
 <!-- Odoo Analytics (Plausible), 15 Nov 2026: same tag as website.layout, so /store counts in Website > Reporting > Analytics; skipped for editors -->
 <script t-if="request.website.plausible_shared_key and not editable" id="plausible_script" name="plausible" defer="defer" t-att-data-domain="request.website.plausible_site" t-att-src="request.website._get_plausible_script_url()"/>
-
+<!-- Meta Pixel, 21 Nov 2026: the same base code as the Odoo pages (website 1 custom head), so visits to /store are counted; the events are in /org/pixel.js. Skipped for editors -->
+<t t-if="not editable"><script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1842746820253680');fbq('track','PageView');</script><script src="/org/pixel.js?v=bf5a30b8"/></t>
 </head>
 <body>
 <div class="salebar" id="saleBar" hidden="hidden"><div class="wrap"><span class="pill">Black Friday</span><span><b>25% off everything</b> · applied automatically at checkout</span><span class="count" id="saleCount"/><a href="#shop">Shop the season →</a></div></div>
