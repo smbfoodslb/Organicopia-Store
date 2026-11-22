@@ -1,0 +1,14 @@
+<search string="Commission">
+  <field name="x_partner_id"/>
+  <field name="x_invoice_id"/>
+  <filter name="unsettled" string="Not settled" domain="[('x_settled', '=', False)]"/>
+  <filter name="settled" string="Settled" domain="[('x_settled', '=', True)]"/>
+  <separator/>
+  <filter name="date" string="Date" date="x_date"/>
+  <group>
+    <filter name="by_month" string="Month" context="{'group_by': 'x_date:month'}"/>
+    <filter name="by_partner" string="Customer" context="{'group_by': 'x_partner_id'}"/>
+    <filter name="by_company" string="Company" context="{'group_by': 'x_company_id'}"/>
+    <filter name="by_source" string="Type" context="{'group_by': 'x_source'}"/>
+  </group>
+</search>

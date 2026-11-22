@@ -1,0 +1,13 @@
+<list string="Commission" create="0" delete="0" default_order="x_date desc, id desc" decoration-muted="x_settled" decoration-danger="x_base &lt; 0">
+  <field name="x_date"/>
+  <field name="x_partner_id"/>
+  <field name="x_invoice_id"/>
+  <field name="x_company_id" optional="show"/>
+  <field name="x_source"/>
+  <field name="x_applied" string="Applied (incl. VAT)" sum="Applied" optional="show"/>
+  <field name="x_base" string="Organicopia net" sum="Organicopia net"/>
+  <field name="x_commission" string="Commission 18%" sum="Commission"/>
+  <field name="x_settled" readonly="1"/>
+  <field name="x_settled_date" optional="show" readonly="1"/>
+  <field name="x_note" optional="show"/>
+</list>
