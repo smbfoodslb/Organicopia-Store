@@ -1,0 +1,14 @@
+<t t-name="website.smb_delivery_planner">
+  <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <meta name="robots" content="noindex, nofollow"/>
+      <title>Delivery planner</title>
+    </head>
+    <body>
+      <div id="planner">Loading…</div>
+      <script src="/smb/delivery-planner.js?v=ad9b0353"></script>
+    </body>
+  </html>
+</t>

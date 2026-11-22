@@ -1,0 +1,10 @@
+<list string="Delivery runs" default_order="x_date desc, id desc">
+  <field name="x_name"/>
+  <field name="x_date"/>
+  <field name="x_who"/>
+  <field name="x_vehicle"/>
+  <field name="x_stops"/>
+  <field name="x_km"/>
+  <field name="x_duration"/>
+  <field name="x_state" widget="badge" decoration-success="x_state == 'done'" decoration-info="x_state == 'sent'" decoration-muted="x_state == 'cancel'"/>
+</list>
