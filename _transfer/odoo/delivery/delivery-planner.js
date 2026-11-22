@@ -64,7 +64,7 @@
       var saved = [];
       if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); (p.orders || []).forEach(function (q) { saved.push(q.picking); }); }); } catch (e) { } }
       if (!picks.length) { return []; }
-      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by'] }).then(function (orders) {
+      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
         picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
@@ -75,7 +75,7 @@
             var has = !!(c.partner_latitude || c.partner_longitude);
             var mine = saved.indexOf(p.id) >= 0;
             return {
-              id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', total: o.amount_total, partner: c.id,
+              id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27), total: o.amount_total, partner: c.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
@@ -144,7 +144,7 @@
   function flyOrders() { return S.stops.filter(function (s) { return s.on && s.fly; }); }
   function setFly(s, fly) {
     S.msg = ''; S.err = '';
-    rpc('sale.order', 'write', [[s.sale], { x_delivered_by: fly ? 'flypost' : 'own' }]).then(function () {
+    rpc('sale.order', 'write', [[s.sale], { x_delivered_by: fly ? 'flypost' : 'own', x_flypost_collects: !!(fly && s.retail) }]).then(function () {
       s.fly = fly; S.route = null; S.saved = null; drawLine(null);
       S.msg = s.order + (fly ? ' goes with FlyPost.' : ' goes with our driver.'); render();
     }).catch(function (e) { S.err = 'Not changed: ' + e.message; render(); });
