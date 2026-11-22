@@ -39,7 +39,7 @@ for run in records:
             keep = True
         elif old.x_state == 'confirmed' or old.x_settled:
             keep = True
-            vals['x_note'] = 'The vehicle entry "%s" was already confirmed before this run changed. Correct it by hand in Commission & Staff > Entries.' % (old.x_name or '')
+            vals['x_note'] = 'The vehicle entry "%s" was already confirmed before this run changed. Correct it by hand in Team Ledger > Entries.' % (old.x_name or '')
         else:
             old.write({'x_state': 'rejected', 'x_note': 'Replaced: the delivery run was changed.'})
     if not keep and km > 0 and run.x_vehicle and run.x_state != 'cancel':
