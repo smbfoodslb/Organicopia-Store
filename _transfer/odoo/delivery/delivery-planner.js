@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var SHOP = { lat: 33.8751011, lng: 35.5589961 };
-  var PICKUP_CARRIER = 5, MAX_STOPS = 9;
+  var PICKUP_CARRIER = 5, MAX_STOPS = 9, FLYPOST = 348, FLY = -1;
   var CTX = { allowed_company_ids: [3, 1] };
   var FINISH = 'Delivery run: finish save', SEND = 'Delivery run: send to driver';
   var S = { stops: [], route: null, run: null, key: '', actions: {}, pinFor: null, map: null, line: null, busy: false, msg: '', err: '' };
@@ -24,7 +24,7 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function today() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function dur(min) { return min >= 60 ? Math.floor(min / 60) + ' h ' + ('0' + (min % 60)).slice(-2) + ' min' : min + ' min'; }
-  function byId(id) { for (var i = 0; i < S.stops.length; i++) { if (S.stops[i].id === id) { return S.stops[i]; } } return null; }
+  function byId(id) { if (id === FLY) { return S.fly; } for (var i = 0; i < S.stops.length; i++) { if (S.stops[i].id === id) { return S.stops[i]; } } return null; }
   function param(n) { var m = new RegExp('[?&]' + n + '=([^&]+)').exec(location.search); return m ? decodeURIComponent(m[1]) : ''; }
 
   var CSS = 'body{margin:0;font:14px/1.45 system-ui,Segoe UI,Arial,sans-serif;color:#17302b;background:#f4f7f6}' +
@@ -50,19 +50,21 @@
       rpc('ir.actions.server', 'search_read', [[['name', 'in', [FINISH, SEND]]]], { fields: ['name'] }),
       rpc('stock.picking', 'search_read', [[['picking_type_code', '=', 'outgoing'], ['state', 'in', ['confirmed', 'assigned', 'waiting']], ['sale_id', '!=', false]]],
         { fields: ['name', 'state', 'sale_id', 'partner_id', 'company_id'], order: 'id' }),
+      rpc('res.partner', 'read', [[FLYPOST]], { fields: ['name', 'partner_latitude', 'partner_longitude'] }),
       rpc('x_delivery_run', 'search_read', [[['x_state', 'in', ['draft', 'sent']]]], { fields: ['x_name', 'x_date', 'x_who', 'x_vehicle', 'x_stop_order', 'x_state', 'x_route_code', 'x_km', 'x_minutes', 'x_stops', 'x_note'], order: 'id desc' })
     ]).then(function (r) {
       S.key = r[0] || '';
       r[1].forEach(function (a) { S.actions[a.name] = a.id; });
-      S.runs = r[3];
+      S.runs = r[4];
+      S.fly = { id: FLY, virtual: true, name: 'FlyPost drop-off', order: '', lat: r[3][0].partner_latitude || null, lng: r[3][0].partner_longitude || null, pin: 'saved', on: true };
       var picks = r[2], runId = parseInt(param('run'), 10) || 0;
       S.run = S.runs.filter(function (x) { return x.id === runId; })[0] || null;
       var inRun = {};
-      S.runs.forEach(function (x) { try { JSON.parse(x.x_stop_order || '[]').forEach(function (p) { inRun[p.picking] = x; }); } catch (e) { } });
+      S.runs.forEach(function (x) { try { JSON.parse(x.x_stop_order || '[]').forEach(function (p) { inRun[p.picking] = x; (p.orders || []).forEach(function (q) { inRun[q.picking] = x; }); }); } catch (e) { } });
       var saved = [];
-      if (S.run) { try { saved = JSON.parse(S.run.x_stop_order || '[]').map(function (p) { return p.picking; }); } catch (e) { } }
+      if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); (p.orders || []).forEach(function (q) { saved.push(q.picking); }); }); } catch (e) { } }
       if (!picks.length) { return []; }
-      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id'] }).then(function (orders) {
+      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
         picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
@@ -73,7 +75,7 @@
             var has = !!(c.partner_latitude || c.partner_longitude);
             var mine = saved.indexOf(p.id) >= 0;
             return {
-              id: p.id, picking: p.name, order: o.name, total: o.amount_total, partner: c.id,
+              id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', total: o.amount_total, partner: c.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
@@ -103,13 +105,14 @@
 
   function marker(s) {
     if (s.marker) { s.marker.setMap(null); s.marker = null; }
-    if (s.lat == null || !S.map) { return; }
+    if (s.lat == null || !S.map || s.fly) { return; }
     var n = S.route ? S.route.order.indexOf(s.id) + 1 : 0;
     s.marker = new google.maps.Marker({
       map: S.map, position: { lat: s.lat, lng: s.lng }, draggable: true, title: s.name + ' - ' + s.order,
-      label: n ? { text: String(n), color: '#fff', fontWeight: '600' } : null, opacity: s.on ? 1 : 0.45,
-      icon: { path: google.maps.SymbolPath.CIRCLE, scale: 13, fillColor: s.pin === 'saved' ? '#123d36' : '#e08a00', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
+      label: n ? { text: String(n), color: '#fff', fontWeight: '600' } : (s.virtual ? { text: 'F', color: '#fff', fontWeight: '700' } : null), opacity: s.on ? 1 : 0.45,
+      icon: { path: google.maps.SymbolPath.CIRCLE, scale: 13, fillColor: s.virtual ? '#c0392b' : s.pin === 'saved' ? '#123d36' : '#e08a00', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
     });
+    if (s.virtual) { s.marker.setDraggable(false); return; }
     s.marker.addListener('dragend', function (e) { setPin(s, e.latLng.lat(), e.latLng.lng()); });
   }
   function setPin(s, lat, lng) {
@@ -136,7 +139,15 @@
   function drawLine(encoded) {
     if (S.line) { S.line.setMap(null); S.line = null; }
     if (encoded) { S.line = new google.maps.Polyline({ map: S.map, path: google.maps.geometry.encoding.decodePath(encoded), strokeColor: '#3fa06f', strokeWeight: 5, strokeOpacity: 0.85 }); }
-    S.stops.forEach(marker);
+    S.stops.forEach(marker); S.fly.on = flyOrders().length > 0; marker(S.fly);
+  }
+  function flyOrders() { return S.stops.filter(function (s) { return s.on && s.fly; }); }
+  function setFly(s, fly) {
+    S.msg = ''; S.err = '';
+    rpc('sale.order', 'write', [[s.sale], { x_delivered_by: fly ? 'flypost' : 'own' }]).then(function () {
+      s.fly = fly; S.route = null; S.saved = null; drawLine(null);
+      S.msg = s.order + (fly ? ' goes with FlyPost.' : ' goes with our driver.'); render();
+    }).catch(function (e) { S.err = 'Not changed: ' + e.message; render(); });
   }
 
   function compute(ids, optimize) {
@@ -155,11 +166,13 @@
       };
     });
   }
-  function chosen() { return S.stops.filter(function (s) { return s.on; }); }
+  function ticked() { return S.stops.filter(function (s) { return s.on; }); }
+  function chosen() { var own = S.stops.filter(function (s) { return s.on && !s.fly; }); return flyOrders().length ? own.concat([S.fly]) : own; }
   function plan(keepOrder) {
     var list = chosen(), missing = list.filter(function (s) { return s.lat == null; });
     S.msg = ''; S.err = '';
     if (!list.length) { S.err = 'Tick at least one stop.'; return render(); }
+    if (missing.length && missing[0].virtual) { S.err = 'FlyPost has no map location on its contact.'; return render(); }
     if (missing.length) { S.err = 'No location yet for: ' + missing.map(function (s) { return s.name; }).join(', ') + '. Press "Set pin" on the stop, then click its place on the map.'; return render(); }
     if (list.length > MAX_STOPS) { S.err = 'A run can hold ' + MAX_STOPS + ' stops (the limit of one Google Maps link). Untick ' + (list.length - MAX_STOPS) + ' and plan them as a second run.'; return render(); }
     var ids = keepOrder && S.route ? S.route.order.slice() : list.map(function (s) { return s.id; });
@@ -191,7 +204,7 @@
     if (approx.length) { S.err = 'Confirm the pin first for: ' + approx.map(function (s) { return s.name; }).join(', ') + ' (orange pins are Google\'s guess from the address).'; return render(); }
     var vals = {
       x_date: day, x_who: who, x_vehicle: veh, x_stops: S.route.order.length, x_km: Math.round(S.route.km * 10) / 10, x_minutes: S.route.minutes, x_route_url: routeUrl(),
-      x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng }; }))
+      x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return s.virtual ? { picking: FLY, name: s.name, lat: s.lat, lng: s.lng, orders: flyOrders().map(function (f) { return { picking: f.id, ref: f.picking, order: f.order, name: f.name }; }) } : { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng }; }))
     };
     S.busy = true; render();
     var p = S.run ? rpc('x_delivery_run', 'write', [[S.run.id], vals]).then(function () { return S.run.id; }) : rpc('x_delivery_run', 'create', [Object.assign({ x_state: 'draft', x_name: 'Delivery run' }, vals)]);
@@ -214,24 +227,25 @@
     var keep = { who: (document.getElementById('who') || {}).value, veh: (document.getElementById('veh') || {}).value, day: (document.getElementById('day') || {}).value };
     var who = keep.who || (S.run && S.run.x_who) || '7', veh = keep.veh || (S.run && S.run.x_vehicle) || 'serge', day = keep.day || (S.run && S.run.x_date) || today();
     var opt = function (v, t, cur) { return '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + t + '</option>'; };
-    var h = '<h1>Delivery planner</h1><p class="sub">Open deliveries, shop to stops and back. Pickup orders are left out.</p>';
+    var h = '<h1>Delivery planner</h1><p class="sub">Open deliveries, shop to stops and back. Pickup orders are left out. FlyPost orders become one drop-off at their office; untick them when FlyPost collects from the shop.</p>';
     if (S.run) { h += '<div class="box">Editing <b>' + esc(S.run.x_name) + '</b> (' + (S.run.x_state === 'sent' ? 'already sent to the driver' : 'draft') + '). <a href="/delivery-planner">Start a new run</a></div>'; }
     else if (S.runs && S.runs.length) { h += '<div class="box">Open runs: ' + S.runs.map(function (r) { return '<a href="?run=' + r.id + '">' + esc(r.x_name) + '</a>'; }).join(' · ') + '</div>'; }
-    h += '<div class="row" style="margin-top:12px"><label>Date<input type="date" id="day" value="' + esc(day) + '"></label><label>Driver<select id="who">' + opt('7', 'Serge', who) + opt('5', 'Melissa', who) + '</select></label>' +
+    h += '<div class="row" style="margin-top:12px"><label>Date<input type="date" id="day" value="' + esc(day) + '"></label><label>Driver<select id="who">' + opt('7', 'Serge', who) + opt('5', 'Melissa', who) + opt('owner', 'Mustafa', who) + '</select></label>' +
       '<label>Vehicle<select id="veh">' + opt('serge', "Serge's", veh) + opt('melissa', "Melissa's", veh) + opt('kangoo', 'SMBF Kangoo', veh) + '</select></label></div>';
     if (S.err) { h += '<div class="err">' + esc(S.err) + '</div>'; }
     if (S.msg) { h += '<div class="msg">' + esc(S.msg) + '</div>'; }
     if (S.pinFor) { h += '<div class="msg">Click the place on the map for <b>' + esc(byId(S.pinFor).name) + '</b>. <button class="small" data-a="nopin">Cancel</button></div>'; }
-    h += '<h2>Stops (' + chosen().length + ' of ' + S.stops.length + ' ticked)</h2>';
+    h += '<h2>Stops (' + ticked().length + ' of ' + S.stops.length + ' ticked)</h2>';
     if (!S.stops.length) { h += '<div class="box">No open deliveries.</div>'; }
     S.stops.forEach(function (s) {
       h += '<div class="stop' + (s.on ? '' : ' off') + '"><div class="top"><input type="checkbox" data-a="tick" data-id="' + s.id + '"' + (s.on ? ' checked' : '') + '><div class="grow"><b>' + esc(s.name) + '</b> · ' + esc(s.order) + ' · $' + s.total.toFixed(2) +
         '<div class="addr">' + esc(s.addr || 'No address') + (s.phone ? ' · ' + esc(s.phone) : '') + '</div>' +
         '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span><span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' +
         (s.other ? '<span class="tag warn">In ' + esc(s.other) + '</span>' : '') +
-        '<span class="tag ' + (s.pin === 'saved' ? 'ok">Pin saved' : s.pin === 'approx' ? 'warn">Pin is a guess' : 'bad">No location') + '</span><br>' +
-        (s.pin === 'approx' ? '<button class="small" data-a="okpin" data-id="' + s.id + '">Pin is right</button>' : '') +
-        '<button class="small" data-a="pin" data-id="' + s.id + '">' + (s.pin === 'saved' ? 'Move pin' : 'Set pin') + '</button>' +
+        (s.fly ? '<span class="tag bad">FlyPost</span><br>' : '<span class="tag ' + (s.pin === 'saved' ? 'ok">Pin saved' : s.pin === 'approx' ? 'warn">Pin is a guess' : 'bad">No location') + '</span><br>') +
+        (!s.fly && s.pin === 'approx' ? '<button class="small" data-a="okpin" data-id="' + s.id + '">Pin is right</button>' : '') +
+        (s.fly ? '' : '<button class="small" data-a="pin" data-id="' + s.id + '">' + (s.pin === 'saved' ? 'Move pin' : 'Set pin') + '</button>') +
+        '<button class="small" data-a="' + (s.fly ? 'nofly' : 'fly') + '" data-id="' + s.id + '">' + (s.fly ? 'Back to our driver' : 'Send with FlyPost') + '</button>' +
         (/^https?:\/\//.test(s.link) ? '<a class="leg" target="_blank" rel="noopener" href="' + esc(s.link) + '">Open customer\'s map link</a>' : '') +
         '</div></div></div>';
     });
@@ -243,7 +257,7 @@
           (dk > 0.05 || dm > 0 ? '<div class="leg">Best order saves ' + Math.max(dk, 0).toFixed(1) + ' km and ' + Math.max(dm, 0) + ' min compared with the list order.</div>' : '<div class="leg">The list order was already the best one.</div>')) + '<div style="margin-top:8px">';
       r.order.forEach(function (id, i) {
         var s = byId(id), l = r.legs[i];
-        h += '<div style="margin:6px 0"><span class="num">' + (i + 1) + '</span><b>' + esc(s.name) + '</b> <span class="leg">' + esc(s.order) + (l ? ' · ' + l.km.toFixed(1) + ' km, ' + l.minutes + ' min from previous' : '') + '</span> ' +
+        h += '<div style="margin:6px 0"><span class="num">' + (i + 1) + '</span><b>' + esc(s.name) + '</b> <span class="leg">' + esc(s.virtual ? flyOrders().map(function (f) { return f.order; }).join(', ') : s.order) + (l ? ' · ' + l.km.toFixed(1) + ' km, ' + l.minutes + ' min from previous' : '') + '</span> ' +
           '<button class="small" data-a="up" data-id="' + id + '"' + (i === 0 || S.busy ? ' disabled' : '') + '>▲</button><button class="small" data-a="down" data-id="' + id + '"' + (i === r.order.length - 1 || S.busy ? ' disabled' : '') + '>▼</button></div>';
       });
       var back = r.legs[r.order.length];
@@ -254,7 +268,7 @@
       var short = 'https://www.smbfoods-lb.com/r/' + S.saved.x_route_code;
       h += '<div class="box"><b>Link for the driver</b><div class="link"><a target="_blank" rel="noopener" href="' + short + '">' + short + '</a></div>' +
         (S.saved.x_note ? '<div class="err">' + esc(S.saved.x_note) + '</div>' : '') +
-        '<div style="margin-top:8px"><button class="main" data-a="send"' + (S.busy ? ' disabled' : '') + '>' + (S.run.x_state === 'sent' ? 'Send updated route on WhatsApp' : 'Send to driver on WhatsApp') + '</button> <button data-a="copy">Copy link</button></div></div>';
+        '<div style="margin-top:8px">' + (who === 'owner' ? '' : '<button class="main" data-a="send"' + (S.busy ? ' disabled' : '') + '>' + (S.run.x_state === 'sent' ? 'Send updated route on WhatsApp' : 'Send to driver on WhatsApp') + '</button> ') + '<button data-a="copy">Copy link</button></div></div>';
     }
     side.innerHTML = h;
   }
@@ -266,6 +280,8 @@
     else if (a === 'pin') { S.pinFor = id; S.msg = ''; S.err = ''; render(); }
     else if (a === 'nopin') { S.pinFor = null; render(); }
     else if (a === 'okpin') { setPin(s, s.lat, s.lng); }
+    else if (a === 'fly') { setFly(s, true); }
+    else if (a === 'nofly') { setFly(s, false); }
     else if (a === 'plan') { plan(false); }
     else if (a === 'up') { move(id, -1); }
     else if (a === 'down') { move(id, 1); }
@@ -280,13 +296,13 @@
   load().then(function () {
     el.innerHTML = '<div id="side"></div><div id="map"></div>';
     document.getElementById('side').addEventListener('click', onClick);
-    document.getElementById('side').addEventListener('change', function (e) { if (e.target.id === 'who') { document.getElementById('veh').value = e.target.value === '5' ? 'melissa' : 'serge'; } });
+    document.getElementById('side').addEventListener('change', function (e) { if (e.target.id === 'who') { document.getElementById('veh').value = e.target.value === '5' ? 'melissa' : e.target.value === 'owner' ? 'kangoo' : 'serge'; } });
     render();
     return loadMaps().then(function () {
       S.map = new google.maps.Map(document.getElementById('map'), { center: SHOP, zoom: 12, mapTypeControl: false, streetViewControl: false });
       new google.maps.Marker({ map: S.map, position: SHOP, title: 'Shop', label: { text: 'S', color: '#fff', fontWeight: '700' }, icon: { path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, scale: 7, fillColor: '#3fa06f', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2, labelOrigin: new google.maps.Point(0, -3) } });
       S.map.addListener('click', function (e) { if (S.pinFor) { setPin(byId(S.pinFor), e.latLng.lat(), e.latLng.lng()); } });
-      return geocodeMissing().then(function () { S.stops.forEach(marker); fit(); render(); });
+      return geocodeMissing().then(function () { drawLine(null); fit(); render(); });
     });
   }).catch(function (e) {
     if (!document.getElementById('side')) { el.innerHTML = '<div id="side"></div>'; var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); }

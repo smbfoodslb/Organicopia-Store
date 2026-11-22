@@ -1,0 +1,11 @@
+<search string="FlyPost orders">
+  <field name="name"/>
+  <field name="partner_id"/>
+  <field name="x_flypost_ref"/>
+  <filter name="open" string="Not yet paid" domain="['|', ('invoice_status', '!=', 'invoiced'), ('x_amount_open', '&gt;', 0.005)]"/>
+  <filter name="paid" string="Paid" domain="[('invoice_status', '=', 'invoiced'), ('x_amount_open', '&lt;=', 0.005)]"/>
+  <group>
+    <filter name="by_company" string="Company" context="{'group_by': 'company_id'}"/>
+    <filter name="by_month" string="Month" context="{'group_by': 'date_order:month'}"/>
+  </group>
+</search>

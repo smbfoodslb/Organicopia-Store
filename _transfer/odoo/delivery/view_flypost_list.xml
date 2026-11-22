@@ -1,0 +1,13 @@
+<list string="FlyPost orders" default_order="date_order desc" create="0">
+  <field name="name"/>
+  <field name="partner_id"/>
+  <field name="x_flypost_ref" string="FlyPost ref"/>
+  <field name="date_order" widget="date" string="Order date"/>
+  <field name="effective_date" string="Left the shop" optional="show"/>
+  <field name="invoice_ids" widget="many2many_tags" string="Invoices"/>
+  <field name="currency_id" column_invisible="1"/>
+  <field name="amount_total" sum="Total" string="Order total"/>
+  <field name="x_amount_open" sum="Open" string="Still open"/>
+  <field name="invoice_status" widget="badge" optional="show"/>
+  <field name="company_id"/>
+</list>
