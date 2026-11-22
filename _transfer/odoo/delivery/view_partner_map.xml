@@ -1,0 +1,5 @@
+<data>
+  <xpath expr="//field[@name='function']" position="before">
+    <field name="x_map_link" placeholder="Paste a Google Maps link or coordinates (33.8751, 35.5590)"/>
+  </xpath>
+</data>
