@@ -8,6 +8,8 @@
   <field name="currency_id" column_invisible="1"/>
   <field name="amount_total" sum="Total" string="Order total"/>
   <field name="x_amount_open" sum="Open" string="Still open"/>
+  <field name="x_flypost_collects" string="FlyPost collects" widget="boolean_toggle"/>
+  <field name="x_flypost_due" sum="To collect" string="FlyPost to pay us"/>
   <field name="invoice_status" widget="badge" optional="show"/>
   <field name="company_id"/>
 </list>
