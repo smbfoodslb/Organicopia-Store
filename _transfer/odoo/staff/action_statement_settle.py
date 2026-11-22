@@ -8,7 +8,7 @@ for st in records:
     L = env['x_commission_line'].sudo()
     waiting = E.search_count([('x_employee_id', '=', emp_id), ('x_state', '=', 'review')])
     if waiting:
-        raise UserError('%d entr%s of %s still waiting for your review. Confirm or reject them first (menu Entries), then settle.' % (waiting, 'y is' if waiting == 1 else 'ies are', emp.name))
+        raise UserError('%d entr%s of %s still waiting for your review. Confirm or reject %s first (menu Entries), then settle.' % (waiting, 'y' if waiting == 1 else 'ies', emp.name + (' is' if waiting == 1 else ' are'), 'it' if waiting == 1 else 'them'))
     com = L.search([('x_employee_id', '=', emp_id), ('x_settled', '=', False)])
     ent = E.search([('x_employee_id', '=', emp_id), ('x_state', '=', 'confirmed'), ('x_settled', '=', False)])
     if not com and not ent:
