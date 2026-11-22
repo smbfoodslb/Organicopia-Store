@@ -6,6 +6,10 @@
 # that invoice; a payment not applied to any invoice earns nothing; a credit note takes its own Organicopia amount
 # off in the period it is issued. One line per application (key P<partial id>) and per credit note (key C<move id>).
 # If an application or credit note disappears later: an unsettled line is removed, a settled one gets a reversal (R<key>).
+# 22 Nov 2026, later: (1) an amount applied from a plain journal entry in a general journal (a marketplace fee or a
+# write-off booked against the invoice) earns nothing - Toters pays net of its fees; (2) invoices on which commission
+# was already paid on the Excel sheet before they were paid by the customer carry a marker line (type 'prepaid',
+# key X<invoice id>): what is applied to them later is recorded as earned and already settled.
 # Run from the menu (returns the list) and by the daily scheduled action; safe to run any number of times.
 START = '2026-11-01'
 RATE = 0.18
@@ -40,6 +44,7 @@ def org_net(move):
 existing = {}
 for l in Line.search([]):
     existing[l.x_key] = l
+prepaid = Line.search([('x_source', '=', 'prepaid')]).mapped('x_invoice_id').ids
 created = 0
 for p in Partial.search([('max_date', '>=', START), ('company_id', 'in', COMPANIES), ('debit_move_id.move_id.move_type', '=', 'out_invoice'), ('debit_move_id.move_id.state', '=', 'posted')]):
     key = 'P%d' % p.id
@@ -51,7 +56,14 @@ for p in Partial.search([('max_date', '>=', START), ('company_id', 'in', COMPANI
     if not base:
         continue
     other = p.credit_move_id.move_id
-    Line.create({'x_name': '%s - %s' % (inv.name, inv.commercial_partner_id.name), 'x_key': key, 'x_date': p.max_date, 'x_employee_id': EMPLOYEE, 'x_company_id': p.company_id.id, 'x_partner_id': inv.commercial_partner_id.id, 'x_invoice_id': inv.id, 'x_source': 'credit_applied' if other.move_type == 'out_refund' else 'payment', 'x_applied': p.amount, 'x_base': base, 'x_rate': RATE, 'x_commission': round(base * RATE, 2)})
+    if other.move_type == 'entry' and other.journal_id.type == 'general':
+        continue
+    vals = {'x_name': '%s - %s' % (inv.name, inv.commercial_partner_id.name), 'x_key': key, 'x_date': p.max_date, 'x_employee_id': EMPLOYEE, 'x_company_id': p.company_id.id, 'x_partner_id': inv.commercial_partner_id.id, 'x_invoice_id': inv.id, 'x_source': 'credit_applied' if other.move_type == 'out_refund' else 'payment', 'x_applied': p.amount, 'x_base': base, 'x_rate': RATE, 'x_commission': round(base * RATE, 2)}
+    if inv.id in prepaid:
+        vals['x_settled'] = True
+        vals['x_settled_date'] = p.max_date
+        vals['x_note'] = 'Commission on this invoice was paid ahead on the Excel sheet (cut-over)'
+    Line.create(vals)
     created += 1
 for cn in Move.search([('move_type', '=', 'out_refund'), ('state', '=', 'posted'), ('invoice_date', '>=', START), ('company_id', 'in', COMPANIES)]):
     key = 'C%d' % cn.id
