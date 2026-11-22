@@ -3,6 +3,8 @@
   <field name="partner_id"/>
   <field name="x_flypost_ref"/>
   <filter name="open" string="Not yet paid" domain="['|', ('invoice_status', '!=', 'invoiced'), ('x_amount_open', '&gt;', 0.005)]"/>
+  <filter name="with_flypost" string="With FlyPost, not delivered yet" domain="[('x_flypost_handed', '!=', False), ('effective_date', '=', False)]"/>
+  <filter name="not_handed" string="Not handed over yet" domain="[('x_flypost_handed', '=', False), ('effective_date', '=', False)]"/>
   <filter name="due" string="FlyPost owes us" domain="[('x_flypost_due', '&gt;', 0.005)]"/>
   <filter name="paid" string="Paid" domain="[('invoice_status', '=', 'invoiced'), ('x_amount_open', '&lt;=', 0.005)]"/>
   <group>
