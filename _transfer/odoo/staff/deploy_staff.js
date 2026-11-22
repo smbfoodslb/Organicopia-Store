@@ -22,6 +22,8 @@ if (stage === 'models') {
     F('x_settled', 'Settled', 'boolean', { index: true }), F('x_settled_date', 'Settled on', 'date'), F('x_settlement_id', 'Settlement', 'many2one', { relation: 'x_staff_settlement', on_delete: 'set null' }), F('x_company_id', 'Company', 'many2one', { relation: 'res.company', on_delete: 'restrict' })]);
   log.statement = await model('x_staff_statement', 'Staff statement', [F('x_name', 'Statement', 'char'), F('x_employee_id', 'Employee', 'many2one', EMP), F('x_html', 'Statement', 'html'), F('x_net', 'Net', 'float'), F('x_review', 'Entries to review', 'integer'), F('x_commission', 'Commission open', 'float'), F('x_entries', 'Ledger entries (net)', 'float')]);
   log.pin = await model('x_staff_pin', 'My statement (PIN)', [F('x_name', 'Name', 'char'), F('x_employee_id', 'Employee', 'many2one', { relation: 'hr.employee.public', on_delete: 'set null' }), F('x_pin', 'PIN', 'char'), F('x_html', 'Statement', 'html')]);
+  const WHO = [['5', 'Melissa Bou Gebrayel'], ['7', 'Serge Bou Antoun']];
+  for (const [m, mid] of [['x_staff_entry', log.entry], ['x_staff_pin', log.pin]]) if (!(await one('ir.model.fields', [['model', '=', m], ['name', '=', 'x_who']]))) await rpc('ir.model.fields', 'create', [{ model_id: mid, name: 'x_who', field_description: 'Who', ttype: 'selection', state: 'manual', selection_ids: WHO.map(([value, name], i) => [0, 0, { value, name, sequence: i + 1 }]) }]);
   const cm = await one('ir.model', [['model', '=', 'x_commission_line']]);
   log.cl_field = await mk('ir.model.fields', [['model', '=', 'x_commission_line'], ['name', '=', 'x_settlement_id']], { model_id: cm, name: 'x_settlement_id', field_description: 'Settlement', ttype: 'many2one', relation: 'x_staff_settlement', on_delete: 'set null', state: 'manual' });
   log.acc = [await access('staff_entry_owner', log.entry, G_OWNER, true, true, true, true), await access('staff_entry_shop', log.entry, G_SHOP, true, false, true, false),
@@ -56,7 +58,7 @@ if (stage === 'views') {
   const win = async (name, vals) => { const id = await one('ir.actions.act_window', [['name', '=', name], ['res_model', '=', vals.res_model]]); if (id) { await rpc('ir.actions.act_window', 'write', [[id], vals]); return id; } return rpc('ir.actions.act_window', 'create', [{ name, ...vals }]); };
   log.w = { expense: await win('Add expense', { res_model: 'x_staff_entry', view_mode: 'form', view_id: log.v.fExpense, target: 'current', context: "{'default_x_type': 'expense', " + today + "}" }),
     vehicle: await win('Vehicle use', { res_model: 'x_staff_entry', view_mode: 'form', view_id: log.v.fVehicle, target: 'current', context: "{'default_x_type': 'vehicle', " + today + "}" }),
-    cash: await win('Cash received', { res_model: 'x_staff_entry', view_mode: 'form', view_id: log.v.fCash, target: 'current', context: "{'default_x_type': 'cash', 'default_x_method': 'cash', " + today + "}" }),
+    cash: await win('Cash received', { res_model: 'x_staff_entry', view_mode: 'form', view_id: log.v.fCash, target: 'current', context: "{'default_x_type': 'cash', " + today + "}" }),
     entries: await win('Entries', { res_model: 'x_staff_entry', view_mode: 'list,form', view_id: log.v.entryList, context: "{'search_default_review': 1, 'default_x_state': 'review', " + today + "}" }),
     settlements: await win('Settlements', { res_model: 'x_staff_settlement', view_mode: 'list' }) };
 }

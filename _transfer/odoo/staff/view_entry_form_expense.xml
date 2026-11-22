@@ -5,7 +5,7 @@
     <group>
       <group>
         <field name="x_type" invisible="1"/>
-        <field name="x_employee_id" string="Your name" required="1" readonly="id" options="{'no_create': True, 'no_open': True}"/>
+        <field name="x_who" string="Your name" required="1" readonly="id"/>
         <field name="x_date" required="1" readonly="id"/>
         <field name="x_desc" string="What did you buy?" required="1" readonly="id"/>
         <field name="x_input" string="Amount paid ($)" required="1" readonly="id"/>

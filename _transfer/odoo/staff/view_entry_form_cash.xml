@@ -1,18 +1,17 @@
 <form string="Cash received">
   <sheet>
-    <div class="alert alert-info" role="alert" invisible="id">Money you received from a customer. Choose the customer, then the invoice being paid. Count the money twice before you save. The manager confirms it and the invoice is marked paid.</div>
+    <div class="alert alert-info" role="alert" invisible="id">Cash you received from a customer (Whish payments go to the manager directly, do not enter them here). Choose the customer, then the invoice being paid. Count the money twice before you save. The manager confirms it and the invoice is marked paid.</div>
     <div class="alert alert-success" role="alert" invisible="not id">Saved. Waiting for the manager to confirm it.</div>
     <group>
       <group>
         <field name="x_type" invisible="1"/>
-        <field name="x_employee_id" string="Who received the money?" required="1" readonly="id" options="{'no_create': True, 'no_open': True}"/>
+        <field name="x_who" string="Who received the money?" required="1" readonly="id"/>
         <field name="x_date" required="1" readonly="id"/>
         <field name="x_partner_id" string="Customer" required="1" readonly="id" options="{'no_create': True, 'no_open': True}"/>
         <field name="x_invoice_id" string="Invoice paid" readonly="id" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial')), '|', ('partner_id', '=', x_partner_id), ('commercial_partner_id', '=', x_partner_id)]" options="{'no_create': True, 'no_open': True}" placeholder="Leave empty only if there is no invoice"/>
       </group>
       <group>
         <field name="x_input" string="Amount received ($)" required="1" readonly="id"/>
-        <field name="x_method" string="Paid by" widget="radio" required="1" readonly="id" options="{'horizontal': true}"/>
         <field name="x_note" string="Notes" readonly="id"/>
       </group>
     </group>

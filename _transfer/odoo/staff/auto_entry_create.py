@@ -7,6 +7,12 @@ OWNER = {'melissa': 5, 'serge': 7}
 LABEL = {'melissa': "Melissa's", 'serge': "Serge's", 'kangoo': 'SMBF Kangoo'}
 for r in records.sudo():
     vals = {}
+    # "Who" is a fixed list (Melissa 5, Serge 7) instead of the employee list: the employees belong to smbfoods and
+    # the employee list is empty when only SMBF is ticked. The employee is set from it here.
+    if r.x_who:
+        r.write({'x_employee_id': int(r.x_who)})
+    if not r.x_employee_id:
+        raise UserError('Choose the name.')
     if not r.x_state:
         vals['x_state'] = 'review'
     if not r.x_date:
@@ -38,8 +44,8 @@ for r in records.sudo():
         vals['x_amount'] = -round(r.x_input, 2)
         vals['x_partner_id'] = partner.id
         vals['x_company_id'] = inv.company_id.id if inv else False
-        vals['x_method'] = r.x_method or 'cash'
-        vals['x_name'] = '%s received: %s%s' % ('Whish' if r.x_method == 'whish' else 'Cash', partner.name or '', ' - %s' % inv.name if inv else '')
+        vals['x_method'] = 'cash'  # Whish payments always go to the owner directly (owner, 22 Nov 2026)
+        vals['x_name'] = 'Cash received: %s%s' % (partner.name or '', ' - %s' % inv.name if inv else '')
     elif r.x_type == 'advance':
         if r.x_input > 0 and not r.x_amount:
             vals['x_amount'] = -round(r.x_input, 2)

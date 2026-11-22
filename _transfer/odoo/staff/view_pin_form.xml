@@ -2,7 +2,7 @@
   <sheet>
     <group invisible="x_html">
       <group>
-        <field name="x_employee_id" string="Your name" options="{'no_create': True, 'no_open': True}"/>
+        <field name="x_who" string="Your name"/>
         <field name="x_pin" string="Your PIN (same as clock in)" password="True"/>
       </group>
       <group>
