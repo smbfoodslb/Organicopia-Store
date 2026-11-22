@@ -66,7 +66,7 @@
       if (!picks.length) { return []; }
       return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
-        picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && p.partner_id; });
+        picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
         return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link'] }).then(function (ps) {
           var pm = {}; ps.forEach(function (p) { pm[p.id] = p; });
@@ -227,7 +227,7 @@
     var keep = { who: (document.getElementById('who') || {}).value, veh: (document.getElementById('veh') || {}).value, day: (document.getElementById('day') || {}).value };
     var who = keep.who || (S.run && S.run.x_who) || '7', veh = keep.veh || (S.run && S.run.x_vehicle) || 'serge', day = keep.day || (S.run && S.run.x_date) || today();
     var opt = function (v, t, cur) { return '<option value="' + v + '"' + (v === cur ? ' selected' : '') + '>' + t + '</option>'; };
-    var h = '<h1>Delivery planner</h1><p class="sub">Open deliveries, shop to stops and back. Pickup orders are left out. FlyPost orders become one drop-off at their office; untick them when FlyPost collects from the shop.</p>';
+    var h = '<h1>Delivery planner</h1><p class="sub">Open deliveries, shop to stops and back. Pickup orders are left out. FlyPost orders become one drop-off at their office; orders marked FlyPost - Pick Up are left out.</p>';
     if (S.run) { h += '<div class="box">Editing <b>' + esc(S.run.x_name) + '</b> (' + (S.run.x_state === 'sent' ? 'already sent to the driver' : 'draft') + '). <a href="/delivery-planner">Start a new run</a></div>'; }
     else if (S.runs && S.runs.length) { h += '<div class="box">Open runs: ' + S.runs.map(function (r) { return '<a href="?run=' + r.id + '">' + esc(r.x_name) + '</a>'; }).join(' · ') + '</div>'; }
     h += '<div class="row" style="margin-top:12px"><label>Date<input type="date" id="day" value="' + esc(day) + '"></label><label>Driver<select id="who">' + opt('7', 'Serge', who) + opt('5', 'Melissa', who) + opt('owner', 'Mustafa', who) + '</select></label>' +

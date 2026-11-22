@@ -1,6 +1,7 @@
 <list string="FlyPost orders" default_order="date_order desc" create="0">
   <field name="name"/>
   <field name="partner_id"/>
+  <field name="x_delivered_by" string="How"/>
   <field name="x_flypost_ref" string="FlyPost ref"/>
   <field name="date_order" widget="date" string="Order date"/>
   <field name="effective_date" string="Left the shop" optional="show"/>

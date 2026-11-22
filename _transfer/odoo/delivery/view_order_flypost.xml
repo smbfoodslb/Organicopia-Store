@@ -1,7 +1,7 @@
 <data>
   <xpath expr="//field[@name='payment_term_id']" position="after">
     <field name="x_delivered_by" widget="radio" options="{'horizontal': true}"/>
-    <field name="x_flypost_ref" invisible="x_delivered_by != 'flypost'" placeholder="e.g. FPO2755"/>
-    <field name="x_flypost_collects" invisible="x_delivered_by != 'flypost'"/>
+    <field name="x_flypost_ref" invisible="x_delivered_by not in ('flypost', 'flypost_pickup')" placeholder="e.g. FPO2755"/>
+    <field name="x_flypost_collects" invisible="x_delivered_by not in ('flypost', 'flypost_pickup')"/>
   </xpath>
 </data>

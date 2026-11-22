@@ -3,6 +3,6 @@
 # afterwards, e.g. a retail customer who pays by Whish.
 RETAIL_PRICELIST = 27
 for order in records:
-    collects = order.x_delivered_by == 'flypost' and order.pricelist_id.id == RETAIL_PRICELIST
+    collects = order.x_delivered_by in ('flypost', 'flypost_pickup') and order.pricelist_id.id == RETAIL_PRICELIST
     if order.x_flypost_collects != collects:
         order.write({'x_flypost_collects': collects})
