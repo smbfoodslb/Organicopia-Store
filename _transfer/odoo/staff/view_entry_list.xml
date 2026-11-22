@@ -1,0 +1,12 @@
+<list string="Staff entries" default_order="x_date desc, id desc" decoration-warning="x_state == 'review'" decoration-muted="x_settled or x_state == 'rejected'">
+  <field name="x_date"/>
+  <field name="x_employee_id" string="Employee"/>
+  <field name="x_type"/>
+  <field name="x_name"/>
+  <field name="x_amount" string="Amount (+ owed to employee)" sum="Total"/>
+  <field name="x_state" widget="badge" decoration-warning="x_state == 'review'" decoration-success="x_state == 'confirmed'" decoration-danger="x_state == 'rejected'"/>
+  <field name="x_invoice_id" optional="show"/>
+  <field name="x_payment_id" optional="hide"/>
+  <field name="x_settled" readonly="1"/>
+  <field name="x_settled_date" optional="hide" readonly="1"/>
+</list>

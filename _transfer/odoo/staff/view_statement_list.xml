@@ -1,0 +1,7 @@
+<list string="Staff statements" create="0" delete="0">
+  <field name="x_employee_id" string="Employee"/>
+  <field name="x_commission" string="Commission open"/>
+  <field name="x_entries" string="Expenses, vehicle, cash (net)"/>
+  <field name="x_net" string="Net (+ owed to employee)"/>
+  <field name="x_review" string="Entries to review" decoration-danger="x_review &gt; 0"/>
+</list>

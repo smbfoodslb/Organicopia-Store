@@ -1,0 +1,8 @@
+<list string="Settlements" create="0" default_order="x_date desc, id desc">
+  <field name="x_date"/>
+  <field name="x_employee_id" string="Employee"/>
+  <field name="x_commission" string="Commission" sum="Commission"/>
+  <field name="x_entries" string="Expenses, vehicle, cash (net)" sum="Entries"/>
+  <field name="x_net" string="Net settled (+ paid to employee)" sum="Net"/>
+  <field name="x_note"/>
+</list>

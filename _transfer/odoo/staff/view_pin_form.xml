@@ -1,0 +1,15 @@
+<form string="My statement" create="0" delete="0">
+  <sheet>
+    <group invisible="x_html">
+      <group>
+        <field name="x_employee_id" string="Your name" options="{'no_create': True, 'no_open': True}"/>
+        <field name="x_pin" string="Your PIN (same as clock in)" password="True"/>
+      </group>
+      <group>
+        <button name="__CHECK__" type="action" string="Show my statement" class="btn-primary"/>
+      </group>
+    </group>
+    <field name="x_html" readonly="1" nolabel="1" invisible="not x_html"/>
+    <div class="text-muted" invisible="not x_html">Close this screen when you are done. It is cleared the next time anyone opens My statement.</div>
+  </sheet>
+</form>

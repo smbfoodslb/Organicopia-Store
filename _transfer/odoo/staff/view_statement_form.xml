@@ -1,0 +1,11 @@
+<form string="Staff statement" create="0" delete="0" edit="0">
+  <header>
+    <button name="__SETTLE__" type="action" string="Settle now" class="btn-primary" confirm="Mark everything shown on this statement as settled today? Do this when you and the employee have squared up."/>
+    <button name="__OPEN__" type="action" string="Refresh"/>
+  </header>
+  <sheet>
+    <div class="alert alert-warning" role="alert" invisible="x_review == 0">There are entries waiting for your review (menu Entries). Settling is blocked until they are confirmed or rejected.</div>
+    <field name="x_review" invisible="1"/>
+    <field name="x_html" readonly="1" nolabel="1"/>
+  </sheet>
+</form>

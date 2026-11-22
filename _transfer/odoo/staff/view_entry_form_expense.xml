@@ -1,0 +1,19 @@
+<form string="Add expense">
+  <sheet>
+    <div class="alert alert-info" role="alert" invisible="id">Something you paid for the shop with your own money. Add a photo of the receipt, then save. The manager checks it and it is added to your statement.</div>
+    <div class="alert alert-success" role="alert" invisible="not id">Saved. Waiting for the manager to check it.</div>
+    <group>
+      <group>
+        <field name="x_type" invisible="1"/>
+        <field name="x_employee_id" string="Your name" required="1" readonly="id" options="{'no_create': True, 'no_open': True}"/>
+        <field name="x_date" required="1" readonly="id"/>
+        <field name="x_desc" string="What did you buy?" required="1" readonly="id"/>
+        <field name="x_input" string="Amount paid ($)" required="1" readonly="id"/>
+      </group>
+      <group>
+        <field name="x_receipt" widget="image" string="Receipt photo" readonly="id" options="{'size': [0, 220]}"/>
+        <field name="x_note" string="Notes" readonly="id"/>
+      </group>
+    </group>
+  </sheet>
+</form>

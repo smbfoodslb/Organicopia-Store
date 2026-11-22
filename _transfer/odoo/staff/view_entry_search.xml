@@ -1,0 +1,16 @@
+<search string="Staff entries">
+  <field name="x_name"/>
+  <field name="x_employee_id"/>
+  <field name="x_partner_id"/>
+  <filter name="review" string="To review" domain="[('x_state', '=', 'review')]"/>
+  <filter name="open" string="Confirmed, not settled" domain="[('x_state', '=', 'confirmed'), ('x_settled', '=', False)]"/>
+  <filter name="settled" string="Settled" domain="[('x_settled', '=', True)]"/>
+  <filter name="rejected" string="Rejected" domain="[('x_state', '=', 'rejected')]"/>
+  <separator/>
+  <filter name="date" string="Date" date="x_date"/>
+  <group>
+    <filter name="by_employee" string="Employee" context="{'group_by': 'x_employee_id'}"/>
+    <filter name="by_type" string="Type" context="{'group_by': 'x_type'}"/>
+    <filter name="by_month" string="Month" context="{'group_by': 'x_date:month'}"/>
+  </group>
+</search>
