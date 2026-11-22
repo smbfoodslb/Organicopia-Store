@@ -6,6 +6,6 @@ for r in records:
     emp = env['hr.employee'].sudo().browse(r.x_employee_id.id)
     if not emp.pin or emp.pin != r.x_pin.strip():
         raise UserError('Wrong PIN.')
-    env['ir.actions.server'].sudo().browse(1352).run()
+    env['ir.actions.server'].sudo().browse(1352).run()  # action 1352 carries no group restriction for this reason
     build.with_context(statement_employee=emp.id, statement_model='x_staff_pin', statement_res_id=r.id).run()
     r.sudo().write({'x_pin': False})
