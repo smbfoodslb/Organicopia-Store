@@ -1,0 +1,16 @@
+<data>
+  <!-- Less white space on invoices and credit notes (owner, 23 Nov 2026). The style sits inside the invoice document,
+       so quotations, delivery slips and every other report keep their spacing.
+       - the customer / shipping address block starts 6px under the header instead of 42px;
+       - the customer's Tax ID follows the address and phone directly (the address element kept a 16px bottom margin);
+       - "Shipping Address" starts level with the customer's name;
+       - a small gap sets "Vendor No." apart from the Tax ID. -->
+  <xpath expr="//div[hasclass('page')]" position="inside">
+    <style>
+      .article > .address.row { padding-top: 6px !important; }
+      .article > .address.row address { margin-bottom: 0 !important; }
+      .article > .address.row [name="shipping_address_block"] > strong { margin-top: 0 !important; }
+      .smb_vendor_no { margin-top: 6px; }
+    </style>
+  </xpath>
+</data>
