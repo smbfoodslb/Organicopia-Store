@@ -76,7 +76,7 @@
             var mine = saved.indexOf(p.id) >= 0;
             return {
               id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27),
-              collect: o.x_collect || ((o.pricelist_id && (o.pricelist_id[0] === 27 || o.pricelist_id[0] === 30)) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, total: o.amount_total, partner: c.id,
+              collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, total: o.amount_total, partner: c.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',

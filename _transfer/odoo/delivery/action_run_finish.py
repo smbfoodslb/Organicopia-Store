@@ -49,7 +49,7 @@ for run in records.sudo():
         if not sale:
             parts.append('%d) %s' % (number, stop.get('name', '')))
             continue
-        mode = sale.x_collect or ('collect' if sale.pricelist_id.id in (27, 30) else 'account')
+        mode = sale.x_collect or ('collect' if sale.pricelist_id.id in (27,) else 'account')
         invoiced = sale.order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted')
         due = sale.x_amount_open if invoiced else sale.amount_total
         if mode == 'account':
