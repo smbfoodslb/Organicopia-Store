@@ -1,0 +1,5 @@
+<data>
+  <xpath expr="//field[@name='vat']" position="after">
+    <field name="x_vendor_no" placeholder="The number this customer gave us as their supplier" invisible="not is_company"/>
+  </xpath>
+</data>
