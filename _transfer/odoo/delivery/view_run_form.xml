@@ -17,14 +17,17 @@
       <group string="When the run is finished">
         <field name="x_km" string="Planned km" readonly="1"/>
         <field name="x_km_final" readonly="x_state in ('done', 'cancel')"/>
+        <field name="x_km_reason" placeholder="Why the km differ from the plan" readonly="x_state in ('done', 'cancel')" required="x_state not in ('done', 'cancel') and x_km_final != x_km" invisible="x_km_final == x_km and not x_km_reason"/>
         <field name="x_done_by" widget="radio" readonly="x_state in ('done', 'cancel')"/>
+        <field name="x_pin" password="True" invisible="x_state in ('done', 'cancel')" placeholder="Your clock-in PIN"/>
         <field name="x_done_date" readonly="1" invisible="x_state != 'done'"/>
         <field name="x_entry_id" readonly="1" invisible="not x_entry_id" options="{'no_open': True}"/>
       </group>
     </group>
-    <div class="text-muted" invisible="x_state in ('done', 'cancel')">Correct "Km driven" if the day went differently from the plan (a skipped stop, an extra errand, a trip home that should count). Then choose your name and press Run completed. The km are only recorded then.</div>
+    <div class="text-muted" invisible="x_state in ('done', 'cancel')">Correct "Km driven" if the day went differently from the plan (a skipped stop, an extra errand, a trip home that should count). If you change it, write the reason. Then choose your name, enter your clock-in PIN and press Run completed. The km are only recorded then.</div>
     <group>
       <field name="x_note" placeholder="Anything the owner should know about this run"/>
     </group>
   </sheet>
+  <chatter/>
 </form>
