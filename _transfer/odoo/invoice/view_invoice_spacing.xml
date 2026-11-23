@@ -5,14 +5,12 @@
        - the customer's Tax ID follows the address and phone directly (the address element kept a 16px bottom margin that only an
          inline style overrides, hence the three attribute xpaths below);
        - "Shipping Address" starts level with the customer's name;
-       - a small gap sets "Vendor No." apart from the Tax ID;
-       - the Invoice Date row keeps a 12px gap to the product table now that the blank line is gone. -->
+       - a small gap sets "Vendor No." apart from the Tax ID. -->
   <xpath expr="//div[hasclass('page')]" position="inside">
     <style>
       .article > .address.row { padding-top: 10px !important; }
       .article > .address.row [name="shipping_address_block"] > strong { margin-top: 0 !important; }
       .smb_vendor_no { margin-top: 6px; }
-      .page > #informations { margin-bottom: 12px !important; }
     </style>
     <!-- Both companies (owner, 23 Nov 2026, replacing the company-3-only rule of the same day): no blank line above
          the Invoice Date row and none above the product table. Both are empty structure blocks holding a <br>;
