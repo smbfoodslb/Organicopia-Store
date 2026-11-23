@@ -326,7 +326,9 @@
       h += '<div class="box"><b>Link for the driver</b><div class="link"><a target="_blank" rel="noopener" href="' + short + '">' + short + '</a></div>' +
         (S.saved.x_collect_text ? '<div style="margin-top:8px"><b>For the driver</b>' + String(S.saved.x_collect_text).split(' | ').map(function (t) { return '<div class="leg">' + esc(t) + '</div>'; }).join('') + '</div>' : '') +
         (S.saved.x_note ? '<div class="err">' + esc(S.saved.x_note) + '</div>' : '') +
-        '<div style="margin-top:8px">' + (who === 'owner' ? '' : '<button class="main" data-a="send"' + (S.busy ? ' disabled' : '') + '>' + (S.run.x_state === 'sent' ? 'Send updated route on WhatsApp' : 'Send to driver on WhatsApp') + '</button> ') + '<button data-a="copy">Copy link</button> <button data-a="copylist">Copy stop list</button></div></div>';
+        '<div style="margin-top:8px">' + (who === 'owner' ? '' : '<button class="main" data-a="send"' + (S.busy ? ' disabled' : '') + '>' + (S.run.x_state === 'sent' ? 'Send updated route on WhatsApp' : 'Send to driver on WhatsApp') + '</button> ') + '<button data-a="copy">Copy link</button> <button data-a="copylist">Copy stop list</button></div>' +
+        /* repeated here: the same notice at the top of the panel is out of view when these buttons are pressed */
+        (S.err ? '<div class="err">' + esc(S.err) + '</div>' : '') + (S.msg ? '<div class="msg">' + esc(S.msg) + '</div>' : '') + '</div>';
     }
     side.innerHTML = h;
   }
