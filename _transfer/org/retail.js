@@ -262,11 +262,17 @@ if (location.hash === "#wholesale") openWholesale();
   const el = document.querySelector(`.card[data-num="${p.num}"]`); if (el) el.scrollIntoView({block: "center"});
   openProduct(p.num); try { history.replaceState(null, "", location.pathname + location.search) } catch (e) {}
 })();
-// Logo animation: the GIF plays once, then fades to the crisp SVG lockup. Reduced motion: lockup only.
+// Logo animation: plays once and stays on its last frame (owner, 23 Nov 2026: no swap to another image afterwards).
+// The crisp SVG lockup is shown instead only for reduced motion, when the animation fails or is very slow to load,
+// and after the GIF fallback (old browsers), because a GIF would loop for ever.
 const heroAnim = $("heroAnim"), animBox = heroAnim.closest(".anim") || heroAnim.parentElement;
 const ANIM_MS = 4300;
 if (matchMedia("(prefers-reduced-motion: reduce)").matches) { animBox.classList.add("done"); heroAnim.remove() }
-else { let started = false; const start = () => { if (started) return; started = true; setTimeout(() => animBox.classList.add("done"), ANIM_MS) }; if (heroAnim.complete) start(); else { heroAnim.addEventListener("load", start, {once: true}); heroAnim.addEventListener("error", start, {once: true}); } setTimeout(start, 8000); /* slow connection: give the file time, but never leave the hero stuck */ }
+else { let settled = false; const still = () => animBox.classList.add("done");
+  const loaded = () => { if (settled) return; settled = true; if (/\.gif(\?|$)/.test(heroAnim.currentSrc || heroAnim.src)) setTimeout(still, ANIM_MS) };
+  const failed = () => { if (settled) return; settled = true; still() };
+  if (heroAnim.complete && heroAnim.naturalWidth) loaded(); else { heroAnim.addEventListener("load", loaded, {once: true}); heroAnim.addEventListener("error", failed, {once: true}); }
+  setTimeout(failed, 8000); /* slow connection: never leave the hero empty */ }
 // account links
 (function () {
   const locked = CATALOG.locked;
