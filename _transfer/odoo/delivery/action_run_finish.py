@@ -30,6 +30,36 @@ for run in records.sudo():
     if run.x_route_url:
         link = env['link.tracker'].sudo().search_or_create([{'url': run.x_route_url, 'title': name}])
         vals['x_route_code'] = link[0].code
+    # What the driver has to collect at each stop, from the invoices as they stand now (owner, 23 Nov 2026):
+    # an order on account -> "on account, do not collect"; nothing left open on its invoices -> "PAID";
+    # otherwise the amount still open (the order total while nothing is invoiced). One line, because a
+    # WhatsApp template variable cannot hold line breaks.
+    parts = []
+    try:
+        stops = json.loads(run.x_stop_order or '[]')
+    except Exception:
+        stops = []
+    number = 0
+    for stop in stops:
+        number += 1
+        if stop.get('orders') is not None:
+            parts.append('%d) FlyPost drop-off: hand over %s' % (number, ', '.join(o.get('order', '') for o in stop.get('orders'))))
+            continue
+        sale = env['stock.picking'].sudo().browse(int(stop.get('picking') or 0)).exists().sale_id
+        if not sale:
+            parts.append('%d) %s' % (number, stop.get('name', '')))
+            continue
+        mode = sale.x_collect or ('collect' if sale.pricelist_id.id in (27, 30) else 'account')
+        invoiced = sale.order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted')
+        due = sale.x_amount_open if invoiced else sale.amount_total
+        if mode == 'account':
+            what = 'on account, do not collect'
+        elif invoiced and due < 0.005:
+            what = 'PAID, nothing to collect'
+        else:
+            what = 'collect $%.2f' % due
+        parts.append('%d) %s: %s' % (number, stop.get('name', ''), what))
+    vals['x_collect_text'] = ' | '.join(parts) or '-'
     if run.x_state not in ('done', 'cancel'):
         vals['x_km_final'] = round(run.x_km or 0.0, 1)
     run.write(vals)

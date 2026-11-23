@@ -64,7 +64,7 @@
       if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); (p.orders || []).forEach(function (q) { saved.push(q.picking); }); }); } catch (e) { } }
       if (S.run && S.run.x_end) { S.end.mode = S.run.x_end; if (S.run.x_end === 'other') { S.end.lat = S.run.x_end_lat; S.end.lng = S.run.x_end_lng; } if (S.run.x_end === 'last' && saved.length) { try { var so = JSON.parse(S.run.x_stop_order || '[]'); S.end.last = so[so.length - 1].picking; } catch (e) { } } }
       if (!picks.length) { return []; }
-      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed'] }).then(function (orders) {
+      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed', 'x_collect', 'x_amount_open'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
         picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && o.x_delivered_by !== 'pickup' && !(o.x_delivered_by === 'flypost' && o.x_flypost_handed) && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
@@ -75,7 +75,8 @@
             var has = !!(c.partner_latitude || c.partner_longitude);
             var mine = saved.indexOf(p.id) >= 0;
             return {
-              id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27), total: o.amount_total, partner: c.id,
+              id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27),
+              collect: o.x_collect || ((o.pricelist_id && (o.pricelist_id[0] === 27 || o.pricelist_id[0] === 30)) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, total: o.amount_total, partner: c.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
@@ -157,6 +158,17 @@
       S.stops = S.stops.filter(function (o) { return o.id !== s.id; }); S.route = null; S.saved = null; drawLine(null);
       S.msg = s.order + ' is with FlyPost. It is off the planner and stays in the FlyPost list.'; render();
     }).catch(function (e) { S.err = 'Not changed: ' + e.message; render(); });
+  }
+
+  function payTag(s) {
+    if (s.collect === 'account') { return '<span class="tag">On account</span>'; }
+    if (s.invoiced && s.due < 0.005) { return '<span class="tag ok">Paid</span>'; }
+    return '<span class="tag warn">Collect $' + s.due.toFixed(2) + '</span>';
+  }
+  function setCollect(s, mode) {
+    S.msg = ''; S.err = '';
+    rpc('sale.order', 'write', [[s.sale], { x_collect: mode }]).then(function () { s.collect = mode; S.saved = null; S.msg = s.order + (mode === 'collect' ? ': the driver collects.' : ': on account, nothing to collect.'); render(); })
+      .catch(function (e) { S.err = 'Not changed: ' + e.message; render(); });
   }
 
   function compute(ids, optimize) {
@@ -241,7 +253,7 @@
     };
     S.busy = true; render();
     var p = S.run ? rpc('x_delivery_run', 'write', [[S.run.id], vals]).then(function () { return S.run.id; }) : rpc('x_delivery_run', 'create', [Object.assign({ x_state: 'draft', x_name: 'Delivery run' }, vals)]);
-    p.then(function (id) { id = Array.isArray(id) ? id[0] : id; return runAction(FINISH, id).then(function () { return rpc('x_delivery_run', 'read', [[id]], { fields: ['x_name', 'x_route_code', 'x_state', 'x_driver_phone', 'x_note', 'x_entry_id'] }); }); })
+    p.then(function (id) { id = Array.isArray(id) ? id[0] : id; return runAction(FINISH, id).then(function () { return rpc('x_delivery_run', 'read', [[id]], { fields: ['x_name', 'x_route_code', 'x_state', 'x_driver_phone', 'x_note', 'x_entry_id', 'x_collect_text'] }); }); })
       .then(function (r) {
         S.run = Object.assign(S.run || {}, r[0]); S.saved = r[0]; S.busy = false;
         S.msg = 'Saved: ' + r[0].x_name + '. The km are recorded when the run is marked completed.';
@@ -283,13 +295,14 @@
     S.stops.forEach(function (s) {
       h += '<div class="stop' + (s.on ? '' : ' off') + '"><div class="top"><input type="checkbox" data-a="tick" data-id="' + s.id + '"' + (s.on ? ' checked' : '') + '><div class="grow"><b>' + esc(s.name) + '</b> · ' + esc(s.order) + ' · $' + s.total.toFixed(2) +
         '<div class="addr">' + esc(s.addr || 'No address') + (s.phone ? ' · ' + esc(s.phone) : '') + '</div>' +
-        '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span><span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' +
+        '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span><span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' + payTag(s) +
         (s.other ? '<span class="tag warn">In ' + esc(s.other) + '</span>' : '') +
         (s.fly ? '<span class="tag bad">FlyPost</span><br>' : '<span class="tag ' + (s.pin === 'saved' ? 'ok">Pin saved' : s.pin === 'approx' ? 'warn">Pin is a guess' : 'bad">No location') + '</span><br>') +
         (!s.fly && s.pin === 'approx' ? '<button class="small" data-a="okpin" data-id="' + s.id + '">Pin is right</button>' : '') +
         (s.fly ? '' : '<button class="small" data-a="pin" data-id="' + s.id + '">' + (s.pin === 'saved' ? 'Move pin' : 'Set pin') + '</button>') +
         '<button class="small" data-a="' + (s.fly ? 'nofly' : 'fly') + '" data-id="' + s.id + '">' + (s.fly ? 'Back to our driver' : 'Send with FlyPost') + '</button>' +
         (s.fly ? '<button class="small" data-a="handed" data-id="' + s.id + '">Handed to FlyPost</button>' : '') +
+        '<button class="small" data-a="' + (s.collect === 'collect' ? 'account' : 'collect') + '" data-id="' + s.id + '">' + (s.collect === 'collect' ? 'Put on account' : 'Collect on delivery') + '</button>' +
         (/^https?:\/\//.test(s.link) ? '<a class="leg" target="_blank" rel="noopener" href="' + esc(s.link) + '">Open customer\'s map link</a>' : '') +
         '</div></div></div>';
     });
@@ -311,8 +324,9 @@
     if (S.saved && S.saved.x_route_code) {
       var short = 'https://www.smbfoods-lb.com/r/' + S.saved.x_route_code;
       h += '<div class="box"><b>Link for the driver</b><div class="link"><a target="_blank" rel="noopener" href="' + short + '">' + short + '</a></div>' +
+        (S.saved.x_collect_text ? '<div style="margin-top:8px"><b>For the driver</b>' + String(S.saved.x_collect_text).split(' | ').map(function (t) { return '<div class="leg">' + esc(t) + '</div>'; }).join('') + '</div>' : '') +
         (S.saved.x_note ? '<div class="err">' + esc(S.saved.x_note) + '</div>' : '') +
-        '<div style="margin-top:8px">' + (who === 'owner' ? '' : '<button class="main" data-a="send"' + (S.busy ? ' disabled' : '') + '>' + (S.run.x_state === 'sent' ? 'Send updated route on WhatsApp' : 'Send to driver on WhatsApp') + '</button> ') + '<button data-a="copy">Copy link</button></div></div>';
+        '<div style="margin-top:8px">' + (who === 'owner' ? '' : '<button class="main" data-a="send"' + (S.busy ? ' disabled' : '') + '>' + (S.run.x_state === 'sent' ? 'Send updated route on WhatsApp' : 'Send to driver on WhatsApp') + '</button> ') + '<button data-a="copy">Copy link</button> <button data-a="copylist">Copy stop list</button></div></div>';
     }
     side.innerHTML = h;
   }
@@ -329,6 +343,11 @@
     else if (a === 'fly') { setFly(s, true); }
     else if (a === 'nofly') { setFly(s, false); }
     else if (a === 'handed') { handed(s); }
+    else if (a === 'collect' || a === 'account') { setCollect(s, a); }
+    else if (a === 'copylist') {
+      var text = S.saved.x_name + '\n' + String(S.saved.x_collect_text || '').split(' | ').join('\n') + '\nRoute: https://www.smbfoods-lb.com/r/' + S.saved.x_route_code;
+      (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { S.msg = 'Stop list copied.'; render(); }).catch(function () { S.msg = 'Select the list above and copy it.'; render(); });
+    }
     else if (a === 'plan') { plan(false); }
     else if (a === 'up') { move(id, -1); }
     else if (a === 'down') { move(id, 1); }
