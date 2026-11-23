@@ -4,6 +4,7 @@
 # Touches no accounting.
 NAMES = {'5': 'Melissa', '7': 'Serge', 'owner': 'Mustafa'}
 PHONES = {'7': '+96181227233'}
+CARS = {'serge': "Serge's Car", 'melissa': "Melissa's Car", 'kangoo': 'SMBF Kangoo'}
 # The owner, and the Shop tablet (group 111) when he is away.
 if not (env.user.has_group('account.group_account_manager') or 111 in env.user.all_group_ids.ids):
     raise UserError('The delivery planner is for the shop team.')
@@ -16,7 +17,10 @@ for run in records.sudo():
     if not phone and who != 'owner':
         emp = env['hr.employee'].sudo().browse(int(who))
         phone = emp.mobile_phone or emp.work_phone or False
+    # the car is part of the name so the driver sees it in the stop list and can flag a wrong one (owner, 23 Nov 2026)
     name = 'Delivery run %s - %s' % (day.strftime('%d %b %Y'), NAMES.get(who, ''))
+    if CARS.get(run.x_vehicle):
+        name = '%s - %s' % (name, CARS.get(run.x_vehicle))
     vals = {
         'x_name': name,
         'x_date': day,
