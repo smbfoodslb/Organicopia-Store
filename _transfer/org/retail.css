@@ -288,7 +288,7 @@ footer a{color:var(--band-fg)}
 @media (max-width:720px){ .group-head{flex-wrap:wrap;gap:2px 12px;padding:12px 16px} .group-head h3{font-size:22px}
   .hero{grid-template-columns:1fr;gap:28px;padding-block:32px 28px} .hero-visual{max-width:420px;margin-inline:auto;width:100%;aspect-ratio:1/.9}
 .hero-visual .anim{top:-4%}
-.hero-visual .waves{right:0;bottom:-6%}
+.hero-visual .waves{right:0;bottom:-13%;width:60%}
   .steps{grid-template-columns:1fr} footer .wrap{grid-template-columns:1fr}
   .brand .word{width:118px} .brand .mark{width:40px;height:38px} .brand .tag{display:none}
   .toolbar{top:calc(env(safe-area-inset-top,0px) + 96px)} .grid{grid-template-columns:repeat(2,1fr);gap:10px}
