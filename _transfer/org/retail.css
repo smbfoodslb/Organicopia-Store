@@ -63,16 +63,14 @@ header.site{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--bars-h
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero h1 em{color:var(--gold)}}
 .hero p.lede{font-size:17px;line-height:1.65;color:var(--muted);max-width:52ch;margin:0 0 26px}
 .hero .ctas{display:flex;gap:12px;flex-wrap:wrap}
-.hero-visual{position:relative;aspect-ratio:1/1;max-width:100%;border-radius:48% 52% 46% 54% / 56% 44% 56% 44%;background:var(--sage);overflow:hidden;isolation:isolate}
-.hero-visual .waves{position:absolute;inset:auto -10% -6% -10%;width:120%;opacity:.55;pointer-events:none}
-.hero-visual .leaf{position:absolute;width:100%;left:-1%;top:5%;height:auto}
-.hero-visual .anim{position:absolute;left:24%;top:19%;width:47%;aspect-ratio:1/1}
+/* 23 Nov 2026 (designer's review): the animated logo stands alone - no green shape, leaf or label; wavy lines tucked under it */
+.hero-visual{position:relative;aspect-ratio:1/1;max-width:100%;isolation:isolate}
+.hero-visual .waves{position:absolute;right:-4%;bottom:-4%;width:70%;opacity:.22;pointer-events:none;z-index:-1}
+.hero-visual .anim{position:absolute;left:7%;top:-6%;width:86%;aspect-ratio:1/1}
 .hero-visual .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .25s}
 .hero-visual .anim .still{opacity:0;padding:0 2%;transform:scale(1.06)}
 .hero-visual .anim.done #heroAnim{opacity:0}
 .hero-visual .anim.done .still{opacity:1}
-.hero-visual .pill{position:absolute;left:50%;transform:translateX(-50%);bottom:9%;white-space:nowrap;background:var(--navy);color:var(--cream);border-radius:999px;padding:8px 14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
-
 /* trust strip */
 .trust{border-block:1px solid var(--line);background:var(--surface)}
 .trust .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding-block:18px}
@@ -212,8 +210,8 @@ header.site{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--bars-h
 .story .panel h3{font-size:19px;margin-bottom:8px}
 .story .panel p{font-size:14px;margin:0}
 .story .panel a{color:var(--gold)}
-.story .seal{display:grid;place-items:center;padding:18px}
-.story .seal img{width:min(240px,70%)}
+.story .seal{display:grid;place-items:center;padding:26px}
+.story .seal img{width:min(420px,92%)}
 .story .seal-img{filter:brightness(0) saturate(100%) invert(93%) sepia(13%) saturate(426%) hue-rotate(336deg) brightness(102%) contrast(95%)}
 
 /* how to order */
@@ -288,7 +286,9 @@ footer a{color:var(--band-fg)}
   .trust .wrap{grid-template-columns:1fr 1fr} .nav{flex-wrap:wrap} .navlinks{order:3;width:100%;gap:18px;overflow-x:auto;padding-bottom:4px} .navlinks a{font-size:12.5px;white-space:nowrap}
 }
 @media (max-width:720px){ .group-head{flex-wrap:wrap;gap:2px 12px;padding:12px 16px} .group-head h3{font-size:22px}
-  .hero{grid-template-columns:1fr;gap:28px;padding-block:32px 28px} .hero-visual{max-width:420px;margin-inline:auto;width:100%}
+  .hero{grid-template-columns:1fr;gap:28px;padding-block:32px 28px} .hero-visual{max-width:420px;margin-inline:auto;width:100%;aspect-ratio:1/.9}
+.hero-visual .anim{top:-4%}
+.hero-visual .waves{right:0;bottom:-6%}
   .steps{grid-template-columns:1fr} footer .wrap{grid-template-columns:1fr}
   .brand .word{width:118px} .brand .mark{width:40px;height:38px} .brand .tag{display:none}
   .toolbar{top:calc(env(safe-area-inset-top,0px) + 96px)} .grid{grid-template-columns:repeat(2,1fr);gap:10px}
@@ -376,3 +376,4 @@ footer a{color:var(--band-fg)}
   main#top>#order{order:6}
   main#top>*{width:100%}
 }
+footer .contactline .ig{display:inline-flex;align-items:center;gap:6px;vertical-align:middle}
