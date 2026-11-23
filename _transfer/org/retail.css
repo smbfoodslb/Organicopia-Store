@@ -63,10 +63,9 @@ header.site{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--bars-h
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .hero h1 em{color:var(--gold)}}
 .hero p.lede{font-size:17px;line-height:1.65;color:var(--muted);max-width:52ch;margin:0 0 26px}
 .hero .ctas{display:flex;gap:12px;flex-wrap:wrap}
-/* 23 Nov 2026 (designer's review): the animated logo stands alone - no green shape, leaf or label; wavy lines tucked under it */
+/* 23 Nov 2026 (designer's review): the animated logo stands alone - no green shape, leaf or label; no wavy lines here either (owner, same day) */
 .hero-visual{position:relative;aspect-ratio:1/1;max-width:100%;isolation:isolate}
-.hero-visual .waves{position:absolute;right:-4%;bottom:-4%;width:70%;opacity:.22;pointer-events:none;z-index:-1}
-.hero-visual .anim{position:absolute;left:7%;top:-6%;width:86%;aspect-ratio:1/1}
+.hero-visual .anim{position:absolute;left:-4%;top:-10%;width:108%;aspect-ratio:1/1} /* 23 Nov 2026: no wavy lines in the hero, the logo fills the space */
 .hero-visual .anim img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .25s}
 .hero-visual .anim .still{opacity:0;padding:0 2%;transform:scale(1.06)}
 .hero-visual .anim.done #heroAnim{opacity:0}
@@ -287,8 +286,7 @@ footer a{color:var(--band-fg)}
 }
 @media (max-width:720px){ .group-head{flex-wrap:wrap;gap:2px 12px;padding:12px 16px} .group-head h3{font-size:22px}
   .hero{grid-template-columns:1fr;gap:28px;padding-block:32px 28px} .hero-visual{max-width:420px;margin-inline:auto;width:100%;aspect-ratio:1/.9}
-.hero-visual .anim{top:-4%}
-.hero-visual .waves{right:0;bottom:-13%;width:60%}
+.hero-visual .anim{left:0;top:-6%;width:100%}
   .steps{grid-template-columns:1fr} footer .wrap{grid-template-columns:1fr}
   .brand .word{width:118px} .brand .mark{width:40px;height:38px} .brand .tag{display:none}
   .toolbar{top:calc(env(safe-area-inset-top,0px) + 96px)} .grid{grid-template-columns:repeat(2,1fr);gap:10px}

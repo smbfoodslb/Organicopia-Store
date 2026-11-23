@@ -32,7 +32,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/org/retail.css?v=677ad42f"/>
+<link rel="stylesheet" href="/org/retail.css?v=2230f264"/>
 <!-- Odoo Analytics (Plausible), 15 Nov 2026: same tag as website.layout, so /store counts in Website > Reporting > Analytics; skipped for editors -->
 <script t-if="request.website.plausible_shared_key and not editable" id="plausible_script" name="plausible" defer="defer" t-att-data-domain="request.website.plausible_site" t-att-src="request.website._get_plausible_script_url()"/>
 <!-- Meta Pixel, 21 Nov 2026: the same base code as the Odoo pages (website 1 custom head), so visits to /store are counted; the events are in /org/pixel.js. Skipped for editors -->
@@ -65,7 +65,6 @@
   </div>
   <div class="hero-visual" aria-hidden="true">
     <div class="anim"><picture><source type="image/webp" srcset="/org/logo-animation.webp?v=2"/><img id="heroAnim" src="/org/logo-animation.gif" alt="" width="480" height="480"/></picture><img id="heroStill" class="still" src="/org/logo-lockup.svg?v=2" alt="" width="480" height="480"/></div>
-    <img class="waves" src="/org/wavy-navy.svg" alt=""/>
   </div>
 </section>
 
