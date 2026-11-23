@@ -1,40 +1,46 @@
 # Delivery run: mark completed (SMB, 23 Nov 2026). Runs on x_delivery_run, from the run form.
 # Anyone at the shop may do it (the owner, Melissa or Serge, also from the tablet). Only now is the
 # vehicle-use entry made in the staff ledger, with the km driven (the planned km unless corrected on the
-# form). The entry is created in "review" and still waits for the owner's confirmation; km x rate to the
-# owner of the vehicle is worked out by automation 58, the SMBF Kangoo earns nothing. Touches no accounting.
+# form, and then a reason is required). The entry is created in "review" and still waits for the owner's
+# confirmation; km x rate to the owner of the vehicle is worked out by automation 58, the SMBF Kangoo earns
+# nothing. Touches no accounting.
+# Signature: on the shared tablet the person named must enter their own clock-in PIN. What was typed is
+# wiped from the record first thing and only compared here; it is never shown or kept. For that reason a
+# refusal is shown as a notice, not raised as an error (an error would undo the wipe).
 NAMES = {'5': 'Melissa', '7': 'Serge', 'owner': 'Mustafa'}
 OWNER_OF = {'melissa': '5', 'serge': '7'}
+is_owner = env.user.has_group('account.group_account_manager')
 for run in records.sudo():
-    if run.x_state == 'done':
-        raise UserError('This run is already marked completed.')
-    if run.x_state == 'cancel':
-        raise UserError('This run was cancelled.')
-    if not run.x_done_by:
-        raise UserError('Choose who is marking the run completed.')
+    typed = (run.x_pin or '').strip()
+    if run.x_pin:
+        run.write({'x_pin': False})
     km = round(run.x_km_final or run.x_km or 0.0, 1)
-    if km <= 0:
-        raise UserError('Enter the km driven.')
     planned = round(run.x_km or 0.0, 1)
     corrected = abs(planned - km) >= 0.05
     reason = (run.x_km_reason or '').strip()
-    if corrected and len(reason) < 5:
-        raise UserError('The km driven (%.1f) differ from the planned km (%.1f). Write the reason for the change.' % (km, planned))
-    # Signature: on the shared tablet the person named must enter their own clock-in PIN. The PIN typed on the
-    # form is compared here and wiped at once; it is never shown or kept. The owner, signed in as himself, needs none.
-    typed = (run.x_pin or '').strip()
-    run.write({'x_pin': False})
-    if not env.user.has_group('account.group_account_manager'):
-        if run.x_done_by not in ('5', '7'):
-            raise UserError('Choose your own name. Only the owner, signed in as himself, can complete a run as Mustafa.')
+    problem = False
+    if run.x_state == 'done':
+        problem = 'This run is already marked completed.'
+    elif run.x_state == 'cancel':
+        problem = 'This run was cancelled.'
+    elif not run.x_done_by:
+        problem = 'Choose who is marking the run completed.'
+    elif km <= 0:
+        problem = 'Enter the km driven.'
+    elif corrected and len(reason) < 5:
+        problem = 'The km driven (%.1f) differ from the planned km (%.1f). Write the reason for the change.' % (km, planned)
+    elif not is_owner and run.x_done_by not in ('5', '7'):
+        problem = 'Choose your own name. Only the owner, signed in as himself, can complete a run as Mustafa.'
+    elif not is_owner:
         pin = env['hr.employee'].sudo().browse(int(run.x_done_by)).pin
         if not pin or not typed or typed != pin:
-            # No error is raised here on purpose: an error would undo the wipe above and leave what was typed on the record.
-            action = {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
-                'title': 'Wrong PIN', 'type': 'danger', 'sticky': False,
-                'message': 'Wrong PIN for %s. Enter the PIN you use to clock in, then press Run completed again.' % NAMES.get(run.x_done_by, ''),
-                'next': {'type': 'ir.actions.client', 'tag': 'soft_reload'}}}
-            continue
+            problem = 'Wrong PIN for %s. Enter the PIN you use to clock in.' % NAMES.get(run.x_done_by, '')
+    if problem:
+        action = {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
+            'title': 'Not completed', 'type': 'danger', 'sticky': False,
+            'message': problem + ' Then press Run completed again.',
+            'next': {'type': 'ir.actions.client', 'tag': 'soft_reload'}}}
+        continue
     who = run.x_who or '7'
     # The owner also drives. He is not in the staff ledger: when he uses Melissa's or Serge's car the entry is
     # made in the name of the car's owner (who is the one paid); with the Kangoo there is no entry.
@@ -59,5 +65,5 @@ for run in records.sudo():
         vals['x_entry_id'] = entry.id
     run.write(vals)
     run.message_post(body='Run completed by %s%s. Planned %.1f km, driven %.1f km.%s' % (
-        NAMES.get(run.x_done_by, ''), '' if env.user.has_group('account.group_account_manager') else ' (PIN checked)', planned, km,
+        NAMES.get(run.x_done_by, ''), '' if is_owner else ' (PIN checked)', planned, km,
         (' Reason for the change: %s' % reason) if corrected else ''))
