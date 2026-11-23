@@ -66,7 +66,7 @@
       if (!picks.length) { return []; }
       return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
-        picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && !(o.x_delivered_by === 'flypost' && o.x_flypost_handed) && p.partner_id; });
+        picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && o.x_delivered_by !== 'pickup' && !(o.x_delivered_by === 'flypost' && o.x_flypost_handed) && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
         return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link'] }).then(function (ps) {
           var pm = {}; ps.forEach(function (p) { pm[p.id] = p; });
