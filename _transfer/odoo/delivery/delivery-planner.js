@@ -7,7 +7,7 @@
   var PICKUP_CARRIER = 5, MAX_STOPS = 9, FLYPOST = 348, FLY = -1;
   var CTX = { allowed_company_ids: [3, 1] };
   var FINISH = 'Delivery run: finish save', SEND = 'Delivery run: send to driver';
-  var S = { stops: [], route: null, run: null, key: '', actions: {}, pinFor: null, map: null, line: null, busy: false, msg: '', err: '' };
+  var S = { end: { mode: 'shop', last: null, lat: null, lng: null, pick: false, marker: null }, stops: [], route: null, run: null, key: '', actions: {}, pinFor: null, map: null, line: null, busy: false, msg: '', err: '' };
   var el = document.getElementById('planner');
 
   function rpc(model, method, args, kwargs) {
@@ -51,7 +51,7 @@
       rpc('stock.picking', 'search_read', [[['picking_type_code', '=', 'outgoing'], ['state', 'in', ['confirmed', 'assigned', 'waiting']], ['sale_id', '!=', false]]],
         { fields: ['name', 'state', 'sale_id', 'partner_id', 'company_id'], order: 'id' }),
       rpc('res.partner', 'read', [[FLYPOST]], { fields: ['name', 'partner_latitude', 'partner_longitude'] }),
-      rpc('x_delivery_run', 'search_read', [[['x_state', 'in', ['draft', 'sent']]]], { fields: ['x_name', 'x_date', 'x_who', 'x_vehicle', 'x_stop_order', 'x_state', 'x_route_code', 'x_km', 'x_minutes', 'x_stops', 'x_note'], order: 'id desc' })
+      rpc('x_delivery_run', 'search_read', [[['x_state', 'in', ['draft', 'sent']]]], { fields: ['x_name', 'x_date', 'x_who', 'x_vehicle', 'x_stop_order', 'x_state', 'x_route_code', 'x_km', 'x_minutes', 'x_stops', 'x_note', 'x_end', 'x_end_lat', 'x_end_lng'], order: 'id desc' })
     ]).then(function (r) {
       S.key = r[0] || '';
       r[1].forEach(function (a) { S.actions[a.name] = a.id; });
@@ -63,6 +63,7 @@
       S.runs.forEach(function (x) { try { JSON.parse(x.x_stop_order || '[]').forEach(function (p) { inRun[p.picking] = x; (p.orders || []).forEach(function (q) { inRun[q.picking] = x; }); }); } catch (e) { } });
       var saved = [];
       if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); (p.orders || []).forEach(function (q) { saved.push(q.picking); }); }); } catch (e) { } }
+      if (S.run && S.run.x_end) { S.end.mode = S.run.x_end; if (S.run.x_end === 'other') { S.end.lat = S.run.x_end_lat; S.end.lng = S.run.x_end_lng; } if (S.run.x_end === 'last' && saved.length) { try { var so = JSON.parse(S.run.x_stop_order || '[]'); S.end.last = so[so.length - 1].picking; } catch (e) { } } }
       if (!picks.length) { return []; }
       return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
@@ -161,20 +162,34 @@
 
   function compute(ids, optimize) {
     var pt = function (p) { return { location: { latLng: { latitude: p.lat, longitude: p.lng } } }; };
-    var body = { origin: pt(SHOP), destination: pt(SHOP), intermediates: ids.map(function (id) { return pt(byId(id)); }), travelMode: 'DRIVE', optimizeWaypointOrder: !!optimize };
+    var mid = ids.slice(), dest = endPoint(ids), lastId = S.end.mode === 'last' ? mid.pop() : null;
+    optimize = !!optimize && mid.length > 1;
+    var body = { origin: pt(SHOP), destination: pt(dest), intermediates: mid.map(function (id) { return pt(byId(id)); }), travelMode: 'DRIVE', optimizeWaypointOrder: optimize };
     return fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': S.key, 'X-Goog-FieldMask': 'routes.optimizedIntermediateWaypointIndex,routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline,routes.legs.distanceMeters,routes.legs.duration' },
       body: JSON.stringify(body)
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j.routes || !j.routes[0]) { throw new Error((j.error && j.error.message) || 'Google returned no route for these stops.'); }
-      var rt = j.routes[0], idx = optimize && rt.optimizedIntermediateWaypointIndex && rt.optimizedIntermediateWaypointIndex[0] >= 0 ? rt.optimizedIntermediateWaypointIndex : ids.map(function (x, i) { return i; });
+      var rt = j.routes[0], idx = optimize && rt.optimizedIntermediateWaypointIndex && rt.optimizedIntermediateWaypointIndex[0] >= 0 ? rt.optimizedIntermediateWaypointIndex : mid.map(function (x, i) { return i; });
       return {
-        order: idx.map(function (i) { return ids[i]; }), km: (rt.distanceMeters || 0) / 1000, minutes: Math.round(parseInt(rt.duration || '0', 10) / 60), line: rt.polyline && rt.polyline.encodedPolyline,
+        order: idx.map(function (i) { return mid[i]; }).concat(lastId === null ? [] : [lastId]), km: (rt.distanceMeters || 0) / 1000, minutes: Math.round(parseInt(rt.duration || '0', 10) / 60), line: rt.polyline && rt.polyline.encodedPolyline,
         legs: (rt.legs || []).map(function (l) { return { km: (l.distanceMeters || 0) / 1000, minutes: Math.round(parseInt(l.duration || '0', 10) / 60) }; })
       };
     });
   }
+  function endPoint(ids) {
+    if (S.end.mode === 'last' && ids.length) { return byId(ids[ids.length - 1]); }
+    if (S.end.mode === 'other' && S.end.lat != null) { return { lat: S.end.lat, lng: S.end.lng }; }
+    return SHOP;
+  }
+  function endMarker() {
+    if (S.end.marker) { S.end.marker.setMap(null); S.end.marker = null; }
+    if (S.end.mode !== 'other' || S.end.lat == null || !S.map) { return; }
+    S.end.marker = new google.maps.Marker({ map: S.map, position: { lat: S.end.lat, lng: S.end.lng }, title: 'Run ends here', label: { text: 'E', color: '#fff', fontWeight: '700' },
+      icon: { path: google.maps.SymbolPath.CIRCLE, scale: 13, fillColor: '#6b3fa0', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 } });
+  }
+  function far(s) { var a = s.lat - SHOP.lat, b = s.lng - SHOP.lng; return a * a + b * b; }
   function ticked() { return S.stops.filter(function (s) { return s.on; }); }
   function chosen() { var own = S.stops.filter(function (s) { return s.on && !s.fly; }); return flyOrders().length ? own.concat([S.fly]) : own; }
   function plan(keepOrder) {
@@ -184,7 +199,15 @@
     if (missing.length && missing[0].virtual) { S.err = 'FlyPost has no map location on its contact.'; return render(); }
     if (missing.length) { S.err = 'No location yet for: ' + missing.map(function (s) { return s.name; }).join(', ') + '. Press "Set pin" on the stop, then click its place on the map.'; return render(); }
     if (list.length > MAX_STOPS) { S.err = 'A run can hold ' + MAX_STOPS + ' stops (the limit of one Google Maps link). Untick ' + (list.length - MAX_STOPS) + ' and plan them as a second run.'; return render(); }
+    if (S.end.mode === 'other' && S.end.lat == null) { S.err = 'Set where the run ends: press "Set end point", then click the place on the map.'; return render(); }
     var ids = keepOrder && S.route ? S.route.order.slice() : list.map(function (s) { return s.id; });
+    if (S.end.mode === 'last') {
+      if (keepOrder) { S.end.last = ids[ids.length - 1]; }
+      else {
+        if (ids.indexOf(S.end.last) < 0) { S.end.last = list.slice().sort(function (a, b) { return far(b) - far(a); })[0].id; }
+        ids.splice(ids.indexOf(S.end.last), 1); ids.push(S.end.last);
+      }
+    }
     S.busy = true; render();
     var base = keepOrder ? Promise.resolve(S.route && S.route.base) : compute(ids, false);
     base.then(function (b) {
@@ -200,7 +223,8 @@
   }
   function routeUrl() {
     var p = function (s) { return s.lat.toFixed(6) + ',' + s.lng.toFixed(6); };
-    return 'https://www.google.com/maps/dir/?api=1&origin=' + p(SHOP) + '&destination=' + p(SHOP) + '&travelmode=driving&waypoints=' + encodeURIComponent(S.route.order.map(function (id) { return p(byId(id)); }).join('|'));
+    var way = S.end.mode === 'last' ? S.route.order.slice(0, -1) : S.route.order;
+    return 'https://www.google.com/maps/dir/?api=1&origin=' + p(SHOP) + '&destination=' + p(endPoint(S.route.order)) + '&travelmode=driving' + (way.length ? '&waypoints=' + encodeURIComponent(way.map(function (id) { return p(byId(id)); }).join('|')) : '');
   }
   function runAction(name, id) {
     if (!S.actions[name]) { return Promise.reject(new Error('Odoo action "' + name + '" is missing.')); }
@@ -212,6 +236,8 @@
     S.msg = ''; S.err = '';
     if (approx.length) { S.err = 'Confirm the pin first for: ' + approx.map(function (s) { return s.name; }).join(', ') + ' (orange pins are Google\'s guess from the address).'; return render(); }
     var vals = {
+      x_end: S.end.mode, x_end_lat: endPoint(S.route.order).lat, x_end_lng: endPoint(S.route.order).lng,
+      x_end_label: S.end.mode === 'last' ? 'Ends at the last delivery: ' + byId(S.route.order[S.route.order.length - 1]).name : S.end.mode === 'other' ? 'Ends at another location' : 'Back at the shop',
       x_date: day, x_who: who, x_vehicle: veh, x_stops: S.route.order.length, x_km: Math.round(S.route.km * 10) / 10, x_minutes: S.route.minutes, x_route_url: routeUrl(),
       x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return s.virtual ? { picking: FLY, name: s.name, lat: s.lat, lng: s.lng, orders: flyOrders().map(function (f) { return { picking: f.id, ref: f.picking, order: f.order, name: f.name }; }) } : { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng }; }))
     };
@@ -220,7 +246,7 @@
     p.then(function (id) { id = Array.isArray(id) ? id[0] : id; return runAction(FINISH, id).then(function () { return rpc('x_delivery_run', 'read', [[id]], { fields: ['x_name', 'x_route_code', 'x_state', 'x_driver_phone', 'x_note', 'x_entry_id'] }); }); })
       .then(function (r) {
         S.run = Object.assign(S.run || {}, r[0]); S.saved = r[0]; S.busy = false;
-        S.msg = 'Saved: ' + r[0].x_name + '.' + (r[0].x_entry_id ? ' Vehicle entry added to the staff ledger for your review.' : '');
+        S.msg = 'Saved: ' + r[0].x_name + '. The km are recorded when the run is marked completed.';
         if (history.replaceState) { history.replaceState(null, '', '?run=' + r[0].id); }
         render();
       }).catch(function (e) { S.busy = false; S.err = 'Not saved: ' + e.message; render(); });
@@ -241,6 +267,15 @@
     else if (S.runs && S.runs.length) { h += '<div class="box">Open runs: ' + S.runs.map(function (r) { return '<a href="?run=' + r.id + '">' + esc(r.x_name) + '</a>'; }).join(' · ') + '</div>'; }
     h += '<div class="row" style="margin-top:12px"><label>Date<input type="date" id="day" value="' + esc(day) + '"></label><label>Driver<select id="who">' + opt('7', 'Serge', who) + opt('5', 'Melissa', who) + opt('owner', 'Mustafa', who) + '</select></label>' +
       '<label>Vehicle<select id="veh">' + opt('serge', "Serge's", veh) + opt('melissa', "Melissa's", veh) + opt('kangoo', 'SMBF Kangoo', veh) + '</select></label></div>';
+    h += '<div class="row"><label>Run ends<select id="endmode">' + opt('shop', 'Back at the shop', S.end.mode) + opt('last', 'At the last delivery', S.end.mode) + opt('other', 'At another location', S.end.mode) + '</select></label>';
+    if (S.end.mode === 'last') {
+      var own = chosen();
+      h += '<label>Last delivery<select id="endlast">' + own.map(function (s) { return '<option value="' + s.id + '"' + (s.id === S.end.last ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '</select></label>';
+    } else if (S.end.mode === 'other') {
+      h += '<label>End point<br><button class="small" data-a="endpin">' + (S.end.lat == null ? 'Set end point' : 'Move end point') + '</button> ' + (S.end.lat == null ? '<span class="tag bad">Not set</span>' : '<span class="tag ok">Set</span>') + '</label>';
+    }
+    h += '</div>';
+    if (S.end.pick) { h += '<div class="msg">Click on the map where the run ends. <button class="small" data-a="noendpin">Cancel</button></div>'; }
     if (S.err) { h += '<div class="err">' + esc(S.err) + '</div>'; }
     if (S.msg) { h += '<div class="msg">' + esc(S.msg) + '</div>'; }
     if (S.pinFor) { h += '<div class="msg">Click the place on the map for <b>' + esc(byId(S.pinFor).name) + '</b>. <button class="small" data-a="nopin">Cancel</button></div>'; }
@@ -271,7 +306,7 @@
           '<button class="small" data-a="up" data-id="' + id + '"' + (i === 0 || S.busy ? ' disabled' : '') + '>▲</button><button class="small" data-a="down" data-id="' + id + '"' + (i === r.order.length - 1 || S.busy ? ' disabled' : '') + '>▼</button></div>';
       });
       var back = r.legs[r.order.length];
-      h += '<div class="leg">Back to the shop' + (back ? ': ' + back.km.toFixed(1) + ' km, ' + back.minutes + ' min' : '') + '</div></div>' +
+      h += (S.end.mode === 'last' ? '<div class="leg">The run ends at the last delivery. No return leg is counted.</div>' : '<div class="leg">' + (S.end.mode === 'other' ? 'To the end point' : 'Back to the shop') + (back ? ': ' + back.km.toFixed(1) + ' km, ' + back.minutes + ' min' : '') + '</div>') + '</div>' +
         '<div style="margin-top:10px"><button class="main" data-a="save"' + (S.busy ? ' disabled' : '') + '>' + (S.run ? 'Save changes' : 'Save run') + '</button> <a target="_blank" rel="noopener" href="' + esc(routeUrl()) + '">Preview in Google Maps</a></div></div>';
     }
     if (S.saved && S.saved.x_route_code) {
@@ -289,6 +324,8 @@
     if (a === 'tick') { s.on = t.checked; S.route = null; S.saved = null; drawLine(null); render(); }
     else if (a === 'pin') { S.pinFor = id; S.msg = ''; S.err = ''; render(); }
     else if (a === 'nopin') { S.pinFor = null; render(); }
+    else if (a === 'endpin') { S.end.pick = true; S.pinFor = null; S.msg = ''; S.err = ''; render(); }
+    else if (a === 'noendpin') { S.end.pick = false; render(); }
     else if (a === 'okpin') { setPin(s, s.lat, s.lng); }
     else if (a === 'fly') { setFly(s, true); }
     else if (a === 'nofly') { setFly(s, false); }
@@ -307,13 +344,15 @@
   load().then(function () {
     el.innerHTML = '<div id="side"></div><div id="map"></div>';
     document.getElementById('side').addEventListener('click', onClick);
-    document.getElementById('side').addEventListener('change', function (e) { if (e.target.id === 'who') { document.getElementById('veh').value = e.target.value === '5' ? 'melissa' : e.target.value === 'owner' ? 'kangoo' : 'serge'; } });
+    document.getElementById('side').addEventListener('change', function (e) { if (e.target.id === 'endmode') { S.end.mode = e.target.value; S.end.pick = false; S.route = null; S.saved = null; drawLine(null); endMarker(); render(); }
+      if (e.target.id === 'endlast') { S.end.last = parseInt(e.target.value, 10); S.route = null; S.saved = null; drawLine(null); render(); }
+      if (e.target.id === 'who') { document.getElementById('veh').value = e.target.value === '5' ? 'melissa' : e.target.value === 'owner' ? 'kangoo' : 'serge'; } });
     render();
     return loadMaps().then(function () {
       S.map = new google.maps.Map(document.getElementById('map'), { center: SHOP, zoom: 12, mapTypeControl: false, streetViewControl: false });
       new google.maps.Marker({ map: S.map, position: SHOP, title: 'Shop', label: { text: 'S', color: '#fff', fontWeight: '700' }, icon: { path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, scale: 7, fillColor: '#3fa06f', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2, labelOrigin: new google.maps.Point(0, -3) } });
-      S.map.addListener('click', function (e) { if (S.pinFor) { setPin(byId(S.pinFor), e.latLng.lat(), e.latLng.lng()); } });
-      return geocodeMissing().then(function () { drawLine(null); fit(); render(); });
+      S.map.addListener('click', function (e) { if (S.end.pick) { S.end.lat = e.latLng.lat(); S.end.lng = e.latLng.lng(); S.end.pick = false; S.route = null; S.saved = null; drawLine(null); endMarker(); render(); return; } if (S.pinFor) { setPin(byId(S.pinFor), e.latLng.lat(), e.latLng.lng()); } });
+      return geocodeMissing().then(function () { drawLine(null); endMarker(); fit(); render(); });
     });
   }).catch(function (e) {
     if (!document.getElementById('side')) { el.innerHTML = '<div id="side"></div>'; var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); }

@@ -1,0 +1,30 @@
+<form string="Delivery run" create="0" delete="0">
+  <header>
+    <button name="%(COMPLETE)d" type="action" string="Run completed" class="btn-primary" invisible="x_state in ('done', 'cancel')"/>
+    <field name="x_state" widget="statusbar" statusbar_visible="draft,sent,done"/>
+  </header>
+  <sheet>
+    <h1><field name="x_name" readonly="1"/></h1>
+    <group>
+      <group string="Run">
+        <field name="x_date" readonly="1"/>
+        <field name="x_who" readonly="1"/>
+        <field name="x_vehicle" readonly="1"/>
+        <field name="x_stops" readonly="1"/>
+        <field name="x_end_label" string="Ends" readonly="1"/>
+        <field name="x_route_url" string="Route" widget="url" readonly="1" text="Open in Google Maps"/>
+      </group>
+      <group string="When the run is finished">
+        <field name="x_km" string="Planned km" readonly="1"/>
+        <field name="x_km_final" readonly="x_state in ('done', 'cancel')"/>
+        <field name="x_done_by" widget="radio" readonly="x_state in ('done', 'cancel')"/>
+        <field name="x_done_date" readonly="1" invisible="x_state != 'done'"/>
+        <field name="x_entry_id" readonly="1" invisible="not x_entry_id" options="{'no_open': True}"/>
+      </group>
+    </group>
+    <div class="text-muted" invisible="x_state in ('done', 'cancel')">Correct "Km driven" if the day went differently from the plan (a skipped stop, an extra errand, a trip home that should count). Then choose your name and press Run completed. The km are only recorded then.</div>
+    <group>
+      <field name="x_note" placeholder="Anything the owner should know about this run"/>
+    </group>
+  </sheet>
+</form>
