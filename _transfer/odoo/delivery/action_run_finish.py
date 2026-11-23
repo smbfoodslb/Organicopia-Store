@@ -94,6 +94,24 @@ for run in records.sudo():
                 what = 'nothing to collect (%s)' % '; '.join('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account') for r in rows)
         parts.append('%d) %s: %s' % (number, title, what))
     vals['x_collect_text'] = ' | '.join(parts) or '-'
+    # The run's own-driver deliveries, for the owner's "Confirm deliveries" list on the run form (owner, 23 Nov 2026).
+    # One line per delivery of every stop (also the other orders of a combined stop); FlyPost drop-offs are left
+    # out: handing a parcel to FlyPost is not delivery to the customer. Rebuilt only while nothing was confirmed.
+    if not run.x_deliveries_done:
+        wanted = []
+        for stop in stops:
+            if stop.get('orders') is not None:
+                continue
+            for item in [stop] + (stop.get('group') or []):
+                pk = env['stock.picking'].sudo().browse(int(item.get('picking') or 0)).exists()
+                if pk:
+                    wanted.append((pk.id, '%s · %s · %s' % (item.get('name', ''), pk.sale_id.name or pk.origin or '', pk.name)))
+        Line = env['x_delivery_run_line'].sudo()
+        have = Line.search([('x_run_id', '=', run.id)])
+        if sorted(have.mapped('x_picking')) != sorted(w[0] for w in wanted):
+            have.unlink()
+            for w in wanted:
+                Line.create({'x_run_id': run.id, 'x_picking': w[0], 'x_name': w[1], 'x_delivered': True})
     if run.x_state not in ('done', 'cancel'):
         vals['x_km_final'] = round(run.x_km or 0.0, 1)
     run.write(vals)
