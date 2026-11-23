@@ -212,7 +212,7 @@
     var base = keepOrder ? Promise.resolve(S.route && S.route.base) : compute(ids, false);
     base.then(function (b) {
       return (keepOrder ? compute(ids, false) : (ids.length > 1 ? compute(ids, true) : Promise.resolve(b))).then(function (rt) {
-        rt.base = keepOrder ? b : { km: b.km, minutes: b.minutes }; rt.manual = !!keepOrder; S.route = rt; S.saved = null; S.busy = false; drawLine(rt.line); render();
+        rt.base = keepOrder ? b : { km: b.km, minutes: b.minutes }; rt.manual = !!keepOrder; if (!keepOrder) { S.best = { km: rt.km, minutes: rt.minutes }; } S.route = rt; S.saved = null; S.busy = false; drawLine(rt.line); render();
       });
     }).catch(function (e) { S.busy = false; S.err = 'Route not calculated: ' + e.message; render(); });
   }
@@ -270,6 +270,7 @@
     h += '<div class="row"><label>Run ends<select id="endmode">' + opt('shop', 'Back at the shop', S.end.mode) + opt('last', 'At the last delivery', S.end.mode) + opt('other', 'At another location', S.end.mode) + '</select></label>';
     if (S.end.mode === 'last') {
       var own = chosen();
+      if (own.length && !own.some(function (s) { return s.id === S.end.last; })) { var withPin = own.filter(function (s) { return s.lat != null; }); S.end.last = (withPin.length ? withPin.slice().sort(function (a, b) { return far(b) - far(a); })[0] : own[0]).id; }
       h += '<label>Last delivery<select id="endlast">' + own.map(function (s) { return '<option value="' + s.id + '"' + (s.id === S.end.last ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '</select></label>';
     } else if (S.end.mode === 'other') {
       h += '<label>End point<br><button class="small" data-a="endpin">' + (S.end.lat == null ? 'Set end point' : 'Move end point') + '</button> ' + (S.end.lat == null ? '<span class="tag bad">Not set</span>' : '<span class="tag ok">Set</span>') + '</label>';
@@ -298,7 +299,7 @@
     if (S.route) {
       var r = S.route, dk = r.base ? r.base.km - r.km : 0, dm = r.base ? r.base.minutes - r.minutes : 0;
       h += '<h2>Route</h2><div class="box"><div class="big">' + r.order.length + ' stops · ' + r.km.toFixed(1) + ' km · ' + dur(r.minutes) + ' driving</div>' +
-        (r.manual ? '<div class="leg">Your own order. Google\'s best order was ' + (dk < -0.05 ? (-dk).toFixed(1) + ' km shorter' : 'the same length') + '.</div>' :
+        (r.manual ? '<div class="leg">Your own order. Google\'s best order was ' + (S.best && r.km - S.best.km > 0.05 ? (r.km - S.best.km).toFixed(1) + ' km shorter' : 'the same length') + '.</div>' :
           (dk > 0.05 || dm > 0 ? '<div class="leg">Best order saves ' + Math.max(dk, 0).toFixed(1) + ' km and ' + Math.max(dm, 0) + ' min compared with the list order.</div>' : '<div class="leg">The list order was already the best one.</div>')) + '<div style="margin-top:8px">';
       r.order.forEach(function (id, i) {
         var s = byId(id), l = r.legs[i];
