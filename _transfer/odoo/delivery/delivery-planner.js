@@ -1,5 +1,5 @@
 /* SMB Foods delivery planner (22 Nov 2026). Runs on smbfoods.odoo.com/delivery-planner for the owner.
-   Reads open deliveries from Odoo, lets Google put the stops in the best order (shop -> stops -> shop),
+   Reads open deliveries from Odoo, lets Google put the stops in the best order (shop -> stops -> shop), several orders for one place become one stop,
    saves the run in Odoo (x_delivery_run). The Google key is read from an Odoo system parameter. */
 (function () {
   'use strict';
@@ -25,6 +25,14 @@
   function today() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function dur(min) { return min >= 60 ? Math.floor(min / 60) + ' h ' + ('0' + (min % 60)).slice(-2) + ' min' : min + ' min'; }
   function byId(id) { if (id === FLY) { return S.fly; } for (var i = 0; i < S.stops.length; i++) { if (S.stops[i].id === id) { return S.stops[i]; } } return null; }
+  /* grouping helpers: a group is the set of stops sharing s.g; its head carries the pin and stands for it on the route */
+  function members(g) { return S.stops.filter(function (s) { return s.on && !s.fly && s.g === g; }).sort(function (a, b) { return (a.pin === 'saved' ? 0 : 1) - (b.pin === 'saved' ? 0 : 1); }); }
+  function head(s) { var m = members(s.g); return m.length ? m[0] : s; }
+  function names(h) { var out = []; (h.virtual ? [h] : members(h.g).length ? members(h.g) : [h]).forEach(function (s) { if (out.indexOf(s.name) < 0) { out.push(s.name); } }); return out.join(' + '); }
+  function linked(a, b) { return a.mate && (a.mate === b.partner || a.mate === b.parent) || b.mate && (b.mate === a.partner || b.mate === a.parent); }
+  function combine(s, t) { var from = s.g, to = t.g; S.stops.forEach(function (o) { if (o.g === from) { o.g = to; } }); S.route = null; S.saved = null; drawLine(null); S.err = ''; S.msg = s.name + ' and ' + t.name + ' are one stop now.'; render(); }
+  function split(s) { var g = s.g, mine = S.stops.filter(function (o) { return o.g === g && o.partner === s.partner; }), rest = S.stops.filter(function (o) { return o.g === g && o.partner !== s.partner; });
+    mine.forEach(function (o) { o.g = mine[0].id; }); rest.forEach(function (o) { o.g = rest[0].id; }); S.route = null; S.saved = null; drawLine(null); S.err = ''; S.msg = s.name + ' is a separate stop now.'; render(); }
   function param(n) { var m = new RegExp('[?&]' + n + '=([^&]+)').exec(location.search); return m ? decodeURIComponent(m[1]) : ''; }
 
   var CSS = 'body{margin:0;font:14px/1.45 system-ui,Segoe UI,Arial,sans-serif;color:#17302b;background:#f4f7f6}' +
@@ -59,16 +67,16 @@
       var picks = r[2], runId = parseInt(param('run'), 10) || 0;
       S.run = S.runs.filter(function (x) { return x.id === runId; })[0] || null;
       var inRun = {};
-      S.runs.forEach(function (x) { try { JSON.parse(x.x_stop_order || '[]').forEach(function (p) { inRun[p.picking] = x; (p.orders || []).forEach(function (q) { inRun[q.picking] = x; }); }); } catch (e) { } });
-      var saved = [];
-      if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); (p.orders || []).forEach(function (q) { saved.push(q.picking); }); }); } catch (e) { } }
+      S.runs.forEach(function (x) { try { JSON.parse(x.x_stop_order || '[]').forEach(function (p) { inRun[p.picking] = x; (p.orders || []).concat(p.group || []).forEach(function (q) { inRun[q.picking] = x; }); }); } catch (e) { } });
+      var saved = [], savedGroup = {};
+      if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); savedGroup[p.picking] = p.picking; (p.orders || []).forEach(function (q) { saved.push(q.picking); }); (p.group || []).forEach(function (q) { saved.push(q.picking); savedGroup[q.picking] = p.picking; }); }); } catch (e) { } }
       if (S.run && S.run.x_end) { S.end.mode = S.run.x_end; if (S.run.x_end === 'other') { S.end.lat = S.run.x_end_lat; S.end.lng = S.run.x_end_lng; } if (S.run.x_end === 'last' && saved.length) { try { var so = JSON.parse(S.run.x_stop_order || '[]'); S.end.last = so[so.length - 1].picking; } catch (e) { } } }
       if (!picks.length) { return []; }
       return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed', 'x_collect', 'x_amount_open'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
         picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && o.x_delivered_by !== 'pickup' && !(o.x_delivered_by === 'flypost' && o.x_flypost_handed) && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
-        return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link'] }).then(function (ps) {
+        return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link', 'parent_id', 'x_delivers_with'] }).then(function (ps) {
           var pm = {}; ps.forEach(function (p) { pm[p.id] = p; });
           S.stops = picks.map(function (p) {
             var o = om[p.sale_id[0]], c = pm[p.partner_id[0]], other = inRun[p.id];
@@ -76,7 +84,7 @@
             var mine = saved.indexOf(p.id) >= 0;
             return {
               id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27),
-              collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, total: o.amount_total, partner: c.id,
+              collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, total: o.amount_total, partner: c.id, parent: c.parent_id ? c.parent_id[0] : 0, mate: c.x_delivers_with ? c.x_delivers_with[0] : 0, g: p.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
@@ -86,6 +94,15 @@
               on: S.run ? mine : (p.state === 'assigned' && o.invoice_status === 'invoiced' && !other)
             };
           });
+          /* One stop for several orders (owner, 23 Nov 2026). Same delivery contact = always one stop (two companies' invoices).
+             Contacts linked with "Delivers with" = one stop by default, can be split. A saved run keeps the grouping it was saved with. */
+          var first = {};
+          S.stops.forEach(function (s) { if (first[s.partner] == null) { first[s.partner] = s.id; } s.g = first[s.partner]; });
+          if (S.run && saved.length) {
+            S.stops.forEach(function (s) { if (savedGroup[s.id] != null && byId(savedGroup[s.id])) { var to = byId(savedGroup[s.id]).g; S.stops.forEach(function (o) { if (o.partner === s.partner) { o.g = to; } }); } });
+          } else {
+            S.stops.forEach(function (a) { S.stops.forEach(function (b) { if (a.g !== b.g && !a.fly && !b.fly && (a.mate === b.partner || b.mate === a.partner)) { var from = b.g; S.stops.forEach(function (o) { if (o.g === from) { o.g = a.g; } }); } }); });
+          }
           if (S.run && saved.length) { S.stops.sort(function (a, b) { var x = saved.indexOf(a.id), y = saved.indexOf(b.id); return (x < 0 ? 999 : x) - (y < 0 ? 999 : y); }); }
         });
       });
@@ -107,9 +124,10 @@
   function marker(s) {
     if (s.marker) { s.marker.setMap(null); s.marker = null; }
     if (s.lat == null || !S.map || s.fly) { return; }
+    if (!s.virtual && s.on && head(s) !== s) { return; }
     var n = S.route ? S.route.order.indexOf(s.id) + 1 : 0;
     s.marker = new google.maps.Marker({
-      map: S.map, position: { lat: s.lat, lng: s.lng }, draggable: true, title: s.name + ' - ' + s.order,
+      map: S.map, position: { lat: s.lat, lng: s.lng }, draggable: true, title: names(s) + (s.virtual ? '' : ' - ' + (s.on ? members(s.g) : [s]).map(function (m) { return m.order; }).join(', ')),
       label: n ? { text: String(n), color: '#fff', fontWeight: '600' } : (s.virtual ? { text: 'F', color: '#fff', fontWeight: '700' } : null), opacity: s.on ? 1 : 0.45,
       icon: { path: google.maps.SymbolPath.CIRCLE, scale: 13, fillColor: s.virtual ? '#c0392b' : s.pin === 'saved' ? '#123d36' : '#e08a00', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 2 }
     });
@@ -117,9 +135,10 @@
     s.marker.addListener('dragend', function (e) { setPin(s, e.latLng.lat(), e.latLng.lng()); });
   }
   function setPin(s, lat, lng) {
-    S.stops.forEach(function (o) { if (o.partner === s.partner) { o.lat = lat; o.lng = lng; o.pin = 'saved'; marker(o); } });
+    S.stops.forEach(function (o) { if (o.partner === s.partner) { o.lat = lat; o.lng = lng; o.pin = 'saved'; } }); S.stops.forEach(marker);
     S.pinFor = null; S.route = null; drawLine(null); S.err = '';
     S.msg = 'Pin saved for ' + s.name + '.'; render();
+    /* the pin is saved on this contact only; other names combined into the stop keep their own */
     rpc('ir.actions.server', 'run', [[UTIL]], { context: { active_model: 'x_delivery_run', planner_pin: { partner: s.partner, lat: lat, lng: lng } } }).catch(function (e) { S.err = 'The pin could not be saved: ' + e.message; render(); });
   }
   function geocodeMissing() {
@@ -202,13 +221,13 @@
   }
   function far(s) { var a = s.lat - SHOP.lat, b = s.lng - SHOP.lng; return a * a + b * b; }
   function ticked() { return S.stops.filter(function (s) { return s.on; }); }
-  function chosen() { var own = S.stops.filter(function (s) { return s.on && !s.fly; }); return flyOrders().length ? own.concat([S.fly]) : own; }
+  function chosen() { var own = S.stops.filter(function (s) { return s.on && !s.fly && head(s) === s; }); return flyOrders().length ? own.concat([S.fly]) : own; }
   function plan(keepOrder) {
     var list = chosen(), missing = list.filter(function (s) { return s.lat == null; });
     S.msg = ''; S.err = '';
     if (!list.length) { S.err = 'Tick at least one stop.'; return render(); }
     if (missing.length && missing[0].virtual) { S.err = 'FlyPost has no map location on its contact.'; return render(); }
-    if (missing.length) { S.err = 'No location yet for: ' + missing.map(function (s) { return s.name; }).join(', ') + '. Press "Set pin" on the stop, then click its place on the map.'; return render(); }
+    if (missing.length) { S.err = 'No location yet for: ' + missing.map(names).join(', ') + '. Press "Set pin" on the stop, then click its place on the map.'; return render(); }
     if (list.length > MAX_STOPS) { S.err = 'A run can hold ' + MAX_STOPS + ' stops (the limit of one Google Maps link). Untick ' + (list.length - MAX_STOPS) + ' and plan them as a second run.'; return render(); }
     if (S.end.mode === 'other' && S.end.lat == null) { S.err = 'Set where the run ends: press "Set end point", then click the place on the map.'; return render(); }
     var ids = keepOrder && S.route ? S.route.order.slice() : list.map(function (s) { return s.id; });
@@ -244,12 +263,12 @@
     var who = document.getElementById('who').value, veh = document.getElementById('veh').value, day = document.getElementById('day').value;
     var approx = S.route.order.map(byId).filter(function (s) { return s.pin !== 'saved'; });
     S.msg = ''; S.err = '';
-    if (approx.length) { S.err = 'Confirm the pin first for: ' + approx.map(function (s) { return s.name; }).join(', ') + ' (orange pins are Google\'s guess from the address).'; return render(); }
+    if (approx.length) { S.err = 'Confirm the pin first for: ' + approx.map(names).join(', ') + ' (orange pins are Google\'s guess from the address).'; return render(); }
     var vals = {
       x_end: S.end.mode, x_end_lat: endPoint(S.route.order).lat, x_end_lng: endPoint(S.route.order).lng,
-      x_end_label: S.end.mode === 'last' ? 'Ends at the last delivery: ' + byId(S.route.order[S.route.order.length - 1]).name : S.end.mode === 'other' ? 'Ends at another location' : 'Back at the shop',
+      x_end_label: S.end.mode === 'last' ? 'Ends at the last delivery: ' + names(byId(S.route.order[S.route.order.length - 1])) : S.end.mode === 'other' ? 'Ends at another location' : 'Back at the shop',
       x_date: day, x_who: who, x_vehicle: veh, x_stops: S.route.order.length, x_km: Math.round(S.route.km * 10) / 10, x_minutes: S.route.minutes, x_route_url: routeUrl(),
-      x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return s.virtual ? { picking: FLY, name: s.name, lat: s.lat, lng: s.lng, orders: flyOrders().map(function (f) { return { picking: f.id, ref: f.picking, order: f.order, name: f.name }; }) } : { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng }; }))
+      x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return s.virtual ? { picking: FLY, name: s.name, lat: s.lat, lng: s.lng, orders: flyOrders().map(function (f) { return { picking: f.id, ref: f.picking, order: f.order, name: f.name }; }) } : { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng, group: members(s.g).filter(function (m) { return m !== s; }).map(function (m) { return { picking: m.id, ref: m.picking, order: m.order, name: m.name }; }) }; }))
     };
     S.busy = true; render();
     var p = S.run ? rpc('x_delivery_run', 'write', [[S.run.id], vals]).then(function () { return S.run.id; }) : rpc('x_delivery_run', 'create', [Object.assign({ x_state: 'draft', x_name: 'Delivery run' }, vals)]);
@@ -281,7 +300,7 @@
     if (S.end.mode === 'last') {
       var own = chosen();
       if (own.length && !own.some(function (s) { return s.id === S.end.last; })) { var withPin = own.filter(function (s) { return s.lat != null; }); S.end.last = (withPin.length ? withPin.slice().sort(function (a, b) { return far(b) - far(a); })[0] : own[0]).id; }
-      h += '<label>Last delivery<select id="endlast">' + own.map(function (s) { return '<option value="' + s.id + '"' + (s.id === S.end.last ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '</select></label>';
+      h += '<label>Last delivery<select id="endlast">' + own.map(function (s) { return '<option value="' + s.id + '"' + (s.id === S.end.last ? ' selected' : '') + '>' + esc(names(s)) + '</option>'; }).join('') + '</select></label>';
     } else if (S.end.mode === 'other') {
       h += '<label>End point<br><button class="small" data-a="endpin">' + (S.end.lat == null ? 'Set end point' : 'Move end point') + '</button> ' + (S.end.lat == null ? '<span class="tag bad">Not set</span>' : '<span class="tag ok">Set</span>') + '</label>';
     }
@@ -297,12 +316,19 @@
         '<div class="addr">' + esc(s.addr || 'No address') + (s.phone ? ' · ' + esc(s.phone) : '') + '</div>' +
         '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span><span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' + payTag(s) +
         (s.other ? '<span class="tag warn">In ' + esc(s.other) + '</span>' : '') +
+        (function () { var m = s.on && !s.fly ? members(s.g) : []; return m.length > 1 ? '<span class="tag ok">One stop with ' + esc(m.filter(function (o) { return o !== s; }).map(function (o) { return (o.name === s.name ? '' : o.name + ' ') + o.order; }).join(', ')) + '</span>' : ''; })() +
         (s.fly ? '<span class="tag bad">FlyPost</span><br>' : '<span class="tag ' + (s.pin === 'saved' ? 'ok">Pin saved' : s.pin === 'approx' ? 'warn">Pin is a guess' : 'bad">No location') + '</span><br>') +
         (!s.fly && s.pin === 'approx' ? '<button class="small" data-a="okpin" data-id="' + s.id + '">Pin is right</button>' : '') +
         (s.fly ? '' : '<button class="small" data-a="pin" data-id="' + s.id + '">' + (s.pin === 'saved' ? 'Move pin' : 'Set pin') + '</button>') +
         '<button class="small" data-a="' + (s.fly ? 'nofly' : 'fly') + '" data-id="' + s.id + '">' + (s.fly ? 'Back to our driver' : 'Send with FlyPost') + '</button>' +
         (s.fly ? '<button class="small" data-a="handed" data-id="' + s.id + '">Handed to FlyPost</button>' : '') +
         '<button class="small" data-a="' + (s.collect === 'collect' ? 'account' : 'collect') + '" data-id="' + s.id + '">' + (s.collect === 'collect' ? 'Put on account' : 'Collect on delivery') + '</button>' +
+        (function () { if (s.fly || !s.on) { return ''; } var m = members(s.g), out = '';
+          if (m.some(function (o) { return o.partner !== s.partner; })) { out += '<button class="small" data-a="split" data-id="' + s.id + '">Split into its own stop</button>'; }
+          var others = [], seen = {}; S.stops.forEach(function (o) { if (o.on && !o.fly && o.g !== s.g && !seen[o.g]) { seen[o.g] = 1; others.push(head(o)); } });
+          others.filter(function (o) { return members(o.g).some(function (x) { return linked(s, x); }); }).forEach(function (o) { out += '<button class="small" data-a="join" data-id="' + s.id + '" data-to="' + o.id + '">Combine with ' + esc(names(o)) + '</button>'; });
+          if (others.length) { out += '<select class="joinsel" data-id="' + s.id + '" style="width:auto;padding:2px 4px;font-size:12px;margin:4px 4px 0 0"><option value="">Same stop as…</option>' + others.map(function (o) { return '<option value="' + o.id + '">' + esc(names(o)) + '</option>'; }).join('') + '</select>'; }
+          return out; })() +
         (/^https?:\/\//.test(s.link) ? '<a class="leg" target="_blank" rel="noopener" href="' + esc(s.link) + '">Open customer\'s map link</a>' : '') +
         '</div></div></div>';
     });
@@ -314,7 +340,7 @@
           (dk > 0.05 || dm > 0 ? '<div class="leg">Best order saves ' + Math.max(dk, 0).toFixed(1) + ' km and ' + Math.max(dm, 0) + ' min compared with the list order.</div>' : '<div class="leg">The list order was already the best one.</div>')) + '<div style="margin-top:8px">';
       r.order.forEach(function (id, i) {
         var s = byId(id), l = r.legs[i];
-        h += '<div style="margin:6px 0"><span class="num">' + (i + 1) + '</span><b>' + esc(s.name) + '</b> <span class="leg">' + esc(s.virtual ? flyOrders().map(function (f) { return f.order; }).join(', ') : s.order) + (l ? ' · ' + l.km.toFixed(1) + ' km, ' + l.minutes + ' min from previous' : '') + '</span> ' +
+        h += '<div style="margin:6px 0"><span class="num">' + (i + 1) + '</span><b>' + esc(names(s)) + '</b> <span class="leg">' + esc(s.virtual ? flyOrders().map(function (f) { return f.order; }).join(', ') : members(s.g).map(function (m) { return m.order; }).join(', ')) + (l ? ' · ' + l.km.toFixed(1) + ' km, ' + l.minutes + ' min from previous' : '') + '</span> ' +
           '<button class="small" data-a="up" data-id="' + id + '"' + (i === 0 || S.busy ? ' disabled' : '') + '>▲</button><button class="small" data-a="down" data-id="' + id + '"' + (i === r.order.length - 1 || S.busy ? ' disabled' : '') + '>▼</button></div>';
       });
       var back = r.legs[r.order.length];
@@ -345,6 +371,8 @@
     else if (a === 'fly') { setFly(s, true); }
     else if (a === 'nofly') { setFly(s, false); }
     else if (a === 'handed') { handed(s); }
+    else if (a === 'split') { split(s); }
+    else if (a === 'join') { combine(s, byId(parseInt(t.getAttribute('data-to'), 10))); }
     else if (a === 'collect' || a === 'account') { setCollect(s, a); }
     else if (a === 'copylist') {
       var text = S.saved.x_name + '\n' + String(S.saved.x_collect_text || '').split(' | ').join('\n') + '\nRoute: https://www.smbfoods-lb.com/r/' + S.saved.x_route_code;
@@ -365,6 +393,7 @@
     el.innerHTML = '<div id="side"></div><div id="map"></div>';
     document.getElementById('side').addEventListener('click', onClick);
     document.getElementById('side').addEventListener('change', function (e) { if (e.target.id === 'endmode') { S.end.mode = e.target.value; S.end.pick = false; S.route = null; S.saved = null; drawLine(null); endMarker(); render(); }
+      if (e.target.className === 'joinsel' && e.target.value) { combine(byId(parseInt(e.target.getAttribute('data-id'), 10)), byId(parseInt(e.target.value, 10))); return; }
       if (e.target.id === 'endlast') { S.end.last = parseInt(e.target.value, 10); S.route = null; S.saved = null; drawLine(null); render(); }
       if (e.target.id === 'who') { document.getElementById('veh').value = e.target.value === '5' ? 'melissa' : e.target.value === 'owner' ? 'kangoo' : 'serge'; } });
     render();

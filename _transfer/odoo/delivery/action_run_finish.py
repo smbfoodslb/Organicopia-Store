@@ -44,25 +44,55 @@ for run in records.sudo():
     except Exception:
         stops = []
     number = 0
+    def pay(sale):
+        # (kind, amount) for one order: account / paid / collect
+        mode = sale.x_collect or ('collect' if sale.pricelist_id.id in (27,) else 'account')
+        invoiced = sale.order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted')
+        due = sale.x_amount_open if invoiced else sale.amount_total
+        if mode == 'account':
+            return ('account', 0.0)
+        if invoiced and due < 0.005:
+            return ('paid', 0.0)
+        return ('collect', due)
+    WORDS = {'account': 'on account, do not collect', 'paid': 'PAID, nothing to collect'}
     for stop in stops:
         number += 1
         if stop.get('orders') is not None:
             parts.append('%d) FlyPost drop-off: hand over %s' % (number, ', '.join(o.get('order', '') for o in stop.get('orders'))))
             continue
-        sale = env['stock.picking'].sudo().browse(int(stop.get('picking') or 0)).exists().sale_id
-        if not sale:
+        # one stop can hold several orders: two companies' invoices for one customer, or two names at
+        # one address combined in the planner (stop['group']). Total first, then the breakdown.
+        rows = []
+        for item in [stop] + (stop.get('group') or []):
+            sale = env['stock.picking'].sudo().browse(int(item.get('picking') or 0)).exists().sale_id
+            if sale:
+                rows.append((item.get('name', ''), sale.name, pay(sale)))
+        if not rows:
             parts.append('%d) %s' % (number, stop.get('name', '')))
             continue
-        mode = sale.x_collect or ('collect' if sale.pricelist_id.id in (27,) else 'account')
-        invoiced = sale.order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted')
-        due = sale.x_amount_open if invoiced else sale.amount_total
-        if mode == 'account':
-            what = 'on account, do not collect'
-        elif invoiced and due < 0.005:
-            what = 'PAID, nothing to collect'
+        names = []
+        for r in rows:
+            if r[0] and r[0] not in names:
+                names.append(r[0])
+        title = ' + '.join(names)
+        if len(rows) == 1:
+            kind, due = rows[0][2]
+            what = ('collect $%.2f' % due) if kind == 'collect' else WORDS[kind]
         else:
-            what = 'collect $%.2f' % due
-        parts.append('%d) %s: %s' % (number, stop.get('name', ''), what))
+            many = len(names) > 1
+            total = sum(r[2][1] for r in rows if r[2][0] == 'collect')
+            kinds = set(r[2][0] for r in rows)
+            def label(r):
+                return ('%s %s' % (r[0], r[1])) if many else r[1]
+            if kinds == set(['collect']):
+                what = 'collect $%.2f (%s)' % (total, ' + '.join('%s $%.2f' % (label(r), r[2][1]) for r in rows))
+            elif 'collect' in kinds:
+                what = 'collect $%.2f (%s)' % (total, '; '.join(('%s $%.2f' % (label(r), r[2][1])) if r[2][0] == 'collect' else ('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account')) for r in rows))
+            elif len(kinds) == 1:
+                what = '%s (%s)' % (WORDS[list(kinds)[0]], ', '.join(label(r) for r in rows))
+            else:
+                what = 'nothing to collect (%s)' % '; '.join('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account') for r in rows)
+        parts.append('%d) %s: %s' % (number, title, what))
     vals['x_collect_text'] = ' | '.join(parts) or '-'
     if run.x_state not in ('done', 'cancel'):
         vals['x_km_final'] = round(run.x_km or 0.0, 1)
