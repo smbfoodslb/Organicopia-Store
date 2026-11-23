@@ -6,7 +6,7 @@
   var SHOP = { lat: 33.8751011, lng: 35.5589961 };
   var PICKUP_CARRIER = 5, MAX_STOPS = 9, FLYPOST = 348, FLY = -1;
   var CTX = { allowed_company_ids: [3, 1] };
-  var FINISH = 'Delivery run: finish save', SEND = 'Delivery run: send to driver';
+  var FINISH = 1400, SEND = 1401, UTIL = 1439;
   var S = { end: { mode: 'shop', last: null, lat: null, lng: null, pick: false, marker: null }, stops: [], route: null, run: null, key: '', actions: {}, pinFor: null, map: null, line: null, busy: false, msg: '', err: '' };
   var el = document.getElementById('planner');
 
@@ -46,15 +46,14 @@
   function load() {
     var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
     return Promise.all([
-      rpc('ir.config_parameter', 'get_param', ['smb_delivery.google_maps_key']),
-      rpc('ir.actions.server', 'search_read', [[['name', 'in', [FINISH, SEND]]]], { fields: ['name'] }),
+      rpc('ir.actions.server', 'run', [[UTIL]], { context: { active_model: 'x_delivery_run' } }),
+      Promise.resolve([]),
       rpc('stock.picking', 'search_read', [[['picking_type_code', '=', 'outgoing'], ['state', 'in', ['confirmed', 'assigned', 'waiting']], ['sale_id', '!=', false]]],
         { fields: ['name', 'state', 'sale_id', 'partner_id', 'company_id'], order: 'id' }),
       rpc('res.partner', 'read', [[FLYPOST]], { fields: ['name', 'partner_latitude', 'partner_longitude'] }),
       rpc('x_delivery_run', 'search_read', [[['x_state', 'in', ['draft', 'sent']]]], { fields: ['x_name', 'x_date', 'x_who', 'x_vehicle', 'x_stop_order', 'x_state', 'x_route_code', 'x_km', 'x_minutes', 'x_stops', 'x_note', 'x_end', 'x_end_lat', 'x_end_lng'], order: 'id desc' })
     ]).then(function (r) {
-      S.key = r[0] || '';
-      r[1].forEach(function (a) { S.actions[a.name] = a.id; });
+      S.key = (r[0] && r[0].infos && r[0].infos.key) || '';
       S.runs = r[4];
       S.fly = { id: FLY, virtual: true, name: 'FlyPost drop-off', order: '', lat: r[3][0].partner_latitude || null, lng: r[3][0].partner_longitude || null, pin: 'saved', on: true };
       var picks = r[2], runId = parseInt(param('run'), 10) || 0;
@@ -120,7 +119,7 @@
     S.stops.forEach(function (o) { if (o.partner === s.partner) { o.lat = lat; o.lng = lng; o.pin = 'saved'; marker(o); } });
     S.pinFor = null; S.route = null; drawLine(null); S.err = '';
     S.msg = 'Pin saved for ' + s.name + '.'; render();
-    rpc('res.partner', 'write', [[s.partner], { partner_latitude: lat, partner_longitude: lng }]).catch(function (e) { S.err = 'The pin could not be saved: ' + e.message; render(); });
+    rpc('ir.actions.server', 'run', [[UTIL]], { context: { active_model: 'x_delivery_run', planner_pin: { partner: s.partner, lat: lat, lng: lng } } }).catch(function (e) { S.err = 'The pin could not be saved: ' + e.message; render(); });
   }
   function geocodeMissing() {
     var g = new google.maps.Geocoder(), todo = S.stops.filter(function (s) { return s.lat == null && s.addr; });
@@ -227,8 +226,7 @@
     return 'https://www.google.com/maps/dir/?api=1&origin=' + p(SHOP) + '&destination=' + p(endPoint(S.route.order)) + '&travelmode=driving' + (way.length ? '&waypoints=' + encodeURIComponent(way.map(function (id) { return p(byId(id)); }).join('|')) : '');
   }
   function runAction(name, id) {
-    if (!S.actions[name]) { return Promise.reject(new Error('Odoo action "' + name + '" is missing.')); }
-    return rpc('ir.actions.server', 'run', [[S.actions[name]]], { context: { active_model: 'x_delivery_run', active_id: id, active_ids: [id] } });
+    return rpc('ir.actions.server', 'run', [[name]], { context: { active_model: 'x_delivery_run', active_id: id, active_ids: [id] } });
   }
   function save() {
     var who = document.getElementById('who').value, veh = document.getElementById('veh').value, day = document.getElementById('day').value;

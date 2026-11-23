@@ -4,9 +4,10 @@
 # Touches no accounting.
 NAMES = {'5': 'Melissa', '7': 'Serge', 'owner': 'Mustafa'}
 PHONES = {'7': '+96181227233'}
-if not env.user.has_group('account.group_account_manager'):
-    raise UserError('Only the owner can plan delivery runs.')
-for run in records:
+# The owner, and the Shop tablet (group 111) when he is away.
+if not (env.user.has_group('account.group_account_manager') or 111 in env.user.all_group_ids.ids):
+    raise UserError('The delivery planner is for the shop team.')
+for run in records.sudo():
     who = run.x_who or '7'
     day = run.x_date or datetime.date.today()
     minutes = int(run.x_minutes or 0)
