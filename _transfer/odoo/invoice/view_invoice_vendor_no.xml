@@ -1,14 +1,14 @@
 <data>
-  <!-- Our vendor number at the customer (res.partner.x_vendor_no, read from the commercial partner) printed under the
-       customer's address on SALES INVOICES only (owner, 23 Nov 2026: Gray Mackenzie requires it; not on credit notes,
-       vendor bills, quotations or delivery slips). Prints nothing when the customer has none. -->
-  <xpath expr="(//address[@t-field='o.partner_id'])[1]" position="after">
-    <div t-if="o.move_type == 'out_invoice' and o.partner_id.commercial_partner_id.x_vendor_no" class="smb_vendor_no">Vendor No.: <span t-out="o.partner_id.commercial_partner_id.x_vendor_no"/></div>
+  <!-- Our vendor number at the customer (res.partner.x_vendor_no, read from the commercial partner) printed as the LAST
+       line of the customer's block, under their Tax ID, on sales invoices and their credit notes (owner, 23 Nov 2026:
+       Gray Mackenzie requires it). Not on vendor bills, quotations or delivery slips. Prints nothing when the customer has none. -->
+  <xpath expr="//div[@id='partner_vat_address_not_same_as_shipping']" position="after">
+    <div t-if="o.move_type in ('out_invoice', 'out_refund') and o.partner_id.commercial_partner_id.x_vendor_no" class="smb_vendor_no">Vendor No.: <span t-out="o.partner_id.commercial_partner_id.x_vendor_no"/></div>
   </xpath>
-  <xpath expr="(//address[@t-field='o.partner_id'])[2]" position="after">
-    <div t-if="o.move_type == 'out_invoice' and o.partner_id.commercial_partner_id.x_vendor_no" class="smb_vendor_no">Vendor No.: <span t-out="o.partner_id.commercial_partner_id.x_vendor_no"/></div>
+  <xpath expr="//div[@id='partner_vat_address_same_as_shipping']" position="after">
+    <div t-if="o.move_type in ('out_invoice', 'out_refund') and o.partner_id.commercial_partner_id.x_vendor_no" class="smb_vendor_no">Vendor No.: <span t-out="o.partner_id.commercial_partner_id.x_vendor_no"/></div>
   </xpath>
-  <xpath expr="(//address[@t-field='o.partner_id'])[3]" position="after">
-    <div t-if="o.move_type == 'out_invoice' and o.partner_id.commercial_partner_id.x_vendor_no" class="smb_vendor_no">Vendor No.: <span t-out="o.partner_id.commercial_partner_id.x_vendor_no"/></div>
+  <xpath expr="//div[@id='partner_vat_no_shipping']" position="after">
+    <div t-if="o.move_type in ('out_invoice', 'out_refund') and o.partner_id.commercial_partner_id.x_vendor_no" class="smb_vendor_no">Vendor No.: <span t-out="o.partner_id.commercial_partner_id.x_vendor_no"/></div>
   </xpath>
 </data>
