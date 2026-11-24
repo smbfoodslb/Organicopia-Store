@@ -40,6 +40,7 @@
     '#map{flex:3 1 480px;min-height:60vh;background:#dfe7e5}h1{font-size:20px;margin:0 0 4px;color:#123d36}h2{font-size:15px;margin:18px 0 6px;color:#123d36}' +
     '.sub{color:#5b6f6a;margin:0 0 12px}.row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.row label{flex:1 1 120px;font-size:12px;color:#5b6f6a}' +
     'select,input[type=date]{width:100%;padding:7px;border:1px solid #b9c9c5;border-radius:6px;font:inherit;background:#fff;box-sizing:border-box}' +
+    '.grp{border:2px solid #1d6b3f;border-radius:10px;padding:6px 6px 0;margin-bottom:9px;background:#eef6f2}.grphead{font-weight:600;color:#123d36;margin:2px 4px 6px}' +
     '.stop{background:#fff;border:1px solid #d5e0dd;border-radius:8px;padding:9px 10px;margin-bottom:7px}.stop.off{opacity:.6}.stop b{color:#123d36}' +
     '.top{display:flex;gap:8px;align-items:flex-start}.top input{margin-top:3px}.grow{flex:1;min-width:0}.addr{color:#5b6f6a;font-size:12.5px}' +
     '.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:10px;margin:3px 4px 0 0;background:#e6efed;color:#35544e}' +
@@ -327,7 +328,15 @@
     if (S.pinFor) { h += '<div class="msg">Click the place on the map for <b>' + esc(byId(S.pinFor).name) + '</b>. <button class="small" data-a="nopin">Cancel</button></div>'; }
     h += '<h2>Stops (' + ticked().length + ' of ' + S.stops.length + ' ticked)</h2>';
     if (!S.stops.length) { h += '<div class="box">No open deliveries.</div>'; }
-    S.stops.forEach(function (s) {
+    /* Orders that are one stop are drawn together in one box, so the list shows stops, not orders (owner, 24 Nov 2026). */
+    var drawn = {}, boxes = [];
+    S.stops.forEach(function (s) { if (drawn[s.id]) { return; } var m = s.on && !s.fly ? members(s.g) : [s]; if (m.indexOf(s) < 0) { m = [s]; } m.forEach(function (x) { drawn[x.id] = 1; }); boxes.push(m); });
+    boxes.forEach(function (m) {
+      if (m.length > 1) {
+        var tot = 0; m.forEach(function (x) { if (x.collect === 'collect') { tot += x.custom > 0.005 ? x.custom : (x.invoiced && x.due < 0.005 ? 0 : x.due); } });
+        h += '<div class="grp"><div class="grphead">One stop · ' + esc(names(m[0])) + ' · ' + m.length + ' orders' + (tot > 0.005 ? ' · <span class="tag bad">Collect $' + tot.toFixed(2) + ' in total</span>' : '') + '</div>';
+      }
+      m.forEach(function (s) {
       h += '<div class="stop' + (s.on ? '' : ' off') + '"><div class="top"><input type="checkbox" data-a="tick" data-id="' + s.id + '"' + (s.on ? ' checked' : '') + '><div class="grow"><b>' + esc(s.name) + '</b> · ' + esc(s.order) + ' · $' + s.total.toFixed(2) +
         '<div class="addr">' + esc(s.addr || 'No address') + (s.phone ? ' · ' + esc(s.phone) : '') + '</div>' +
         '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span>' + (s.more && s.more.length ? '<span class="tag">' + (s.more.length + 1) + ' warehouses, one delivery</span>' : '') + '<span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' + payTag(s) +
@@ -348,6 +357,8 @@
           return out; })() +
         (/^https?:\/\//.test(s.link) ? '<a class="leg" target="_blank" rel="noopener" href="' + esc(s.link) + '">Open customer\'s map link</a>' : '') +
         '</div></div></div>';
+      });
+      if (m.length > 1) { h += '</div>'; }
     });
     h += '<button class="main" data-a="plan"' + (S.busy ? ' disabled' : '') + '>' + (S.busy ? 'Working…' : 'Plan best route') + '</button>';
     if (S.route) {
