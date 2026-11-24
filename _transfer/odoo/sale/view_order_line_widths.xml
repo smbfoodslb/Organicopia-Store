@@ -15,8 +15,8 @@
   <xpath expr="//field[@name='order_line']/list/field[@name='margin_percent']" position="attributes"><attribute name="width">90px</attribute></xpath>
   <xpath expr="//field[@name='order_line']/list/field[@name='tax_ids']" position="attributes"><attribute name="width">95px</attribute></xpath>
   <xpath expr="//field[@name='order_line']/list/field[@name='discount']" position="attributes"><attribute name="width">65px</attribute></xpath>
-  <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal'][@string='Amount']" position="attributes"><attribute name="width">105px</attribute></xpath>
-  <xpath expr="//field[@name='order_line']/list/field[@name='price_total'][@string='Amount']" position="attributes"><attribute name="width">105px</attribute></xpath>
-  <xpath expr="//field[@name='order_line']/list/field[@name='price_total'][@string='Tax Incl.']" position="attributes"><attribute name="width">105px</attribute></xpath>
-  <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal'][@string='Tax Excl.']" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="(//field[@name='order_line']/list/field[@name='price_subtotal'])[1]" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="(//field[@name='order_line']/list/field[@name='price_total'])[1]" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="(//field[@name='order_line']/list/field[@name='price_total'])[2]" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="(//field[@name='order_line']/list/field[@name='price_subtotal'])[2]" position="attributes"><attribute name="width">105px</attribute></xpath>
 </data>
