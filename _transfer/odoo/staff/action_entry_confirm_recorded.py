@@ -24,6 +24,8 @@ for r in records:
         exact = found.filtered(lambda p: abs(p.amount - amt) < 0.005)
         if len(exact) == 1:
             pay = exact
+        elif len(found) == 1:
+            pay = found  # the only candidate: a different amount is reported just below
         elif not found:
             raise UserError('%s: %s has no recorded payment with money not yet applied in %s. Record the payment first, or use "Confirm and register payment".' % (r.x_name, partner.name, inv.company_id.name))
         else:
