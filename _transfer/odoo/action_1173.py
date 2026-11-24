@@ -31,6 +31,13 @@ for order in records:
         if l.is_delivery:
             vals['is_delivery'] = True
         lines.append((0, 0, vals))
+    # A contact made by the website checkout belongs to SMBF only, and Odoo then refuses it on a smbfoods order
+    # ("company inconsistencies ... no company crossover is allowed"). Make it a shared contact, like the contacts
+    # made by hand (owner, 24 Nov 2026).
+    contacts = order.partner_id | order.partner_invoice_id | order.partner_shipping_id
+    contacts = (contacts | contacts.mapped('commercial_partner_id')).sudo().filtered(lambda p: p.company_id)
+    if contacts:
+        contacts.write({'company_id': False})
     SO = env['sale.order'].with_company(1).with_context(allowed_company_ids=[1, 3], default_company_id=1, smb_delivery_auto=True, smb_move=True)
     vals = {
         'company_id': 1,
