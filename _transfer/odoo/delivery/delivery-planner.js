@@ -181,9 +181,9 @@
 
   function payTag(s) {
     if (s.collect === 'account') { return '<span class="tag">On account</span>'; }
-    if (s.custom > 0.005) { return '<span class="tag warn">Collect $' + s.custom.toFixed(2) + ' (other amount)</span>'; }
+    if (s.custom > 0.005) { return '<span class="tag bad">Collect $' + s.custom.toFixed(2) + ' (other amount)</span>'; }
     if (s.invoiced && s.due < 0.005) { return '<span class="tag ok">Paid</span>'; }
-    return '<span class="tag warn">Collect $' + s.due.toFixed(2) + '</span>';
+    return '<span class="tag bad">Collect $' + s.due.toFixed(2) + '</span>';
   }
   // another amount to collect than the invoice (0 or empty = back to the invoice amount) - owner, 24 Nov 2026
   function setAmount(s, value) {
