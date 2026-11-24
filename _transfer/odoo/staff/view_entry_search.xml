@@ -2,6 +2,7 @@
   <field name="x_name"/>
   <field name="x_employee_id"/>
   <field name="x_partner_id"/>
+  <filter name="expected" string="To collect (driver)" domain="[('x_state', '=', 'expected')]"/>
   <filter name="review" string="To review" domain="[('x_state', '=', 'review')]"/>
   <filter name="open" string="Confirmed, not settled" domain="[('x_state', '=', 'confirmed'), ('x_settled', '=', False)]"/>
   <filter name="settled" string="Settled" domain="[('x_settled', '=', True)]"/>

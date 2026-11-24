@@ -3,7 +3,7 @@
     <button name="__CONFIRM__" type="action" string="Confirm" class="btn-primary" invisible="not id or x_state != 'review' or (x_type == 'cash' and x_invoice_id)" confirm="Confirm this entry? It is then counted on the employee's statement."/>
     <button name="__CONFIRM__" type="action" string="Confirm and register payment" class="btn-primary" invisible="not id or x_state != 'review' or x_type != 'cash' or not x_invoice_id" confirm="Confirm this entry? This registers the customer's cash payment on the invoice and marks it paid."/>
     <button name="__REJECT__" type="action" string="Reject" invisible="not id or x_state != 'review'" confirm="Reject this entry?"/>
-    <field name="x_state" widget="statusbar" statusbar_visible="review,confirmed"/>
+    <field name="x_state" widget="statusbar" statusbar_visible="expected,review,confirmed"/>
   </header>
   <sheet>
     <group>
@@ -18,9 +18,12 @@
         <field name="x_vehicle" invisible="x_type != 'vehicle'" readonly="x_state != 'review'"/>
         <field name="x_partner_id" invisible="x_type != 'cash'" readonly="x_state != 'review'"/>
         <field name="x_invoice_id" invisible="x_type != 'cash'" readonly="x_state != 'review'" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial'))]"/>
+        <field name="x_sale_id" invisible="x_type != 'cash' or (not x_sale_id and x_state != 'review')" readonly="x_state != 'review'"/>
+        <field name="x_run_id" invisible="not x_run_id" readonly="1"/>
         <field name="x_payment_id" invisible="not x_payment_id" readonly="1"/>
       </group>
       <group>
+        <field name="x_expected" invisible="not x_expected" readonly="1"/>
         <field name="x_input" string="Amount ($)" readonly="id" invisible="x_type == 'vehicle'"/>
         <field name="x_amount" string="Counted on the statement (calculated when saved: + owed to the employee, - held by the employee)" readonly="x_state != 'review'" invisible="not id"/>
         <field name="x_name" readonly="1" invisible="not id"/>

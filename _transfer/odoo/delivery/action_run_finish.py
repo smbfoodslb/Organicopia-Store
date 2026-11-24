@@ -1,7 +1,7 @@
 # Delivery run: finish a save made by the planner page (SMB, 22 Nov 2026). Runs on x_delivery_run.
 # Fills the name and the texts used by the WhatsApp message, makes the short link for the Google Maps route,
 # The vehicle-use entry is NOT made here: it is made when the run is marked completed (action_run_complete.py).
-# Touches no accounting.
+# Also keeps the "To collect" entries of the Cash received tile in step with the run. Touches no accounting.
 NAMES = {'5': 'Melissa', '7': 'Serge', 'owner': 'Mustafa'}
 PHONES = {'7': '+96181227233'}
 CARS = {'serge': "Serge's Car", 'melissa': "Melissa's Car", 'kangoo': 'SMBF Kangoo'}
@@ -51,6 +51,9 @@ for run in records.sudo():
         due = sale.x_amount_open if invoiced else sale.amount_total
         if mode == 'account':
             return ('account', 0.0)
+        if sale.x_collect_amount > 0.005:
+            # the owner set another amount to collect on the order (more or less than the invoice)
+            return ('collect', sale.x_collect_amount)
         if invoiced and due < 0.005:
             return ('paid', 0.0)
         return ('collect', due)
@@ -112,6 +115,29 @@ for run in records.sudo():
             have.unlink()
             for w in wanted:
                 Line.create({'x_run_id': run.id, 'x_picking': w[0], 'x_name': w[1], 'x_delivered': True})
+    # Cash the driver should collect -> "To collect" entries in the tablet's Cash received tile (owner, 24 Nov 2026).
+    # One per order to collect, for Melissa or Serge (not when the owner drives). Rebuilt on every save: entries still
+    # "To collect" are replaced; entries the driver already confirmed or marked not collected are left alone.
+    E = env['x_staff_entry'].sudo()
+    mine = E.search([('x_run_id', '=', run.id)])
+    kept = mine.filtered(lambda e: e.x_state != 'expected').mapped('x_sale_id').ids
+    mine.filtered(lambda e: e.x_state == 'expected').unlink()
+    if who in ('5', '7') and run.x_state != 'cancel':
+        for stop in stops:
+            if stop.get('orders') is not None:
+                continue
+            for item in [stop] + (stop.get('group') or []):
+                sale = env['stock.picking'].sudo().browse(int(item.get('picking') or 0)).exists().sale_id
+                if not sale or sale.id in kept:
+                    continue
+                kind, due = pay(sale)
+                if kind != 'collect' or due < 0.005:
+                    continue
+                kept.append(sale.id)
+                E.search([('x_sale_id', '=', sale.id), ('x_state', '=', 'expected')]).unlink()
+                inv = sale.order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted' and m.move_type == 'out_invoice' and m.amount_residual > 0.005).sorted('id')[:1]
+                E.create({'x_type': 'cash', 'x_state': 'expected', 'x_who': who, 'x_date': day, 'x_run_id': run.id, 'x_sale_id': sale.id,
+                          'x_partner_id': sale.partner_id.commercial_partner_id.id, 'x_invoice_id': inv.id if inv else False, 'x_input': round(due, 2)})
     if run.x_state not in ('done', 'cancel'):
         vals['x_km_final'] = round(run.x_km or 0.0, 1)
     run.write(vals)

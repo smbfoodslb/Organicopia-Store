@@ -35,17 +35,25 @@ for r in records.sudo():
         if owner:
             vals['x_employee_id'] = owner
     elif r.x_type == 'cash':
-        if r.x_input <= 0:
-            raise UserError('Enter the amount received.')
         inv = r.x_invoice_id
-        if inv and r.x_input > inv.amount_residual + 0.005:
-            raise UserError('The amount is more than what is still open on %s (%.2f). Check the invoice or the amount.' % (inv.name, inv.amount_residual))
-        partner = inv.commercial_partner_id if inv else r.x_partner_id
-        vals['x_amount'] = -round(r.x_input, 2)
+        sale = r.x_sale_id
+        partner = inv.commercial_partner_id if inv else (r.x_partner_id or sale.partner_id.commercial_partner_id)
+        ref = inv.name if inv else (sale.name if sale else '')
         vals['x_partner_id'] = partner.id
-        vals['x_company_id'] = inv.company_id.id if inv else False
+        vals['x_company_id'] = inv.company_id.id if inv else (sale.company_id.id if sale else False)
         vals['x_method'] = 'cash'  # Whish payments always go to the owner directly (owner, 22 Nov 2026)
-        vals['x_name'] = 'Cash received: %s%s' % (partner.name or '', ' - %s' % inv.name if inv else '')
+        if r.x_state == 'expected':
+            # made by the delivery run (action 1400): cash the driver should collect. Not on any statement until
+            # the driver confirms it on the tablet (owner, 24 Nov 2026).
+            vals['x_expected'] = round(r.x_input, 2)
+            vals['x_amount'] = 0.0
+            vals['x_name'] = 'To collect: %s%s' % (partner.name or '', ' - %s' % ref if ref else '')
+        else:
+            if r.x_input <= 0:
+                raise UserError('Enter the amount received.')
+            # the amount may be more than the invoice: the customer is paying off a balance (owner, 24 Nov 2026)
+            vals['x_amount'] = -round(r.x_input, 2)
+            vals['x_name'] = 'Cash received: %s%s' % (partner.name or '', ' - %s' % ref if ref else '')
     elif r.x_type == 'advance':
         if r.x_input > 0 and not r.x_amount:
             vals['x_amount'] = -round(r.x_input, 2)

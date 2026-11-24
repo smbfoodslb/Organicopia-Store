@@ -2,17 +2,29 @@
 # A "cash received" entry with an invoice registers the customer payment through Odoo's own Register Payment wizard,
 # in the invoice's company and its Cash or Whish journal, dated like the entry - so the invoice is paid (fully or
 # partly) and the commission line follows. Without an invoice the entry is only confirmed.
+# An amount above the invoice is allowed: see below.
 JOURNALS = {(3, 'cash'): 36, (3, 'whish'): 49, (1, 'cash'): 35, (1, 'whish'): 51}
 for r in records:
     if r.x_state != 'review':
         continue
+    if r.x_type == 'cash' and not r.x_invoice_id and r.x_sale_id:
+        # collected at delivery before the order was invoiced: take the order's open invoice now (owner, 24 Nov 2026)
+        found = r.x_sale_id.sudo().order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted' and m.move_type == 'out_invoice' and m.amount_residual > 0.005).sorted('id')[:1]
+        if not found:
+            raise UserError('%s: order %s has no open invoice. Invoice the order first, or choose the invoice on the entry (or empty "Order" to confirm it without a payment).' % (r.x_name, r.x_sale_id.name))
+        r.write({'x_invoice_id': found.id, 'x_company_id': found.company_id.id})
     if r.x_type == 'cash' and r.x_invoice_id and not r.x_payment_id:
         inv = r.x_invoice_id
         amt = round(-r.x_amount, 2)
         if amt <= 0:
             raise UserError('%s: the amount must be positive.' % r.x_name)
-        if amt > inv.amount_residual + 0.005:
-            raise UserError('%s: %.2f is more than what is still open on %s (%.2f).' % (r.x_name, amt, inv.name, inv.amount_residual))
+        if inv.amount_residual < 0.005:
+            raise UserError('%s: %s has nothing open any more. Choose another invoice on the entry.' % (r.x_name, inv.name))
+        # More than the invoice: the customer is paying off a balance. One payment for the whole amount; the invoice
+        # is paid and the rest stays on the customer account for the owner to link to another invoice (owner, 24 Nov 2026).
+        extra = round(amt - inv.amount_residual, 2)
+        if extra > 0.005:
+            r.write({'x_note': ('%s\n' % r.x_note if r.x_note else '') + 'Paid %.2f, %s had %.2f open: %.2f is on the customer account, to link to another invoice.' % (amt, inv.name, inv.amount_residual, extra)})
         journal = JOURNALS.get((inv.company_id.id, r.x_method or 'cash'))
         if not journal:
             raise UserError('No cash journal is set for %s.' % inv.company_id.name)

@@ -72,7 +72,7 @@
       if (S.run) { try { JSON.parse(S.run.x_stop_order || '[]').forEach(function (p) { saved.push(p.picking); savedGroup[p.picking] = p.picking; (p.orders || []).forEach(function (q) { saved.push(q.picking); }); (p.group || []).forEach(function (q) { saved.push(q.picking); savedGroup[q.picking] = p.picking; }); }); } catch (e) { } }
       if (S.run && S.run.x_end) { S.end.mode = S.run.x_end; if (S.run.x_end === 'other') { S.end.lat = S.run.x_end_lat; S.end.lng = S.run.x_end_lng; } if (S.run.x_end === 'last' && saved.length) { try { var so = JSON.parse(S.run.x_stop_order || '[]'); S.end.last = so[so.length - 1].picking; } catch (e) { } } }
       if (!picks.length) { return []; }
-      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed', 'x_collect', 'x_amount_open'] }).then(function (orders) {
+      return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed', 'x_collect', 'x_amount_open', 'x_collect_amount'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
         picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && o.x_delivered_by !== 'pickup' && !(o.x_delivered_by === 'flypost' && o.x_flypost_handed) && p.partner_id; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
@@ -84,7 +84,7 @@
             var mine = saved.indexOf(p.id) >= 0;
             return {
               id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27),
-              collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, total: o.amount_total, partner: c.id, parent: c.parent_id ? c.parent_id[0] : 0, mate: c.x_delivers_with ? c.x_delivers_with[0] : 0, g: p.id,
+              collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, custom: o.x_collect_amount || 0, total: o.amount_total, partner: c.id, parent: c.parent_id ? c.parent_id[0] : 0, mate: c.x_delivers_with ? c.x_delivers_with[0] : 0, g: p.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
@@ -181,8 +181,16 @@
 
   function payTag(s) {
     if (s.collect === 'account') { return '<span class="tag">On account</span>'; }
+    if (s.custom > 0.005) { return '<span class="tag warn">Collect $' + s.custom.toFixed(2) + ' (other amount)</span>'; }
     if (s.invoiced && s.due < 0.005) { return '<span class="tag ok">Paid</span>'; }
     return '<span class="tag warn">Collect $' + s.due.toFixed(2) + '</span>';
+  }
+  // another amount to collect than the invoice (0 or empty = back to the invoice amount) - owner, 24 Nov 2026
+  function setAmount(s, value) {
+    var v = Math.round((parseFloat(value) || 0) * 100) / 100; if (v < 0) { v = 0; }
+    S.msg = ''; S.err = '';
+    rpc('sale.order', 'write', [[s.sale], { x_collect_amount: v }]).then(function () { s.custom = v; S.amt = null; S.saved = null; S.msg = s.order + (v ? ': the driver collects $' + v.toFixed(2) + '.' : ': the driver collects the invoice amount.'); render(); })
+      .catch(function (e) { S.err = 'Not changed: ' + e.message; render(); });
   }
   function setCollect(s, mode) {
     S.msg = ''; S.err = '';
@@ -323,6 +331,7 @@
         '<button class="small" data-a="' + (s.fly ? 'nofly' : 'fly') + '" data-id="' + s.id + '">' + (s.fly ? 'Back to our driver' : 'Send with FlyPost') + '</button>' +
         (s.fly ? '<button class="small" data-a="handed" data-id="' + s.id + '">Handed to FlyPost</button>' : '') +
         '<button class="small" data-a="' + (s.collect === 'collect' ? 'account' : 'collect') + '" data-id="' + s.id + '">' + (s.collect === 'collect' ? 'Put on account' : 'Collect on delivery') + '</button>' +
+        (s.collect !== 'collect' || s.fly ? '' : S.amt === s.id ? '<input class="amtin" type="number" min="0" step="0.01" value="' + (s.custom > 0.005 ? s.custom.toFixed(2) : '') + '" placeholder="Amount $" style="width:90px;padding:2px 4px;font-size:12px;margin:4px 4px 0 0"><button class="small" data-a="amtok" data-id="' + s.id + '">OK</button>' : '<button class="small" data-a="amt" data-id="' + s.id + '">Other amount</button>') +
         (function () { if (s.fly || !s.on) { return ''; } var m = members(s.g), out = '';
           if (m.some(function (o) { return o.partner !== s.partner; })) { out += '<button class="small" data-a="split" data-id="' + s.id + '">Split into its own stop</button>'; }
           var others = [], seen = {}; S.stops.forEach(function (o) { if (o.on && !o.fly && o.g !== s.g && !seen[o.g]) { seen[o.g] = 1; others.push(head(o)); } });
@@ -374,6 +383,8 @@
     else if (a === 'split') { split(s); }
     else if (a === 'join') { combine(s, byId(parseInt(t.getAttribute('data-to'), 10))); }
     else if (a === 'collect' || a === 'account') { setCollect(s, a); }
+    else if (a === 'amt') { S.amt = s.id; render(); }
+    else if (a === 'amtok') { var box = document.querySelector('.amtin'); setAmount(s, box ? box.value : 0); }
     else if (a === 'copylist') {
       var text = S.saved.x_name + '\n' + String(S.saved.x_collect_text || '').split(' | ').join('\n') + '\nRoute: https://www.smbfoods-lb.com/r/' + S.saved.x_route_code;
       (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { S.msg = 'Stop list copied.'; render(); }).catch(function () { S.msg = 'Select the list above and copy it.'; render(); });
