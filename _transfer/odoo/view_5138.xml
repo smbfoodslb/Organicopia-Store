@@ -1,10 +1,10 @@
 <list string="Sales Orders" create="0" edit="0" delete="0" default_order="date_order desc">
-  <field name="name"/>
-  <field name="company_id" string="Company" widget="badge" decoration-warning="company_id == 1" decoration-success="company_id == 3"/>
-  <field name="date_order"/>
+  <field name="name" width="80px"/>
+  <field name="company_id" string="Company" width="90px" widget="badge" decoration-warning="company_id == 1" decoration-success="company_id == 3"/>
+  <field name="date_order" width="140px"/>
   <field name="partner_id"/>
-  <field name="commitment_date" optional="show"/>
-  <field name="amount_total" sum="Total"/>
-  <field name="state" widget="badge" decoration-success="state == 'sale'" decoration-info="state in ('draft','sent')"/>
-  <field name="invoice_status" optional="show"/>
+  <field name="commitment_date" optional="show" width="140px"/>
+  <field name="amount_total" sum="Total" width="95px"/>
+  <field name="state" widget="badge" width="90px" decoration-success="state == 'sale'" decoration-info="state in ('draft','sent')"/>
+  <field name="invoice_status" optional="show" width="135px"/>
 </list>
