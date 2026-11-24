@@ -1,0 +1,22 @@
+<data>
+  <!-- Sales order lines: fixed column widths (owner, 24 Nov 2026). Odoo sized the columns by field type, so numbers were
+       squeezed and had to be resized by hand on every visit. Every number, unit, tax and barcode column now has a width
+       that fits its content; the Product column has none and takes the space that is left, on a wide desktop and on
+       the tablet alike. Which columns are shown is still each user's own choice in the column picker. -->
+  <xpath expr="//field[@name='order_line']/list/field[@name='x_studio_related_field_6v9_1jl1tcr9i']" position="attributes"><attribute name="width">125px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='route_ids']" position="attributes"><attribute name="width">100px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="attributes"><attribute name="width">80px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='qty_delivered']" position="attributes"><attribute name="width">80px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='qty_invoiced']" position="attributes"><attribute name="width">80px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_id'][@widget='many2one_uom']" position="attributes"><attribute name="width">85px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']" position="attributes"><attribute name="width">90px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='purchase_price']" position="attributes"><attribute name="width">90px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='margin']" position="attributes"><attribute name="width">90px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='margin_percent']" position="attributes"><attribute name="width">90px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='tax_ids']" position="attributes"><attribute name="width">95px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='discount']" position="attributes"><attribute name="width">65px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal'][@string='Amount']" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='price_total'][@string='Amount']" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='price_total'][@string='Tax Incl.']" position="attributes"><attribute name="width">105px</attribute></xpath>
+  <xpath expr="//field[@name='order_line']/list/field[@name='price_subtotal'][@string='Tax Excl.']" position="attributes"><attribute name="width">105px</attribute></xpath>
+</data>
