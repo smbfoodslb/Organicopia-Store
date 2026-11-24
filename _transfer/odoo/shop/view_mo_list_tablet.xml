@@ -1,12 +1,12 @@
 <list string="Manufacturing Orders" create="0" delete="0" default_order="id desc" decoration-muted="state == 'cancel'">
-  <field name="name" string="Reference" width="130px" decoration-bf="1"/>
+  <field name="name" string="Reference" width="125px" decoration-bf="1"/>
   <field name="product_id" readonly="1"/>
-  <field name="product_qty" string="Qty" width="65px" readonly="1"/>
-  <field name="product_uom_id" string="Unit" width="60px" readonly="1" options="{'no_open': True}"/>
-  <field name="origin" string="Source" width="80px" optional="show"/>
+  <field name="product_qty" string="Qty" width="60px" readonly="1"/>
+  <field name="product_uom_id" string="Unit" width="55px" readonly="1" options="{'no_open': True}"/>
+  <field name="origin" string="Source" width="70px" optional="show"/>
   <field name="components_availability_state" column_invisible="True"/>
-  <field name="components_availability" string="Components" width="110px" optional="show" decoration-success="components_availability_state == 'available'" decoration-warning="components_availability_state == 'expected'" decoration-danger="components_availability_state in ('late', 'unavailable')"/>
-  <field name="date_start" string="Start" width="130px" readonly="1"/>
-  <field name="company_id" string="Company" width="90px" widget="badge" decoration-warning="company_id == 1" decoration-success="company_id == 3"/>
-  <field name="state" width="100px" widget="badge" decoration-success="state in ('done', 'to_close')" decoration-info="state in ('confirmed', 'progress')" decoration-muted="state in ('draft', 'cancel')"/>
+  <field name="components_availability" string="Components" width="105px" optional="show" decoration-success="components_availability_state == 'available'" decoration-warning="components_availability_state == 'expected'" decoration-danger="components_availability_state in ('late', 'unavailable')"/>
+  <field name="date_start" string="Start" widget="date" width="85px" readonly="1"/>
+  <field name="company_id" string="Company" width="85px" widget="badge" decoration-warning="company_id == 1" decoration-success="company_id == 3"/>
+  <field name="state" width="95px" widget="badge" decoration-success="state in ('done', 'to_close')" decoration-info="state in ('confirmed', 'progress')" decoration-muted="state in ('draft', 'cancel')"/>
 </list>
