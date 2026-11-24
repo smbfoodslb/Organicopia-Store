@@ -1,5 +1,5 @@
 # One use per phone number for the coupons listed in ONCE (SMB, 18 Nov 2026).
-# ONCE holds the discount-line products of those coupons (8512 = HOLIDAY10). A use counts when ANOTHER order carrying the
+# ONCE holds the discount-line products of those coupons (8512 = HOLIDAY26). A use counts when ANOTHER order carrying the
 # same discount product was submitted (state sent/sale/done) or is a draft in smbfoods (an order moved there), and its
 # customer's phone ends in the same 8 digits. Cancelled orders do not count.
 # Runs when an order's lines or customer change (a website visitor applies the code before we know who they are; the

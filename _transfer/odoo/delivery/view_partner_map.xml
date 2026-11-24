@@ -6,5 +6,6 @@
   <xpath expr="//field[@name='child_ids']/form//field[@name='company_id']" position="before">
     <field name="x_map_link" string="Map location" placeholder="Paste a Google Maps link or coordinates (33.8751, 35.5590)" invisible="type == 'contact'"/>
     <field name="x_delivers_with" string="Delivers with" placeholder="Another name at the same delivery location" options="{'no_create': True}" invisible="type == 'contact'"/>
+    <field name="x_default_delivery" invisible="type != 'delivery'"/>
   </xpath>
 </data>
