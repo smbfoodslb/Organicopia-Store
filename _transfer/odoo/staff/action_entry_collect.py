@@ -22,7 +22,7 @@ for r in records.sudo():
         'x_company_id': inv.company_id.id if inv else (sale.company_id.id if sale else False),
         'x_partner_id': partner.id,
         'x_amount': -round(r.x_input, 2),
-        'x_date': datetime.date.today(),
+        'x_date': r.x_date or datetime.date.today(),  # the date the driver gave; today when left empty (owner, 24 Nov 2026)
         'x_state': 'review',
         'x_name': 'Cash received: %s%s' % (partner.name or '', ' - %s' % ref if ref else ''),
     })

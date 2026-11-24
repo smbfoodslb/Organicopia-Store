@@ -1,7 +1,7 @@
 <form string="Cash received">
   <sheet>
     <div class="alert alert-info" role="alert" invisible="id">Cash you received from a customer (Whish payments go to the manager directly, do not enter them here). Choose the customer, then the invoice being paid. Count the money twice before you save. The manager confirms it and the invoice is marked paid.</div>
-    <div class="alert alert-warning" role="alert" invisible="x_state != 'expected'">To collect at delivery. Check the amount and change it if the customer paid a different amount, then press Confirm received. If the customer did not pay, press Not collected.</div>
+    <div class="alert alert-warning" role="alert" invisible="x_state != 'expected'">To collect at delivery. Check the amount and change it if the customer paid a different amount, set the date the money was received (today if left empty), then press Confirm received. If the customer did not pay, press Not collected.</div>
     <div class="alert alert-success" role="alert" invisible="x_state != 'review'">Saved. Waiting for the manager to confirm it.</div>
     <div class="alert alert-secondary" role="alert" invisible="x_state != 'rejected'">Not collected, or rejected by the manager.</div>
     <div class="alert alert-success" role="alert" invisible="x_state != 'confirmed'">Confirmed by the manager.</div>
@@ -10,7 +10,7 @@
         <field name="x_type" invisible="1"/>
         <field name="x_state" invisible="1"/>
         <field name="x_who" string="Who received the money?" required="1" readonly="id and x_state != 'expected'"/>
-        <field name="x_date" required="1" readonly="id"/>
+        <field name="x_date" string="Date received" required="not id" readonly="id and x_state != 'expected'" placeholder="Today if left empty"/>
         <field name="x_partner_id" string="Customer" required="1" readonly="id" options="{'no_create': True, 'no_open': True}"/>
         <field name="x_invoice_id" string="Invoice paid" readonly="id" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial')), '|', ('partner_id', '=', x_partner_id), ('commercial_partner_id', '=', x_partner_id)]" options="{'no_create': True, 'no_open': True}" placeholder="Leave empty only if there is no invoice"/>
         <field name="x_sale_id" string="Order" readonly="1" invisible="not x_sale_id" options="{'no_open': True}"/>

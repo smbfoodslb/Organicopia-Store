@@ -15,7 +15,7 @@ for r in records.sudo():
         raise UserError('Choose the name.')
     if not r.x_state:
         vals['x_state'] = 'review'
-    if not r.x_date:
+    if not r.x_date and r.x_state != 'expected':  # a "To collect" entry gets its date when the money is received
         vals['x_date'] = datetime.date.today()
     if r.x_type == 'expense':
         if r.x_input <= 0:

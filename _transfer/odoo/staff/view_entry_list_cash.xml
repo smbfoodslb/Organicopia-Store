@@ -1,9 +1,10 @@
 <list string="Cash received" default_order="x_state, x_date desc, id desc" decoration-warning="x_state == 'expected'" decoration-muted="x_state == 'review'">
-  <field name="x_date" width="90px"/>
+  <field name="x_date" string="Date received" width="110px"/>
   <field name="x_who" string="Driver" width="170px"/>
   <field name="x_partner_id"/>
   <field name="x_sale_id" string="Order" width="80px"/>
   <field name="x_invoice_id" optional="show"/>
+  <field name="x_run_id" string="Run" optional="show"/>
   <field name="x_input" string="Amount ($)" width="95px"/>
   <field name="x_state" widget="badge" width="100px" decoration-warning="x_state == 'expected'" decoration-info="x_state == 'review'"/>
 </list>
