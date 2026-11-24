@@ -66,9 +66,12 @@ for run in records.sudo():
         # one stop can hold several orders: two companies' invoices for one customer, or two names at
         # one address combined in the planner (stop['group']). Total first, then the breakdown.
         rows = []
+        seen = []
         for item in [stop] + (stop.get('group') or []):
             sale = env['stock.picking'].sudo().browse(int(item.get('picking') or 0)).exists().sale_id
-            if sale:
+            # an order prepared from two warehouses has two transfers: count it once (owner, 24 Nov 2026)
+            if sale and sale.id not in seen:
+                seen.append(sale.id)
                 rows.append((item.get('name', ''), sale.name, pay(sale)))
         if not rows:
             parts.append('%d) %s' % (number, stop.get('name', '')))

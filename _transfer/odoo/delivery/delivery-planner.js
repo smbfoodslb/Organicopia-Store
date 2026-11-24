@@ -75,23 +75,29 @@
       return rpc('sale.order', 'read', [picks.map(function (p) { return p.sale_id[0]; })], { fields: ['name', 'carrier_id', 'invoice_status', 'amount_total', 'website_id', 'x_delivered_by', 'pricelist_id', 'x_flypost_handed', 'x_collect', 'x_amount_open', 'x_collect_amount'] }).then(function (orders) {
         var om = {}; orders.forEach(function (o) { om[o.id] = o; });
         picks = picks.filter(function (p) { var o = om[p.sale_id[0]]; return o && !(o.carrier_id && o.carrier_id[0] === PICKUP_CARRIER) && o.x_delivered_by !== 'flypost_pickup' && o.x_delivered_by !== 'pickup' && !(o.x_delivered_by === 'flypost' && o.x_flypost_handed) && p.partner_id; });
+        /* One order = one delivery for the driver, even when Odoo prepares it from two warehouses (two transfers).
+           The first transfer carries the card; the others ride along and are saved with the stop (owner, 24 Nov 2026). */
+        var firstOf = {}, extra = {};
+        picks = picks.filter(function (p) { var k = p.sale_id[0]; if (firstOf[k] == null) { firstOf[k] = p.id; extra[p.id] = []; return true; } extra[firstOf[k]].push(p); return false; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
         return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link', 'parent_id', 'x_delivers_with'] }).then(function (ps) {
           var pm = {}; ps.forEach(function (p) { pm[p.id] = p; });
           S.stops = picks.map(function (p) {
-            var o = om[p.sale_id[0]], c = pm[p.partner_id[0]], other = inRun[p.id];
+            var o = om[p.sale_id[0]], c = pm[p.partner_id[0]], more = extra[p.id] || [];
+            var other = inRun[p.id] || more.map(function (q) { return inRun[q.id]; }).filter(Boolean)[0];
+            var allReady = p.state === 'assigned' && more.every(function (q) { return q.state === 'assigned'; });
             var has = !!(c.partner_latitude || c.partner_longitude);
-            var mine = saved.indexOf(p.id) >= 0;
+            var mine = saved.indexOf(p.id) >= 0 || more.some(function (q) { return saved.indexOf(q.id) >= 0; });
             return {
-              id: p.id, picking: p.name, order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27),
+              id: p.id, picking: p.name, more: more.map(function (q) { return { id: q.id, name: q.name }; }), order: o.name, sale: o.id, fly: o.x_delivered_by === 'flypost', retail: !!(o.pricelist_id && o.pricelist_id[0] === 27),
               collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, custom: o.x_collect_amount || 0, total: o.amount_total, partner: c.id, parent: c.parent_id ? c.parent_id[0] : 0, mate: c.x_delivers_with ? c.x_delivers_with[0] : 0, g: p.id,
               name: c.name || c.commercial_company_name || '', phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
-              ready: p.state === 'assigned', invoiced: o.invoice_status === 'invoiced',
+              ready: allReady, invoiced: o.invoice_status === 'invoiced',
               lat: has ? c.partner_latitude : null, lng: has ? c.partner_longitude : null, pin: has ? 'saved' : 'none',
               other: other && (!S.run || other.id !== S.run.id) ? other.x_name : '',
-              on: S.run ? mine : (p.state === 'assigned' && o.invoice_status === 'invoiced' && !other)
+              on: S.run ? mine : (allReady && o.invoice_status === 'invoiced' && !other)
             };
           });
           /* One stop for several orders (owner, 23 Nov 2026). Same delivery contact = always one stop (two companies' invoices).
@@ -276,7 +282,7 @@
       x_end: S.end.mode, x_end_lat: endPoint(S.route.order).lat, x_end_lng: endPoint(S.route.order).lng,
       x_end_label: S.end.mode === 'last' ? 'Ends at the last delivery: ' + names(byId(S.route.order[S.route.order.length - 1])) : S.end.mode === 'other' ? 'Ends at another location' : 'Back at the shop',
       x_date: day, x_who: who, x_vehicle: veh, x_stops: S.route.order.length, x_km: Math.round(S.route.km * 10) / 10, x_minutes: S.route.minutes, x_route_url: routeUrl(),
-      x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return s.virtual ? { picking: FLY, name: s.name, lat: s.lat, lng: s.lng, orders: flyOrders().map(function (f) { return { picking: f.id, ref: f.picking, order: f.order, name: f.name }; }) } : { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng, group: members(s.g).filter(function (m) { return m !== s; }).map(function (m) { return { picking: m.id, ref: m.picking, order: m.order, name: m.name }; }) }; }))
+      x_stop_order: JSON.stringify(S.route.order.map(function (id) { var s = byId(id); return s.virtual ? { picking: FLY, name: s.name, lat: s.lat, lng: s.lng, orders: [].concat.apply([], flyOrders().map(function (f) { return [{ picking: f.id, ref: f.picking, order: f.order, name: f.name }].concat((f.more || []).map(function (q) { return { picking: q.id, ref: q.name, order: f.order, name: f.name }; })); })) } : { picking: s.id, ref: s.picking, order: s.order, name: s.name, lat: s.lat, lng: s.lng, group: (s.more || []).map(function (q) { return { picking: q.id, ref: q.name, order: s.order, name: s.name }; }).concat([].concat.apply([], members(s.g).filter(function (m) { return m !== s; }).map(function (m) { return [{ picking: m.id, ref: m.picking, order: m.order, name: m.name }].concat((m.more || []).map(function (q) { return { picking: q.id, ref: q.name, order: m.order, name: m.name }; })); }))) }; }))
     };
     S.busy = true; render();
     var p = S.run ? rpc('x_delivery_run', 'write', [[S.run.id], vals]).then(function () { return S.run.id; }) : rpc('x_delivery_run', 'create', [Object.assign({ x_state: 'draft', x_name: 'Delivery run' }, vals)]);
@@ -322,7 +328,7 @@
     S.stops.forEach(function (s) {
       h += '<div class="stop' + (s.on ? '' : ' off') + '"><div class="top"><input type="checkbox" data-a="tick" data-id="' + s.id + '"' + (s.on ? ' checked' : '') + '><div class="grow"><b>' + esc(s.name) + '</b> · ' + esc(s.order) + ' · $' + s.total.toFixed(2) +
         '<div class="addr">' + esc(s.addr || 'No address') + (s.phone ? ' · ' + esc(s.phone) : '') + '</div>' +
-        '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span><span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' + payTag(s) +
+        '<span class="tag ' + (s.ready ? 'ok">Ready' : 'warn">Not ready') + '</span>' + (s.more && s.more.length ? '<span class="tag">' + (s.more.length + 1) + ' warehouses, one delivery</span>' : '') + '<span class="tag ' + (s.invoiced ? 'ok">Invoiced' : 'warn">Not invoiced') + '</span><span class="tag">' + esc(s.company) + '</span>' + payTag(s) +
         (s.other ? '<span class="tag warn">In ' + esc(s.other) + '</span>' : '') +
         (function () { var m = s.on && !s.fly ? members(s.g) : []; return m.length > 1 ? '<span class="tag ok">One stop with ' + esc(m.filter(function (o) { return o !== s; }).map(function (o) { return (o.name === s.name ? '' : o.name + ' ') + o.order; }).join(', ')) + '</span>' : ''; })() +
         (s.fly ? '<span class="tag bad">FlyPost</span><br>' : '<span class="tag ' + (s.pin === 'saved' ? 'ok">Pin saved' : s.pin === 'approx' ? 'warn">Pin is a guess' : 'bad">No location') + '</span><br>') +
