@@ -21,10 +21,9 @@ for r in records:
         if inv.amount_residual < 0.005:
             raise UserError('%s: %s has nothing open any more. Choose another invoice on the entry.' % (r.x_name, inv.name))
         # More than the invoice: the customer is paying off a balance. One payment for the whole amount; the invoice
-        # is paid and the rest stays on the customer account for the owner to link to another invoice (owner, 24 Nov 2026).
+        # is paid and the rest is applied below (owner, 24 Nov 2026).
         extra = round(amt - inv.amount_residual, 2)
-        if extra > 0.005:
-            r.write({'x_note': ('%s\n' % r.x_note if r.x_note else '') + 'Paid %.2f, %s had %.2f open: %.2f is on the customer account, to link to another invoice.' % (amt, inv.name, inv.amount_residual, extra)})
+        was_open = inv.amount_residual
         journal = JOURNALS.get((inv.company_id.id, r.x_method or 'cash'))
         if not journal:
             raise UserError('No cash journal is set for %s.' % inv.company_id.name)
@@ -32,4 +31,23 @@ for r in records:
         wiz = env['account.payment.register'].with_context(ctx).create({'amount': amt, 'journal_id': journal, 'payment_date': r.x_date})
         pay = wiz._create_payments()
         r.write({'x_payment_id': pay[:1].id})
+        if extra > 0.005:
+            # the rest goes to the customer's oldest unpaid invoices in the same company, oldest first (owner, 24 Nov 2026);
+            # anything still left stays on the customer account
+            credit = pay.sudo().move_id.line_ids.filtered(lambda l: l.account_id.account_type == 'asset_receivable')
+            others = env['account.move'].sudo().search([('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial')),
+                ('commercial_partner_id', '=', inv.commercial_partner_id.id), ('company_id', '=', inv.company_id.id), ('id', '!=', inv.id)], order='invoice_date, id')
+            used = []
+            for other in others:
+                line = credit.filtered(lambda l: not l.reconciled)[:1]
+                if not line:
+                    break
+                before = other.amount_residual
+                other.with_context(ctx).js_assign_outstanding_line(line.id)
+                if before - other.amount_residual > 0.005:
+                    used.append('%.2f on %s' % (before - other.amount_residual, other.name))
+            left = round(-sum(credit.mapped('amount_residual')), 2)
+            text = 'Paid %.2f, %s had %.2f open. The extra %.2f: %s%s' % (amt, inv.name, was_open, extra, ', '.join(used) or 'no other unpaid invoice',
+                ('; %.2f is left on the customer account.' % left) if left > 0.005 else '.')
+            r.write({'x_note': ('%s\n' % r.x_note if r.x_note else '') + text})
     r.write({'x_state': 'confirmed'})
