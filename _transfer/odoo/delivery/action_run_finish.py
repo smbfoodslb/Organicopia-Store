@@ -32,13 +32,38 @@ for run in records.sudo():
         'x_driver_phone': phone,
     }
     if run.x_route_url:
-        link = env['link.tracker'].sudo().search_or_create([{'url': run.x_route_url, 'title': name}])
-        vals['x_route_code'] = link[0].code
+        # The WhatsApp button and the copied link open the run's stop-list page (view "SMB delivery run page",
+        # /delivery-run?t=<token>), which carries the Google Maps button; before 24 Nov 2026 they opened Google Maps
+        # directly. The page shows customers and amounts, so the short link is NOT one of Odoo's 3-letter codes:
+        # its code is the run's own 32-character random token (owner, 24 Nov 2026).
+        token = run.x_token
+        if not token:
+            env.cr.execute("SELECT replace(gen_random_uuid()::text, '-', '')")
+            token = env.cr.fetchone()[0]
+            vals['x_token'] = token
+        link = env['link.tracker'].sudo().search_or_create([{'url': 'https://www.smbfoods-lb.com/delivery-run?t=%s' % token, 'title': name}])[0]
+        code = link.link_code_ids[:1]
+        if code and code.code != token:
+            code.write({'code': token})
+        vals['x_route_code'] = token
     # What the driver has to collect at each stop, from the invoices as they stand now (owner, 23 Nov 2026):
     # an order on account -> "on account, do not collect"; nothing left open on its invoices -> "PAID";
     # otherwise the amount still open (the order total while nothing is invoiced). One line, because a
     # WhatsApp template variable cannot hold line breaks.
     parts = []
+    page = []  # the same stops for the stop-list page: one entry per stop, with who to ask for, address and phone
+    def people(items):
+        out = []
+        done = []
+        for item in items:
+            pk = env['stock.picking'].sudo().browse(int(item.get('picking') or 0)).exists()
+            p = pk.partner_id
+            if not p or p.id in done:
+                continue
+            done.append(p.id)
+            out.append({'name': item.get('name') or p.display_name or '', 'phone': p.phone or p.commercial_partner_id.phone or '',
+                        'addr': ', '.join(x for x in [p.street, p.street2, p.city] if x)})
+        return out
     try:
         stops = json.loads(run.x_stop_order or '[]')
     except Exception:
@@ -62,6 +87,8 @@ for run in records.sudo():
         number += 1
         if stop.get('orders') is not None:
             parts.append('%d) FlyPost drop-off: hand over %s' % (number, ', '.join(o.get('order', '') for o in stop.get('orders'))))
+            page.append({'n': number, 'title': 'FlyPost drop-off', 'what': 'hand over %s' % ', '.join(o.get('order', '') for o in stop.get('orders')), 'collect': False,
+                         'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': []})
             continue
         # one stop can hold several orders: two companies' invoices for one customer, or two names at
         # one address combined in the planner (stop['group']). Total first, then the breakdown.
@@ -75,6 +102,7 @@ for run in records.sudo():
                 rows.append((item.get('name', ''), sale.name, pay(sale)))
         if not rows:
             parts.append('%d) %s' % (number, stop.get('name', '')))
+            page.append({'n': number, 'title': stop.get('name', ''), 'what': '', 'collect': False, 'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': people([stop] + (stop.get('group') or []))})
             continue
         names = []
         for r in rows:
@@ -99,7 +127,9 @@ for run in records.sudo():
             else:
                 what = 'nothing to collect (%s)' % '; '.join('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account') for r in rows)
         parts.append('%d) %s: %s' % (number, title, what))
+        page.append({'n': number, 'title': title, 'what': what, 'collect': what.startswith('collect'), 'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': people([stop] + (stop.get('group') or []))})
     vals['x_collect_text'] = ' | '.join(parts) or '-'
+    vals['x_stops_json'] = json.dumps(page)
     # The run's own-driver deliveries, for the owner's "Confirm deliveries" list on the run form (owner, 23 Nov 2026).
     # One line per delivery of every stop (also the other orders of a combined stop); FlyPost drop-offs are left
     # out: handing a parcel to FlyPost is not delivery to the customer. Rebuilt only while nothing was confirmed.

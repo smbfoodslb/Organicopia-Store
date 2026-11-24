@@ -1,8 +1,10 @@
 # Delivery run: send the route to the driver on WhatsApp (SMB, 22 Nov 2026). Runs on x_delivery_run.
 # Uses an approved Meta template on the SMB Foods number; the number is
 # x_driver_phone, the button opens the short link. Only ever started by the owner pressing the button.
-# Two templates: 23 carries the collection list (preferred); 22 is the first one, without it.
-TEMPLATES = (23, 22)
+# Template 22 is the short message (date, stops, km, time). Its button opens the run's stop-list page, where every stop
+# is on its own line with the amount to collect. Template 23, which carried the whole collection list on one line
+# (a WhatsApp variable cannot hold line breaks), is no longer used (owner, 24 Nov 2026).
+TEMPLATES = (22,)
 FINISH = 1400
 # The owner, and the Shop tablet (group 111) when he is away.
 if not (env.user.has_group('account.group_account_manager') or 111 in env.user.all_group_ids.ids):

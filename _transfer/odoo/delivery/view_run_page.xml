@@ -1,0 +1,64 @@
+<t t-name="website.smb_delivery_run_page">
+  <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <meta name="robots" content="noindex, nofollow"/>
+      <meta name="referrer" content="no-referrer"/>
+      <title>Delivery run</title>
+      <style>
+        body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f3f6f5;color:#1c2b28;font-size:16px;line-height:1.4}
+        .wrap{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+        h1{font-size:19px;margin:6px 0 2px;color:#123d36}
+        .sub{color:#4d615c;margin-bottom:12px}
+        .go{display:block;text-align:center;background:#123d36;color:#fff;text-decoration:none;font-weight:600;padding:13px;border-radius:9px;margin:10px 0 16px}
+        .stop{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:11px 12px;margin-bottom:10px}
+        .top{display:flex;gap:10px;align-items:flex-start}
+        .n{flex:none;width:30px;height:30px;border-radius:50%;background:#123d36;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+        .t{font-weight:600;color:#123d36}
+        .what{display:inline-block;margin-top:6px;padding:3px 9px;border-radius:12px;background:#e6efec;color:#2d4a44;font-size:15px}
+        .what.c{background:#fbdcdc;color:#9b1c1c;font-weight:600}
+        .p{margin-top:8px;padding-top:8px;border-top:1px solid #e6efec;font-size:15px;color:#34443f}
+        .p a{color:#123d36;font-weight:600}
+        .nav{display:inline-block;margin-top:8px;font-size:15px;color:#123d36;font-weight:600}
+        .note{background:#fff8e1;border:1px solid #f0dc9c;border-radius:9px;padding:10px 12px;margin-bottom:12px}
+        .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
+      </style>
+    </head>
+    <body>
+      <div class="wrap">
+        <t t-set="tok" t-value="request.params.get('t') or ''"/>
+        <t t-set="run" t-value="len(tok) == 32 and request.env['x_delivery_run'].sudo().search([('x_token', '=', tok), ('x_state', '!=', 'cancel')], limit=1)"/>
+        <t t-set="fresh" t-value="run and run.x_date and (datetime.date.today() - run.x_date).days &lt;= 7"/>
+        <t t-if="not fresh">
+          <div class="gone">This delivery run link is not valid any more.</div>
+        </t>
+        <t t-else="">
+          <h1 t-out="run.x_name"/>
+          <div class="sub"><t t-out="run.x_stops_label"/> stops · <t t-out="run.x_km_label"/> km · about <t t-out="run.x_duration"/> of driving</div>
+          <div t-if="run.x_note" class="note" t-out="run.x_note"/>
+          <a t-if="run.x_route_url" class="go" t-att-href="run.x_route_url" target="_blank" rel="noopener">Open the whole route in Google Maps</a>
+          <t t-foreach="json.loads(run.x_stops_json or '[]')" t-as="st">
+            <div class="stop">
+              <div class="top">
+                <div class="n" t-out="st['n']"/>
+                <div>
+                  <div class="t" t-out="st['title']"/>
+                  <div t-if="st['what']" t-attf-class="what #{'c' if st['collect'] else ''}" t-out="st['what']"/>
+                </div>
+              </div>
+              <t t-foreach="st['people']" t-as="p">
+                <div class="p">
+                  <div t-if="len(st['people']) &gt; 1" t-out="p['name']"/>
+                  <div t-if="p['addr']" t-out="p['addr']"/>
+                  <a t-if="p['phone']" t-attf-href="tel:#{p['phone'].replace(' ', '')}" t-out="p['phone']"/>
+                </div>
+              </t>
+              <a t-if="st['lat'] and st['lng']" class="nav" target="_blank" rel="noopener" t-attf-href="https://www.google.com/maps/dir/?api=1&amp;destination=#{st['lat']},#{st['lng']}">Navigate to this stop</a>
+            </div>
+          </t>
+        </t>
+      </div>
+    </body>
+  </html>
+</t>
