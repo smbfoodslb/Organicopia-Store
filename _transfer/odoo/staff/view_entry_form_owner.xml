@@ -2,6 +2,7 @@
   <header>
     <button name="__CONFIRM__" type="action" string="Confirm" class="btn-primary" invisible="not id or x_state != 'review' or (x_type == 'cash' and x_invoice_id)" confirm="Confirm this entry? It is then counted on the employee's statement."/>
     <button name="__CONFIRM__" type="action" string="Confirm and register payment" class="btn-primary" invisible="not id or x_state != 'review' or x_type != 'cash' or not x_invoice_id" confirm="Confirm this entry? This registers the customer's cash payment on the invoice and marks it paid."/>
+    <button name="__RECORDED__" type="action" string="Confirm, payment already recorded" class="btn-danger" invisible="not id or x_state != 'review' or x_type != 'cash'" confirm="Use a payment that is already recorded in Accounting? No new payment is created: the recorded payment is applied to the invoice, any rest to the oldest unpaid invoices."/>
     <button name="__REJECT__" type="action" string="Reject" invisible="not id or x_state != 'review'" confirm="Reject this entry?"/>
     <field name="x_state" widget="statusbar" statusbar_visible="expected,review,confirmed"/>
   </header>
@@ -20,7 +21,7 @@
         <field name="x_invoice_id" invisible="x_type != 'cash'" readonly="x_state != 'review'" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial'))]"/>
         <field name="x_sale_id" invisible="x_type != 'cash' or (not x_sale_id and x_state != 'review')" readonly="x_state != 'review'"/>
         <field name="x_run_id" invisible="not x_run_id" readonly="1"/>
-        <field name="x_payment_id" invisible="not x_payment_id" readonly="1"/>
+        <field name="x_payment_id" invisible="x_type != 'cash' or (not x_payment_id and x_state != 'review')" readonly="x_state != 'review'" domain="[('payment_type', '=', 'inbound'), ('state', 'in', ('in_process', 'paid'))]" options="{'no_create': True}" placeholder="Only for a payment recorded beforehand"/>
       </group>
       <group>
         <field name="x_expected" invisible="not x_expected" readonly="1"/>
