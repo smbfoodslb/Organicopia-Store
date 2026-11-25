@@ -100,7 +100,7 @@ for run in records.sudo():
             # an order prepared from two warehouses has two transfers: count it once (owner, 24 Nov 2026)
             if sale and sale.id not in seen:
                 seen.append(sale.id)
-                rows.append((item.get('name', ''), sale.name, pay(sale)))
+                rows.append((item.get('name', ''), sale.name, pay(sale), sale.id))
         if not rows:
             parts.append('%d) %s' % (number, stop.get('name', '')))
             page.append({'n': number, 'title': stop.get('name', ''), 'what': '', 'collect': False, 'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': people([stop] + (stop.get('group') or []))})
@@ -128,7 +128,9 @@ for run in records.sudo():
             else:
                 what = 'nothing to collect (%s)' % '; '.join('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account') for r in rows)
         parts.append('%d) %s: %s' % (number, title, what))
-        page.append({'n': number, 'title': title, 'what': what, 'collect': what.startswith('collect'), 'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': people([stop] + (stop.get('group') or []))})
+        page.append({'n': number, 'title': title, 'what': what, 'collect': what.startswith('collect'), 'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': people([stop] + (stop.get('group') or [])),
+                     # the orders with cash to collect at this stop: the driver enters what he received on the page (25 Nov 2026)
+                     'cash': [{'sale': r[3], 'order': r[1], 'name': r[0], 'amt': round(r[2][1], 2)} for r in rows if r[2][0] == 'collect' and r[2][1] > 0.005]})
     vals['x_collect_text'] = ' | '.join(parts) or '-'
     vals['x_stops_json'] = json.dumps(page)
     # The run's own-driver deliveries, for the owner's "Confirm deliveries" list on the run form (owner, 23 Nov 2026).

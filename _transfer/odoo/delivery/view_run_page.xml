@@ -28,6 +28,8 @@
         .b.on.ok{background:#1d6b3f;border-color:#1d6b3f;color:#fff}.b.on.no{background:#9b1c1c;border-color:#9b1c1c;color:#fff}
         .b.no{border-color:#9b1c1c;color:#9b1c1c}
         .why input{font:inherit;width:100%;box-sizing:border-box;padding:10px;border:1px solid #b9c7c3;border-radius:8px;margin:4px 0 8px}
+        .cash{margin:0 0 10px}.cash label{display:block;font-weight:600;color:#9b1c1c;margin-bottom:4px}
+        .cash input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:9px 10px;border:2px solid #9b1c1c;border-radius:8px}
         .err{color:#9b1c1c;font-size:15px;margin-top:4px}
         .info{background:#e6efec;border-radius:9px;padding:10px 12px;margin-bottom:12px}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
@@ -47,9 +49,10 @@
           <div t-if="run.x_note" class="note" t-out="run.x_note"/>
           <t t-set="lines" t-value="run.x_line_ids"/>
           <t t-set="locked" t-value="bool(run.x_deliveries_done)"/>
+          <t t-set="cashdone" t-value="{e.x_sale_id.id: e for e in request.env['x_staff_entry'].sudo().search([('x_run_id', '=', run.id), ('x_type', '=', 'cash')])}"/>
           <div t-if="lines and locked" class="info">The manager has confirmed the deliveries of this run.</div>
           <div t-elif="lines and run.x_reported == 'all'" class="info">Every stop is reported. The manager will confirm the deliveries.</div>
-          <div t-elif="lines" class="info">At each stop, tap Delivered or Not delivered. The manager confirms them afterwards.</div>
+          <div t-elif="lines" class="info">At each stop, tap Delivered or Not delivered. Where money is collected, check the amount first and change it if the customer paid a different amount. The manager confirms afterwards.</div>
           <a t-if="run.x_route_url" class="go" t-att-href="run.x_route_url" target="_blank" rel="noopener">Open the whole route in Google Maps</a>
           <t t-foreach="json.loads(run.x_stops_json or '[]')" t-as="st">
             <div class="stop" t-attf-id="s#{st['n']}">
@@ -72,6 +75,15 @@
                 <t t-set="r" t-value="sl[0].x_report"/>
                 <div t-if="r == 'delivered'" class="st ok">Reported: delivered</div>
                 <div t-if="r == 'failed'" class="st no">Reported: not delivered<t t-if="sl[0].x_report_note">, <t t-out="sl[0].x_report_note"/></t></div>
+                <t t-foreach="st.get('cash') or []" t-as="c">
+                  <t t-set="en" t-value="cashdone.get(c['sale'])"/>
+                  <div t-if="en and en.x_state == 'expected' and not locked" class="cash">
+                    <label>Cash received<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t> ($)</label>
+                    <input type="number" inputmode="decimal" min="0" step="0.01" t-att-data-sale="c['sale']" t-att-value="'%.2f' % (en.x_input or c['amt'])"/>
+                  </div>
+                  <div t-elif="en and en.x_state in ('review', 'confirmed')" class="st ok">Cash reported<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t>: $<t t-out="'%.2f' % en.x_input"/></div>
+                  <div t-elif="en and en.x_state == 'rejected'" class="st no">Cash not collected<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t></div>
+                </t>
                 <t t-if="not locked">
                   <button type="button" t-attf-class="b ok #{'on' if r == 'delivered' else ''}" data-s="delivered">Delivered</button>
                   <button type="button" t-attf-class="b no #{'on' if r == 'failed' else ''}" data-s="failed">Not delivered</button>
@@ -94,6 +106,9 @@
             var fd = new FormData();
             fd.append('csrf_token', C); fd.append('x_name', 'report'); fd.append('x_token', T);
             fd.append('x_stop', box.getAttribute('data-stop')); fd.append('x_status', status); fd.append('x_note', note || '');
+            var cash = [];
+            if (status === 'delivered') { Array.prototype.forEach.call(box.querySelectorAll('.cash input'), function (i) { cash.push(i.getAttribute('data-sale') + '=' + (parseFloat(i.value) || 0)); }); }
+            fd.append('x_cash', cash.join(','));
             btn.disabled = true; box.querySelector('.err').hidden = true;
             fetch('/website/form/x_delivery_report', { method: 'POST', body: fd })
               .then(function (r) { return r.json(); })
