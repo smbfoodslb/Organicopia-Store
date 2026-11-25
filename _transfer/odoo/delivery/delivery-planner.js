@@ -7,6 +7,7 @@
   var PICKUP_CARRIER = 5, MAX_STOPS = 9, FLYPOST = 348, FLY = -1;
   var CTX = { allowed_company_ids: [3, 1] };
   var FINISH = 1400, SEND = 1401, UTIL = 1439;
+  var TOPS = {};
   var S = { end: { mode: 'shop', last: null, lat: null, lng: null, pick: false, marker: null }, stops: [], route: null, run: null, key: '', actions: {}, pinFor: null, map: null, line: null, busy: false, msg: '', err: '' };
   var el = document.getElementById('planner');
 
@@ -81,7 +82,11 @@
         var firstOf = {}, extra = {};
         picks = picks.filter(function (p) { var k = p.sale_id[0]; if (firstOf[k] == null) { firstOf[k] = p.id; extra[p.id] = []; return true; } extra[firstOf[k]].push(p); return false; });
         var pids = picks.map(function (p) { return p.partner_id[0]; });
-        return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link', 'parent_id', 'x_delivers_with'] }).then(function (ps) {
+        return rpc('res.partner', 'read', [pids], { fields: ['name', 'commercial_company_name', 'street', 'street2', 'city', 'state_id', 'phone', 'partner_latitude', 'partner_longitude', 'x_map_link', 'parent_id', 'x_delivers_with', 'x_delivery_short'] }).then(function (ps0) {
+          /* the customers above the delivery addresses, for their delivery-name settings (owner, 25 Nov 2026) */
+          var tops = []; ps0.forEach(function (p) { if (p.parent_id && tops.indexOf(p.parent_id[0]) < 0) { tops.push(p.parent_id[0]); } });
+          return (tops.length ? rpc('res.partner', 'read', [tops], { fields: ['name', 'x_delivery_short', 'x_delivery_own_name'] }) : Promise.resolve([])).then(function (ts) { TOPS = {}; ts.forEach(function (t) { TOPS[t.id] = t; }); return ps0; });
+        }).then(function (ps) {
           var pm = {}; ps.forEach(function (p) { pm[p.id] = p; });
           S.stops = picks.map(function (p) {
             var o = om[p.sale_id[0]], c = pm[p.partner_id[0]], more = extra[p.id] || [];
@@ -94,7 +99,12 @@
               collect: o.x_collect || ((o.pricelist_id && o.pricelist_id[0] === 27) ? 'collect' : 'account'), due: o.invoice_status === 'invoiced' ? o.x_amount_open : o.amount_total, custom: o.x_collect_amount || 0, total: o.amount_total, partner: c.id, parent: c.parent_id ? c.parent_id[0] : 0, mate: c.x_delivers_with ? c.x_delivers_with[0] : 0, g: p.id,
               /* a delivery address is shown with its customer: "Balance Food Center, Harouf" - three customers can each
                  have an address called "Harouf" (owner, 24 Nov 2026) */
-              name: (function () { var own = c.name || '', top = c.parent_id ? c.parent_id[1] : ''; if (!own) { return top || c.commercial_company_name || ''; } return top && own.toLowerCase().indexOf(top.toLowerCase()) < 0 ? top + ', ' + own : own; })(), phone: c.phone || '',
+              /* 25 Nov 2026: the customer's "Short name for deliveries" replaces its full name here ("Balance Center, Harouf"),
+                 and a customer ticked "Delivery addresses carry their own name" shows the address name alone ("Grab N' Go Bliss"). */
+              name: (function () { var own = c.name || '', t = c.parent_id ? TOPS[c.parent_id[0]] : null;
+                if (!t) { return c.x_delivery_short || own || c.commercial_company_name || ''; }
+                var top = t.x_delivery_short || t.name || ''; if (!own) { return top; } if (t.x_delivery_own_name) { return own; }
+                return top && own.toLowerCase().indexOf(top.toLowerCase()) < 0 ? top + ', ' + own : own; })(), phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
               ready: allReady, invoiced: o.invoice_status === 'invoiced',

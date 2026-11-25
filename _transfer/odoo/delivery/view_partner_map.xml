@@ -2,6 +2,8 @@
   <xpath expr="//field[@name='function']" position="before">
     <field name="x_map_link" placeholder="Paste a Google Maps link or coordinates (33.8751, 35.5590)"/>
     <field name="x_delivers_with" placeholder="Another name at the same delivery location" options="{'no_create': True}"/>
+    <field name="x_delivery_short" placeholder="Shorter name for the driver, e.g. Balance Center" invisible="parent_id"/>
+    <field name="x_delivery_own_name" invisible="parent_id"/>
   </xpath>
   <xpath expr="//field[@name='child_ids']/form//field[@name='company_id']" position="before">
     <field name="x_map_link" string="Map location" placeholder="Paste a Google Maps link or coordinates (33.8751, 35.5590)" invisible="type == 'contact'"/>
