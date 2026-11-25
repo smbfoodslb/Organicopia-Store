@@ -37,6 +37,12 @@
         .ho{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:12px;margin-top:10px}
         .ho .hq{font-weight:700;color:#123d36;margin-bottom:8px}.ho .hs{font-weight:600;margin-bottom:8px;color:#1d6b3f}.ho .hn{font-size:15px;color:#4d615c;margin-top:4px}
         .ho .b{display:block;width:100%;margin:0 0 8px}.ho .b.on{background:#123d36;color:#fff}
+        .ask{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(18,61,54,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+        .ask[hidden]{display:none}
+        .askb{background:#fff;border-radius:12px;padding:18px 16px;max-width:420px;width:100%;text-align:center}
+        .askq{font-size:19px;font-weight:700;color:#123d36;margin-bottom:6px}.askq.no{color:#9b1c1c}
+        .askd{color:#34443f;margin-bottom:14px}
+        .askb .b{display:block;width:100%;margin:0 0 8px;padding:13px}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
@@ -125,6 +131,14 @@
           </div>
         </t>
       </div>
+      <div class="ask" id="ask" hidden="hidden">
+        <div class="askb">
+          <div class="askq" id="askq"/>
+          <div class="askd" id="askd"/>
+          <button type="button" class="b on" id="asky"/>
+          <button type="button" class="b" id="askn">Go back</button>
+        </div>
+      </div>
       <script>
         (function () {
           var wrap = document.querySelector('.wrap'), T = wrap.getAttribute('data-t'), C = wrap.getAttribute('data-c');
@@ -151,12 +165,27 @@
               .then(function (j) { if (!j || !j.id) { throw new Error('no id'); } location.hash = 'ho'; location.reload(); })
               .catch(function () { hb.disabled = false; box.querySelector('.err').hidden = false; });
           });
+          /* a tap by mistake must not report a stop: every report is confirmed in a pop-up first (owner, 25 Nov 2026) */
+          var ask = document.getElementById('ask'), pending = null;
+          function confirmFirst(box, status, note, btn) {
+            var stop = box.closest('.stop'), title = stop.querySelector('.t').textContent, ok = status === 'delivered', lines = [title], cash = [];
+            if (ok) { Array.prototype.forEach.call(box.querySelectorAll('.cash input'), function (i) { cash.push('$' + (parseFloat(i.value) || 0).toFixed(2)); }); }
+            if (cash.length) { lines.push('Cash received: ' + cash.join(' + ')); }
+            if (!ok) { lines.push(note ? 'Reason: ' + note : 'No reason written'); }
+            var q = document.getElementById('askq'), y = document.getElementById('asky');
+            q.textContent = 'Stop ' + box.getAttribute('data-stop') + ': ' + (ok ? 'delivered?' : 'NOT delivered?'); q.className = 'askq ' + (ok ? '' : 'no');
+            document.getElementById('askd').textContent = lines.join(' · ');
+            y.textContent = ok ? 'Yes, delivered' : 'Yes, not delivered'; y.className = 'b on ' + (ok ? 'ok' : 'no');
+            pending = function () { send(box, status, note, btn); }; ask.hidden = false;
+          }
+          document.getElementById('askn').addEventListener('click', function () { pending = null; ask.hidden = true; });
+          document.getElementById('asky').addEventListener('click', function () { var go = pending; pending = null; ask.hidden = true; if (go) { go(); } });
           document.addEventListener('click', function (e) {
             var btn = e.target.closest ? e.target.closest('.rep .b') : null; if (!btn) { return; }
             var box = btn.closest('.rep'), s = btn.getAttribute('data-s');
-            if (s === 'delivered') { send(box, 'delivered', '', btn); }
+            if (s === 'delivered') { confirmFirst(box, 'delivered', '', btn); }
             else if (s === 'failed') { box.querySelector('.why').hidden = false; box.querySelector('.why input').focus(); }
-            else if (s === 'send') { send(box, 'failed', box.querySelector('.why input').value, btn); }
+            else if (s === 'send') { confirmFirst(box, 'failed', box.querySelector('.why input').value.trim(), btn); }
           });
         })();
       </script>
