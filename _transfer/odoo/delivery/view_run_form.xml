@@ -31,7 +31,7 @@
       </group>
     </group>
     <div class="text-muted" invisible="x_state in ('done', 'cancel')">Correct "Km driven" if the day went differently from the plan (a skipped stop, an extra errand, a trip home that should count). If you change it, write the reason. Then choose your name, enter your clock-in PIN and press Run completed. The km are only recorded then.</div>
-    <div class="alert alert-warning" role="alert" invisible="x_handover != 'wait5'">The driver says he handed the cash of this run to Melissa. Melissa: count it against "Cash amount ($)", enter your clock-in PIN in "PIN" above and press "Melissa: I received the cash". The payments then go on your statement.</div>
+    <div class="alert alert-warning" role="alert" invisible="x_handover != 'wait5'">The driver says he handed the cash of this run to Melissa. Melissa: count it against "Cash amount ($)", enter your clock-in PIN in "Your PIN" above and press "Melissa: I received the cash". The payments then go on your statement.</div>
     <!-- owner only: after the run is completed, tick what was delivered and press Confirm deliveries (owner, 23 Nov 2026) -->
     <group string="Deliveries of this run" groups="account.group_account_manager" invisible="x_state != 'done' and not x_reported">
       <field name="x_deliveries_done" invisible="1"/>
