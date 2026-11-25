@@ -112,7 +112,7 @@
           </div>
           <t t-set="pend" t-value="[e for e in cashdone.values() if e.x_state == 'review']"/>
           <div t-if="run.x_handover == 'ok5'" class="ho" id="ho"><div class="hs">Melissa accepted the cash of this run.</div></div>
-          <div t-elif="run.x_who in ('5', '7') and pend and todo &lt;= 0.005 and run.x_reported == 'all'" class="ho" id="ho">
+          <div t-elif="run.x_who in ('5', '7') and pend and todo &lt;= 0.005 and run.x_reported in ('all', 'ok')" class="ho" id="ho">
             <div class="hq">Where is this cash now?</div>
             <div t-if="run.x_handover == 'wait5'" class="hs">You reported: handed to Melissa. She accepts it on the shop tablet.</div>
             <div t-if="run.x_handover == 'owner'" class="hs">You reported: handed to Mustafa.</div>

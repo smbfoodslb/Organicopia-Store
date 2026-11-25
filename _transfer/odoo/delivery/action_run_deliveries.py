@@ -56,7 +56,7 @@ for run in records:
         note = '%d validated on %s by %s.' % (done, datetime.date.today().strftime('%d %b %Y'), env.user.name)
         if left:
             note += ' Not validated: ' + '; '.join(left) + '.'
-        run.sudo().write({'x_deliveries_done': True, 'x_deliveries_note': note})
+        run.sudo().write({'x_deliveries_done': True, 'x_deliveries_note': note, 'x_reported': 'ok'})
         msg, kind = note, ('warning' if left else 'success')
     action = {'type': 'ir.actions.client', 'tag': 'display_notification', 'params': {
         'title': 'Deliveries', 'message': msg, 'type': kind, 'sticky': kind == 'warning',

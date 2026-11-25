@@ -16,7 +16,7 @@
         <field name="x_end_label" string="Ends" readonly="1"/>
         <field name="x_route_url" string="Route" widget="url" readonly="1" text="Open in Google Maps"/>
         <field name="x_page_url" string="Deliveries" widget="url" readonly="1" text="Open the stop list to report deliveries" invisible="not x_page_url"/>
-        <field name="x_reported" readonly="1" invisible="not x_reported" widget="badge" decoration-warning="x_reported == 'part'" decoration-success="x_reported == 'all'"/>
+        <field name="x_reported" readonly="1" invisible="not x_reported" widget="badge" decoration-warning="x_reported == 'part'" decoration-info="x_reported == 'all'" decoration-success="x_reported == 'ok'"/>
       </group>
       <group string="When the run is finished">
         <field name="x_km" string="Planned km" readonly="1"/>

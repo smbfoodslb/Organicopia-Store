@@ -7,6 +7,6 @@
   <field name="x_km" string="Planned km"/>
   <field name="x_km_final"/>
   <field name="x_duration"/>
-  <field name="x_reported" string="Deliveries" widget="badge" decoration-warning="x_reported == 'part'" decoration-info="x_reported == 'all'" optional="show"/>
+  <field name="x_reported" string="Deliveries" widget="badge" decoration-warning="x_reported == 'part'" decoration-info="x_reported == 'all'" decoration-success="x_reported == 'ok'" optional="show"/>
   <field name="x_state" widget="badge" decoration-success="x_state == 'done'" decoration-info="x_state == 'sent'" decoration-muted="x_state == 'cancel'"/>
 </list>

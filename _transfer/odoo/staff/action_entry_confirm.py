@@ -7,6 +7,13 @@ JOURNALS = {(3, 'cash'): 36, (3, 'whish'): 49, (1, 'cash'): 35, (1, 'whish'): 51
 for r in records:
     if r.x_state != 'review':
         continue
+    # An invoice of the other company (smbfoods while only SMBF is ticked, or the reverse) cannot be read with the
+    # companies ticked on screen: work as if both were ticked, which the owner may do anyway (owner, 25 Nov 2026).
+    comp = r.sudo().x_invoice_id.company_id or r.sudo().x_sale_id.company_id
+    cids = list(env.context.get('allowed_company_ids', []))
+    if comp and comp.id not in cids:
+        r = r.with_context(allowed_company_ids=cids + [comp.id])
+        env = r.env
     if r.x_type == 'cash' and not r.x_invoice_id and r.x_sale_id:
         # collected at delivery before the order was invoiced: take the order's open invoice now (owner, 24 Nov 2026)
         found = r.x_sale_id.sudo().order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted' and m.move_type == 'out_invoice' and m.amount_residual > 0.005).sorted('id')[:1]

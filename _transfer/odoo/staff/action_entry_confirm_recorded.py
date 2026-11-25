@@ -8,6 +8,13 @@ def unapplied(p):
 for r in records:
     if r.x_state != 'review' or r.x_type != 'cash':
         continue
+    # An invoice of the other company (smbfoods while only SMBF is ticked, or the reverse) cannot be read with the
+    # companies ticked on screen: work as if both were ticked, which the owner may do anyway (owner, 25 Nov 2026).
+    comp = r.sudo().x_invoice_id.company_id or r.sudo().x_sale_id.company_id
+    cids = list(env.context.get('allowed_company_ids', []))
+    if comp and comp.id not in cids:
+        r = r.with_context(allowed_company_ids=cids + [comp.id])
+        env = r.env
     amt = round(-r.x_amount, 2)
     if amt <= 0:
         raise UserError('%s: the amount must be positive.' % r.x_name)
