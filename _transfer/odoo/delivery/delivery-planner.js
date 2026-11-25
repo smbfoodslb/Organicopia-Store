@@ -106,6 +106,7 @@
                 var top = t.x_delivery_short || t.name || ''; if (!own) { return top; } if (t.x_delivery_own_name) { return own; }
                 return top && own.toLowerCase().indexOf(top.toLowerCase()) < 0 ? top + ', ' + own : own; })(), phone: c.phone || '',
               addr: [c.street, c.street2, c.city, c.state_id && c.state_id[1]].filter(Boolean).join(', '),
+              town: [c.city, c.state_id && c.state_id[1].replace(/\s*\([A-Z]+\)$/, '')].filter(Boolean).join(', '), hasTown: !!c.city,
               link: c.x_map_link || '', company: p.company_id ? p.company_id[1] : '', site: o.website_id ? o.website_id[1] : '',
               ready: allReady, invoiced: o.invoice_status === 'invoiced',
               lat: has ? c.partner_latitude : null, lng: has ? c.partner_longitude : null, pin: has ? 'saved' : 'none',
@@ -160,13 +161,29 @@
     /* the pin is saved on this contact only; other names combined into the stop keep their own */
     rpc('ir.actions.server', 'run', [[UTIL]], { context: { active_model: 'x_delivery_run', planner_pin: { partner: s.partner, lat: lat, lng: lng } } }).catch(function (e) { S.err = 'The pin could not be saved: ' + e.message; render(); });
   }
+  /* Google's guess for a contact without a saved pin. The street alone can match the same street name in another
+     town ("Mar Elias Street" in Beit El Chaar was placed in Beirut, 30 km off), so the town is looked up first: the
+     address is then searched around it, and a result more than 8 km from the town is replaced by the town itself
+     (owner, 25 Nov 2026). Still only a guess: orange, to be confirmed. */
+  function km(a, b) {
+    var R = Math.PI / 180, x = (b.lng - a.lng) * R * Math.cos((a.lat + b.lat) / 2 * R), y = (b.lat - a.lat) * R;
+    return Math.sqrt(x * x + y * y) * 6371;
+  }
   function geocodeMissing() {
     var g = new google.maps.Geocoder(), todo = S.stops.filter(function (s) { return s.lat == null && s.addr; });
+    function first(req) { return g.geocode(req).then(function (r) { return (r.results && r.results[0]) || null; }).catch(function () { return null; }); }
+    function at(res) { var l = res.geometry.location; return { lat: l.lat(), lng: l.lng() }; }
     return todo.reduce(function (p, s) {
       return p.then(function () {
-        return g.geocode({ address: s.addr + ', Lebanon', region: 'LB' }).then(function (r) {
-          if (r.results && r.results[0]) { var l = r.results[0].geometry.location; s.lat = l.lat(); s.lng = l.lng(); s.pin = 'approx'; }
-        }).catch(function () { });
+        return (s.hasTown ? first({ address: s.town + ', Lebanon', region: 'LB' }) : Promise.resolve(null)).then(function (town) {
+          var req = { address: s.addr + ', Lebanon', region: 'LB' };
+          if (town && town.geometry.viewport) { req.bounds = town.geometry.viewport; }
+          return first(req).then(function (full) {
+            var t = town ? at(town) : null, f = full ? at(full) : null;
+            var use = f && t && km(f, t) > 8 ? t : (f || t);
+            if (use) { s.lat = use.lat; s.lng = use.lng; s.pin = 'approx'; }
+          });
+        });
       });
     }, Promise.resolve());
   }
