@@ -161,13 +161,14 @@ for run in records.sudo():
         lines = Line.search([('x_run_id', '=', run.id)])
         vals['x_reported'] = ('all' if all(l.x_report for l in lines) else 'part') if any(l.x_report for l in lines) else False
     # Cash the driver should collect -> "To collect" entries in the tablet's Cash received tile (owner, 24 Nov 2026).
-    # One per order to collect, for Melissa or Serge (not when the owner drives). Rebuilt on every save: entries still
+    # One per order to collect. For Melissa or Serge it is cash they hold; when the owner drives it has no employee and
+    # is only his reminder to register the payment (25 Nov 2026). Rebuilt on every save: entries still
     # "To collect" are replaced; entries the driver already confirmed or marked not collected are left alone.
     E = env['x_staff_entry'].sudo()
     mine = E.search([('x_run_id', '=', run.id)])
     kept = mine.filtered(lambda e: e.x_state != 'expected').mapped('x_sale_id').ids
     mine.filtered(lambda e: e.x_state == 'expected').unlink()
-    if who in ('5', '7') and run.x_state != 'cancel':
+    if who in ('5', '7', 'owner') and run.x_state != 'cancel':
         for stop in stops:
             if stop.get('orders') is not None:
                 continue
@@ -181,7 +182,7 @@ for run in records.sudo():
                 kept.append(sale.id)
                 E.search([('x_sale_id', '=', sale.id), ('x_state', '=', 'expected')]).unlink()
                 inv = sale.order_line.invoice_lines.move_id.filtered(lambda m: m.state == 'posted' and m.move_type == 'out_invoice' and m.amount_residual > 0.005).sorted('id')[:1]
-                E.create({'x_type': 'cash', 'x_state': 'expected', 'x_who': who, 'x_run_id': run.id, 'x_sale_id': sale.id,
+                E.create({'x_type': 'cash', 'x_state': 'expected', 'x_who': who if who in ('5', '7') else False, 'x_run_id': run.id, 'x_sale_id': sale.id,
                           'x_partner_id': sale.partner_id.commercial_partner_id.id, 'x_invoice_id': inv.id if inv else False, 'x_input': round(due, 2)})
     if run.x_state not in ('done', 'cancel'):
         vals['x_km_final'] = round(run.x_km or 0.0, 1)

@@ -11,7 +11,10 @@ for r in records.sudo():
     # the employee list is empty when only SMBF is ticked. The employee is set from it here.
     if r.x_who:
         r.write({'x_employee_id': int(r.x_who)})
-    if not r.x_employee_id:
+    # A run the owner drives himself: its "To collect" entries have no employee, the owner holds his own money. They are
+    # on nobody's statement and only serve to register the payment when he confirms them (owner, 25 Nov 2026).
+    own_run = r.x_type == 'cash' and r.x_run_id and r.x_run_id.x_who == 'owner'
+    if not r.x_employee_id and not own_run:
         raise UserError('Choose the name.')
     if not r.x_state:
         vals['x_state'] = 'review'
