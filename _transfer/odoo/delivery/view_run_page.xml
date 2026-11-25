@@ -105,7 +105,7 @@
             <div class="tl">Total cash collected on this run</div>
             <div class="tv">$<t t-out="'%.2f' % got"/></div>
             <div t-if="todo &gt; 0.005" class="ts">Still to collect: $<t t-out="'%.2f' % todo"/></div>
-            <div class="ts"><t t-out="len([e for e in cashdone.values() if e.x_state in ('review', 'confirmed')])"/> payment(s) reported. Hand this amount to the manager.</div>
+            <div class="ts"><t t-out="len([e for e in cashdone.values() if e.x_state in ('review', 'confirmed')])"/> payment(s) reported.<t t-if="run.x_who != 'owner'"> Hand this amount to the manager.</t></div>
           </div>
         </t>
       </div>
