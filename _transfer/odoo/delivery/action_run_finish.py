@@ -3,7 +3,7 @@
 # The vehicle-use entry is NOT made here: it is made when the run is marked completed (action_run_complete.py).
 # Also keeps the "To collect" entries of the Cash received tile in step with the run. Touches no accounting.
 NAMES = {'5': 'Melissa', '7': 'Serge', 'owner': 'Mustafa'}
-PHONES = {'7': '+96181227233'}
+PHONES = {'7': '+96181227233', '5': '+96171738018'}  # Serge, Melissa (owner, 25 Nov 2026)
 CARS = {'serge': "Serge's Car", 'melissa': "Melissa's Car", 'kangoo': 'SMBF Kangoo'}
 # The owner, and the Shop tablet (group 111) when he is away.
 if not (env.user.has_group('account.group_account_manager') or 111 in env.user.all_group_ids.ids):

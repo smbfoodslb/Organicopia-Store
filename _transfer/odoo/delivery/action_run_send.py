@@ -5,14 +5,15 @@
 # is on its own line with the amount to collect. Template 23, which carried the whole collection list on one line
 # (a WhatsApp variable cannot hold line breaks), is no longer used (owner, 24 Nov 2026).
 TEMPLATES = (22,)
-# The same message also goes to these numbers (owner, 25 Nov 2026): Melissa. Skipped when it is the driver's own number.
-ALSO = ('+96171738018',)
+# The message goes to BOTH drivers whoever drives (owner, 25 Nov 2026): Serge and Melissa. The driver of the run gets
+# it through the template's own phone field; the other number(s) below get a copy. A number is never sent twice.
+ALSO = ('+96181227233', '+96171738018')
 FINISH = 1400
 # The owner, and the Shop tablet (group 111) when he is away.
 if not (env.user.has_group('account.group_account_manager') or 111 in env.user.all_group_ids.ids):
     raise UserError('The delivery planner is for the shop team.')
 for run in records.sudo():
-    if not run.x_route_code or not run.x_driver_phone:
+    if not run.x_route_code:
         raise UserError('Save the run first.')
     # refresh the texts first, so the collection list reflects payments recorded since the run was saved
     env['ir.actions.server'].browse(FINISH).with_context(active_model='x_delivery_run', active_id=run.id, active_ids=run.ids).run()
@@ -20,12 +21,13 @@ for run in records.sudo():
     if not approved:
         raise UserError('Meta has not approved the "Delivery run" WhatsApp message yet. Nothing was sent. You can copy the link and the stop list and send them yourself for now.')
     TEMPLATE = [t for t in TEMPLATES if t in approved.ids][0]
-    composer = env['whatsapp.composer'].sudo().with_context(active_model='x_delivery_run', active_ids=run.ids, active_id=run.id).create({
-        'res_model': 'x_delivery_run',
-        'res_ids': str(run.ids),
-        'wa_template_id': TEMPLATE,
-    })
-    composer.action_send_whatsapp_template()
+    if run.x_driver_phone:
+        composer = env['whatsapp.composer'].sudo().with_context(active_model='x_delivery_run', active_ids=run.ids, active_id=run.id).create({
+            'res_model': 'x_delivery_run',
+            'res_ids': str(run.ids),
+            'wa_template_id': TEMPLATE,
+        })
+        composer.action_send_whatsapp_template()
     own = ''.join(ch for ch in (run.x_driver_phone or '') if ch.isdigit())[-8:]
     for number in ALSO:
         if ''.join(ch for ch in number if ch.isdigit())[-8:] == own:
