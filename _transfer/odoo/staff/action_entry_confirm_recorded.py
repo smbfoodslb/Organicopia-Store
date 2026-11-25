@@ -44,6 +44,10 @@ for r in records:
     ctx = dict(env.context, allowed_company_ids=[inv.company_id.id] + [c for c in env.context.get('allowed_company_ids', []) if c != inv.company_id.id])
     others = env['account.move'].sudo().search([('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial')),
         ('commercial_partner_id', '=', partner.id), ('company_id', '=', inv.company_id.id), ('id', '!=', inv.id)], order='invoice_date, id')
+    # the rest after the entry's invoice: an unpaid invoice with exactly that amount open goes first, else oldest first
+    rest = round(unapplied(pay) - inv.amount_residual, 2)
+    exact = others.filtered(lambda o: abs(o.amount_residual - rest) < 0.005)[:1] if rest > 0.005 else others[:0]
+    others = exact + (others - exact)
     used = []
     for target in [inv.sudo()] + [o for o in others]:
         line = credit.filtered(lambda l: not l.reconciled)[:1]

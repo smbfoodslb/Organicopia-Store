@@ -32,11 +32,15 @@ for r in records:
         pay = wiz._create_payments()
         r.write({'x_payment_id': pay[:1].id})
         if extra > 0.005:
-            # the rest goes to the customer's oldest unpaid invoices in the same company, oldest first (owner, 24 Nov 2026);
+            # the rest goes to the customer's other unpaid invoices in the same company (owner, 24 Nov 2026);
             # anything still left stays on the customer account
             credit = pay.sudo().move_id.line_ids.filtered(lambda l: l.account_id.account_type == 'asset_receivable')
             others = env['account.move'].sudo().search([('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial')),
                 ('commercial_partner_id', '=', inv.commercial_partner_id.id), ('company_id', '=', inv.company_id.id), ('id', '!=', inv.id)], order='invoice_date, id')
+            # When the extra is exactly what one unpaid invoice has open, that is the invoice the customer was paying:
+            # it goes first. Otherwise oldest first (owner, 25 Nov 2026).
+            exact = others.filtered(lambda o: abs(o.amount_residual - extra) < 0.005)[:1]
+            others = exact + (others - exact)
             used = []
             for other in others:
                 line = credit.filtered(lambda l: not l.reconciled)[:1]
