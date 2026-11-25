@@ -5,6 +5,8 @@
 # is on its own line with the amount to collect. Template 23, which carried the whole collection list on one line
 # (a WhatsApp variable cannot hold line breaks), is no longer used (owner, 24 Nov 2026).
 TEMPLATES = (22,)
+# The same message also goes to these numbers (owner, 25 Nov 2026): Melissa. Skipped when it is the driver's own number.
+ALSO = ('+96171738018',)
 FINISH = 1400
 # The owner, and the Shop tablet (group 111) when he is away.
 if not (env.user.has_group('account.group_account_manager') or 111 in env.user.all_group_ids.ids):
@@ -24,4 +26,15 @@ for run in records.sudo():
         'wa_template_id': TEMPLATE,
     })
     composer.action_send_whatsapp_template()
+    own = ''.join(ch for ch in (run.x_driver_phone or '') if ch.isdigit())[-8:]
+    for number in ALSO:
+        if ''.join(ch for ch in number if ch.isdigit())[-8:] == own:
+            continue
+        copy = env['whatsapp.composer'].sudo().with_context(active_model='x_delivery_run', active_ids=run.ids, active_id=run.id).create({
+            'res_model': 'x_delivery_run',
+            'res_ids': str(run.ids),
+            'wa_template_id': TEMPLATE,
+            'phone': number,
+        })
+        copy.action_send_whatsapp_template()
     run.write({'x_state': 'sent'})
