@@ -10,8 +10,8 @@ if not env.user.has_group('account.group_account_manager'):
     raise UserError('Only the owner confirms deliveries.')
 action = False
 for run in records:
-    if run.x_state != 'done':
-        msg, kind = 'Mark the run completed first.', 'warning'
+    if run.x_state != 'done' and run.x_reported != 'all':
+        msg, kind = 'Mark the run completed first, or wait until the driver has reported every stop.', 'warning'
     elif run.x_deliveries_done:
         msg, kind = 'The deliveries of this run were already confirmed.', 'info'
     elif not run.x_line_ids:

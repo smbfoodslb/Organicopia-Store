@@ -22,11 +22,19 @@
         .p a{color:#123d36;font-weight:600}
         .nav{display:inline-block;margin-top:8px;font-size:15px;color:#123d36;font-weight:600}
         .note{background:#fff8e1;border:1px solid #f0dc9c;border-radius:9px;padding:10px 12px;margin-bottom:12px}
+        .rep{margin-top:10px;padding-top:10px;border-top:1px solid #e6efec}
+        .st{font-weight:700;margin-bottom:8px}.st.ok{color:#1d6b3f}.st.no{color:#9b1c1c}
+        .b{font:inherit;font-weight:600;padding:10px 14px;border-radius:8px;border:2px solid #123d36;background:#fff;color:#123d36;margin:0 8px 6px 0}
+        .b.on.ok{background:#1d6b3f;border-color:#1d6b3f;color:#fff}.b.on.no{background:#9b1c1c;border-color:#9b1c1c;color:#fff}
+        .b.no{border-color:#9b1c1c;color:#9b1c1c}
+        .why input{font:inherit;width:100%;box-sizing:border-box;padding:10px;border:1px solid #b9c7c3;border-radius:8px;margin:4px 0 8px}
+        .err{color:#9b1c1c;font-size:15px;margin-top:4px}
+        .info{background:#e6efec;border-radius:9px;padding:10px 12px;margin-bottom:12px}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
     <body>
-      <div class="wrap">
+      <div class="wrap" t-att-data-t="request.params.get('t') or ''" t-att-data-c="request.csrf_token()">
         <t t-set="tok" t-value="request.params.get('t') or ''"/>
         <t t-set="run" t-value="len(tok) == 32 and request.env['x_delivery_run'].sudo().search([('x_token', '=', tok), ('x_state', '!=', 'cancel')], limit=1)"/>
         <t t-set="fresh" t-value="run and run.x_date and (datetime.date.today() - run.x_date).days &lt;= 7"/>
@@ -37,9 +45,14 @@
           <h1 t-out="run.x_name"/>
           <div class="sub"><t t-out="run.x_stops_label"/> stops · <t t-out="run.x_km_label"/> km · about <t t-out="run.x_duration"/> of driving</div>
           <div t-if="run.x_note" class="note" t-out="run.x_note"/>
+          <t t-set="lines" t-value="run.x_line_ids"/>
+          <t t-set="locked" t-value="bool(run.x_deliveries_done)"/>
+          <div t-if="lines and locked" class="info">The manager has confirmed the deliveries of this run.</div>
+          <div t-elif="lines and run.x_reported == 'all'" class="info">Every stop is reported. The manager will confirm the deliveries.</div>
+          <div t-elif="lines" class="info">At each stop, tap Delivered or Not delivered. The manager confirms them afterwards.</div>
           <a t-if="run.x_route_url" class="go" t-att-href="run.x_route_url" target="_blank" rel="noopener">Open the whole route in Google Maps</a>
           <t t-foreach="json.loads(run.x_stops_json or '[]')" t-as="st">
-            <div class="stop">
+            <div class="stop" t-attf-id="s#{st['n']}">
               <div class="top">
                 <div class="n" t-out="st['n']"/>
                 <div>
@@ -54,11 +67,48 @@
                   <a t-if="p['phone']" t-attf-href="tel:#{p['phone'].replace(' ', '')}" t-out="p['phone']"/>
                 </div>
               </t>
+              <t t-set="sl" t-value="lines.filtered(lambda l: l.x_stop == st['n'])"/>
+              <div t-if="sl" class="rep" t-att-data-stop="st['n']">
+                <t t-set="r" t-value="sl[0].x_report"/>
+                <div t-if="r == 'delivered'" class="st ok">Reported: delivered</div>
+                <div t-if="r == 'failed'" class="st no">Reported: not delivered<t t-if="sl[0].x_report_note">, <t t-out="sl[0].x_report_note"/></t></div>
+                <t t-if="not locked">
+                  <button type="button" t-attf-class="b ok #{'on' if r == 'delivered' else ''}" data-s="delivered">Delivered</button>
+                  <button type="button" t-attf-class="b no #{'on' if r == 'failed' else ''}" data-s="failed">Not delivered</button>
+                  <div class="why" hidden="hidden">
+                    <input type="text" maxlength="200" placeholder="Why? (closed, refused, no time...)"/>
+                    <button type="button" class="b no on" data-s="send">Send "Not delivered"</button>
+                  </div>
+                  <div class="err" hidden="hidden">Not saved. Check the connection and try again.</div>
+                </t>
+              </div>
               <a t-if="st['lat'] and st['lng']" class="nav" target="_blank" rel="noopener" t-attf-href="https://www.google.com/maps/dir/?api=1&amp;destination=#{st['lat']},#{st['lng']}">Navigate to this stop</a>
             </div>
           </t>
         </t>
       </div>
+      <script>
+        (function () {
+          var wrap = document.querySelector('.wrap'), T = wrap.getAttribute('data-t'), C = wrap.getAttribute('data-c');
+          function send(box, status, note, btn) {
+            var fd = new FormData();
+            fd.append('csrf_token', C); fd.append('x_name', 'report'); fd.append('x_token', T);
+            fd.append('x_stop', box.getAttribute('data-stop')); fd.append('x_status', status); fd.append('x_note', note || '');
+            btn.disabled = true; box.querySelector('.err').hidden = true;
+            fetch('/website/form/x_delivery_report', { method: 'POST', body: fd })
+              .then(function (r) { return r.json(); })
+              .then(function (j) { if (!j || !j.id) { throw new Error('no id'); } location.hash = 's' + box.getAttribute('data-stop'); location.reload(); })
+              .catch(function () { btn.disabled = false; box.querySelector('.err').hidden = false; });
+          }
+          document.addEventListener('click', function (e) {
+            var btn = e.target.closest ? e.target.closest('.rep .b') : null; if (!btn) { return; }
+            var box = btn.closest('.rep'), s = btn.getAttribute('data-s');
+            if (s === 'delivered') { send(box, 'delivered', '', btn); }
+            else if (s === 'failed') { box.querySelector('.why').hidden = false; box.querySelector('.why input').focus(); }
+            else if (s === 'send') { send(box, 'failed', box.querySelector('.why input').value, btn); }
+          });
+        })();
+      </script>
     </body>
   </html>
 </t>

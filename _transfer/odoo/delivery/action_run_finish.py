@@ -46,6 +46,7 @@ for run in records.sudo():
         if code and code.code != token:
             code.write({'code': token})
         vals['x_route_code'] = token
+        vals['x_page_url'] = 'https://www.smbfoods-lb.com/delivery-run?t=%s' % token
     # What the driver has to collect at each stop, from the invoices as they stand now (owner, 23 Nov 2026):
     # an order on account -> "on account, do not collect"; nothing left open on its invoices -> "PAID";
     # otherwise the amount still open (the order total while nothing is invoiced). One line, because a
@@ -135,19 +136,28 @@ for run in records.sudo():
     # out: handing a parcel to FlyPost is not delivery to the customer. Rebuilt only while nothing was confirmed.
     if not run.x_deliveries_done:
         wanted = []
+        stop_no = 0
         for stop in stops:
+            stop_no += 1  # same numbering as the stop list above
             if stop.get('orders') is not None:
                 continue
             for item in [stop] + (stop.get('group') or []):
                 pk = env['stock.picking'].sudo().browse(int(item.get('picking') or 0)).exists()
                 if pk:
-                    wanted.append((pk.id, '%s · %s · %s' % (item.get('name', ''), pk.sale_id.name or pk.origin or '', pk.name)))
+                    wanted.append((pk.id, '%s · %s · %s' % (item.get('name', ''), pk.sale_id.name or pk.origin or '', pk.name), stop_no))
         Line = env['x_delivery_run_line'].sudo()
         have = Line.search([('x_run_id', '=', run.id)])
-        if sorted(have.mapped('x_picking')) != sorted(w[0] for w in wanted):
-            have.unlink()
-            for w in wanted:
-                Line.create({'x_run_id': run.id, 'x_picking': w[0], 'x_name': w[1], 'x_delivered': True})
+        # Lines are kept when the delivery is still in the run, so what the driver already reported on the stop-list
+        # page survives a re-save; only deliveries that left the run are removed and new ones added (25 Nov 2026).
+        have.filtered(lambda l: l.x_picking not in [w[0] for w in wanted]).unlink()
+        for w in wanted:
+            line = have.exists().filtered(lambda l: l.x_picking == w[0])[:1]
+            if line:
+                line.write({'x_name': w[1], 'x_stop': w[2]})
+            else:
+                Line.create({'x_run_id': run.id, 'x_picking': w[0], 'x_name': w[1], 'x_stop': w[2], 'x_delivered': True})
+        lines = Line.search([('x_run_id', '=', run.id)])
+        vals['x_reported'] = ('all' if all(l.x_report for l in lines) else 'part') if any(l.x_report for l in lines) else False
     # Cash the driver should collect -> "To collect" entries in the tablet's Cash received tile (owner, 24 Nov 2026).
     # One per order to collect, for Melissa or Serge (not when the owner drives). Rebuilt on every save: entries still
     # "To collect" are replaced; entries the driver already confirmed or marked not collected are left alone.
