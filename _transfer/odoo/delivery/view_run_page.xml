@@ -32,6 +32,8 @@
         .cash input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:9px 10px;border:2px solid #9b1c1c;border-radius:8px}
         .err{color:#9b1c1c;font-size:15px;margin-top:4px}
         .info{background:#e6efec;border-radius:9px;padding:10px 12px;margin-bottom:12px}
+        .total{background:#123d36;color:#fff;border-radius:9px;padding:14px 14px;margin-top:16px;text-align:center}
+        .total .tl{font-weight:600}.total .tv{font-size:32px;font-weight:700;margin:4px 0}.total .ts{font-size:15px;opacity:.9}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
@@ -97,6 +99,14 @@
               <a t-if="st['lat'] and st['lng']" class="nav" target="_blank" rel="noopener" t-attf-href="https://www.google.com/maps/dir/?api=1&amp;destination=#{st['lat']},#{st['lng']}">Navigate to this stop</a>
             </div>
           </t>
+          <t t-set="got" t-value="sum([e.x_input for e in cashdone.values() if e.x_state in ('review', 'confirmed')])"/>
+          <t t-set="todo" t-value="sum([e.x_input for e in cashdone.values() if e.x_state == 'expected'])"/>
+          <div t-if="cashdone" class="total">
+            <div class="tl">Total cash collected on this run</div>
+            <div class="tv">$<t t-out="'%.2f' % got"/></div>
+            <div t-if="todo &gt; 0.005" class="ts">Still to collect: $<t t-out="'%.2f' % todo"/></div>
+            <div class="ts"><t t-out="len([e for e in cashdone.values() if e.x_state in ('review', 'confirmed')])"/> payment(s) reported. Hand this amount to the manager.</div>
+          </div>
         </t>
       </div>
       <script>
