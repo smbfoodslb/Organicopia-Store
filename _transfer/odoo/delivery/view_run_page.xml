@@ -34,6 +34,9 @@
         .info{background:#e6efec;border-radius:9px;padding:10px 12px;margin-bottom:12px}
         .total{background:#123d36;color:#fff;border-radius:9px;padding:14px 14px;margin-top:16px;text-align:center}
         .total .tl{font-weight:600}.total .tv{font-size:32px;font-weight:700;margin:4px 0}.total .ts{font-size:15px;opacity:.9}
+        .ho{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:12px;margin-top:10px}
+        .ho .hq{font-weight:700;color:#123d36;margin-bottom:8px}.ho .hs{font-weight:600;margin-bottom:8px;color:#1d6b3f}.ho .hn{font-size:15px;color:#4d615c;margin-top:4px}
+        .ho .b{display:block;width:100%;margin:0 0 8px}.ho .b.on{background:#123d36;color:#fff}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
@@ -107,6 +110,19 @@
             <div t-if="todo &gt; 0.005" class="ts">Still to collect: $<t t-out="'%.2f' % todo"/></div>
             <div class="ts"><t t-out="len([e for e in cashdone.values() if e.x_state in ('review', 'confirmed')])"/> payment(s) reported.<t t-if="run.x_who != 'owner'"> Hand this amount to the manager.</t></div>
           </div>
+          <t t-set="pend" t-value="[e for e in cashdone.values() if e.x_state == 'review']"/>
+          <div t-if="run.x_handover == 'ok5'" class="ho" id="ho"><div class="hs">Melissa accepted the cash of this run.</div></div>
+          <div t-elif="run.x_who in ('5', '7') and pend and todo &lt;= 0.005 and run.x_reported == 'all'" class="ho" id="ho">
+            <div class="hq">Where is this cash now?</div>
+            <div t-if="run.x_handover == 'wait5'" class="hs">You reported: handed to Melissa. She accepts it on the shop tablet.</div>
+            <div t-if="run.x_handover == 'owner'" class="hs">You reported: handed to Mustafa.</div>
+            <div t-if="run.x_handover == 'keep'" class="hs">You reported: you kept it.</div>
+            <button t-if="run.x_who != '5'" type="button" t-attf-class="b #{'on' if run.x_handover == 'wait5' else ''}" data-h="5">Handed to Melissa</button>
+            <button type="button" t-attf-class="b #{'on' if run.x_handover == 'owner' else ''}" data-h="owner">Handed to Mustafa</button>
+            <button type="button" t-attf-class="b #{'on' if run.x_handover == 'keep' else ''}" data-h="keep">I kept it</button>
+            <div class="hn">Cash you keep counts on your statement until you hand it over.</div>
+            <div class="err" hidden="hidden">Not saved. Check the connection and try again.</div>
+          </div>
         </t>
       </div>
       <script>
@@ -125,6 +141,16 @@
               .then(function (j) { if (!j || !j.id) { throw new Error('no id'); } location.hash = 's' + box.getAttribute('data-stop'); location.reload(); })
               .catch(function () { btn.disabled = false; box.querySelector('.err').hidden = false; });
           }
+          document.addEventListener('click', function (e) {
+            var hb = e.target.closest ? e.target.closest('.ho .b') : null; if (!hb) { return; }
+            var box = hb.closest('.ho'), fd = new FormData();
+            fd.append('csrf_token', C); fd.append('x_name', 'cash'); fd.append('x_token', T); fd.append('x_stop', '0'); fd.append('x_handover', hb.getAttribute('data-h'));
+            hb.disabled = true; box.querySelector('.err').hidden = true;
+            fetch('/website/form/x_delivery_report', { method: 'POST', body: fd })
+              .then(function (r) { return r.json(); })
+              .then(function (j) { if (!j || !j.id) { throw new Error('no id'); } location.hash = 'ho'; location.reload(); })
+              .catch(function () { hb.disabled = false; box.querySelector('.err').hidden = false; });
+          });
           document.addEventListener('click', function (e) {
             var btn = e.target.closest ? e.target.closest('.rep .b') : null; if (!btn) { return; }
             var box = btn.closest('.rep'), s = btn.getAttribute('data-s');

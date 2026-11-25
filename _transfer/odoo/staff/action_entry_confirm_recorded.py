@@ -62,4 +62,8 @@ for r in records:
     left = unapplied(pay)
     text = 'Payment %s (%.2f) was already recorded; applied: %s%s' % (pay.name, pay.amount, ', '.join(used) or 'nothing',
         ('; %.2f is left on the customer account.' % left) if left > 0.005 else '.')
+    # The driver said on the stop list that he handed this run's cash to the owner: the owner confirming is the owner
+    # accepting it, so the entry leaves the driver's statement (owner, 25 Nov 2026).
+    if r.x_type == 'cash' and r.x_run_id and r.x_run_id.sudo().x_handover == 'owner' and r.x_who:
+        r.write({'x_who': False, 'x_employee_id': False, 'x_note': ('%s\n' % r.x_note if r.x_note else '') + 'Handed to Mustafa by the driver: on nobody\'s statement.'})
     r.write({'x_payment_id': pay.id, 'x_invoice_id': inv.id, 'x_company_id': inv.company_id.id, 'x_note': ('%s\n' % r.x_note if r.x_note else '') + text, 'x_state': 'confirmed'})

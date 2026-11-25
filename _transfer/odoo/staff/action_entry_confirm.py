@@ -54,4 +54,8 @@ for r in records:
             text = 'Paid %.2f, %s had %.2f open. The extra %.2f: %s%s' % (amt, inv.name, was_open, extra, ', '.join(used) or 'no other unpaid invoice',
                 ('; %.2f is left on the customer account.' % left) if left > 0.005 else '.')
             r.write({'x_note': ('%s\n' % r.x_note if r.x_note else '') + text})
+    # The driver said on the stop list that he handed this run's cash to the owner: the owner confirming is the owner
+    # accepting it, so the entry leaves the driver's statement (owner, 25 Nov 2026).
+    if r.x_type == 'cash' and r.x_run_id and r.x_run_id.sudo().x_handover == 'owner' and r.x_who:
+        r.write({'x_who': False, 'x_employee_id': False, 'x_note': ('%s\n' % r.x_note if r.x_note else '') + 'Handed to Mustafa by the driver: on nobody\'s statement.'})
     r.write({'x_state': 'confirmed'})

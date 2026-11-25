@@ -8,6 +8,23 @@ today = datetime.date.today()
 for rep in records.sudo():
     tok = (rep.x_token or '').strip()
     run = env['x_delivery_run'].sudo().search([('x_token', '=', tok), ('x_state', '!=', 'cancel')], limit=1) if len(tok) == 32 else env['x_delivery_run']
+    # Where the collected cash is now (driver, bottom of the stop list): "keep" = he kept it, "5" = handed to Melissa,
+    # "owner" = handed to Mustafa. Only recorded here: the payments stay on the driver's statement until Melissa accepts
+    # with her PIN on the run form (action_run_cash_accept.py) or the owner confirms the entries. Can be changed until
+    # Melissa has accepted (owner, 25 Nov 2026).
+    ho = (rep.x_handover or '').strip()
+    if ho:
+        if run and run.x_date and (today - run.x_date).days <= 7 and run.x_who in ('5', '7') and ho in ('keep', '5', 'owner') and not (ho == '5' and run.x_who == '5') and run.x_handover != 'ok5':
+            entries = env['x_staff_entry'].sudo().search([('x_run_id', '=', run.id), ('x_type', '=', 'cash'), ('x_state', '=', 'review')])
+            if entries:
+                total = round(sum(entries.mapped('x_input')), 2)
+                text = {'keep': 'kept by the driver', '5': 'handed to Melissa, waiting for her to accept', 'owner': 'handed to Mustafa'}[ho]
+                run.write({'x_handover': {'keep': 'keep', '5': 'wait5', 'owner': 'owner'}[ho], 'x_handover_amount': total, 'x_handover_at': datetime.datetime.now()})
+                for e in entries:
+                    e.write({'x_note': ('%s\n' % e.x_note if e.x_note else '') + 'Driver on the stop list: cash %s.' % text})
+                run.message_post(body='Driver reported on the stop list: cash %s ($%.2f, %s payment(s)).' % (text, total, len(entries)))
+                rep.write({'x_name': 'applied: %s cash %s' % (run.x_name, ho)})
+        continue
     if run and not run.x_deliveries_done and run.x_date and (today - run.x_date).days <= 7 and rep.x_status in ('delivered', 'failed'):
         lines = run.x_line_ids.filtered(lambda l: l.x_stop == rep.x_stop)
         if lines:
