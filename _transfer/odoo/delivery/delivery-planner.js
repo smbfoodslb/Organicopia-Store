@@ -163,7 +163,7 @@
   }
   /* Google's guess for a contact without a saved pin. The street alone can match the same street name in another
      town ("Mar Elias Street" in Beit El Chaar was placed in Beirut, 30 km off), so the town is looked up first: the
-     address is then searched around it, and a result more than 8 km from the town is replaced by the town itself
+     address is then searched around it, and a result more than 3 km from the town is replaced by the town itself
      (owner, 25 Nov 2026). Still only a guess: orange, to be confirmed. */
   function km(a, b) {
     var R = Math.PI / 180, x = (b.lng - a.lng) * R * Math.cos((a.lat + b.lat) / 2 * R), y = (b.lat - a.lat) * R;
@@ -180,7 +180,7 @@
           if (town && town.geometry.viewport) { req.bounds = town.geometry.viewport; }
           return first(req).then(function (full) {
             var t = town ? at(town) : null, f = full ? at(full) : null;
-            var use = f && t && km(f, t) > 8 ? t : (f || t);
+            var use = f && t && km(f, t) > 3 ? t : (f || t);
             if (use) { s.lat = use.lat; s.lng = use.lng; s.pin = 'approx'; }
           });
         });
