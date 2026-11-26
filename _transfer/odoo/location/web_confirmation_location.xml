@@ -1,0 +1,13 @@
+<data inherit_id="website_sale.confirmation">
+  <!-- After the order is placed (never before): optional "pin my delivery location" on the thank-you page, only while
+       the delivery address has no pin yet (SMB, 26 Nov 2026). Opens /delivery-location (view_location_page.xml). -->
+  <xpath expr="//div[@id='order_name']" position="after">
+    <t t-set="smb_ship" t-value="order.sudo().partner_shipping_id"/>
+    <t t-set="smb_url" t-value="order.sudo().get_portal_url()"/>
+    <div t-if="'access_token=' in smb_url and not (smb_ship.partner_latitude or smb_ship.partner_longitude)" class="alert alert-light border mb-4" id="smb_pin_box">
+      <div class="fw-bold mb-1">Help our driver find you <span class="fw-normal text-muted">(optional)</span></div>
+      <div class="mb-2">Pin your delivery location on the map. It takes a few seconds and we will not need to ask you later.</div>
+      <a class="btn btn-primary" target="_blank" t-attf-href="/delivery-location?o=#{order.id}&amp;t=#{smb_url.split('access_token=')[1].split('&amp;')[0]}">Pin my delivery location</a>
+    </div>
+  </xpath>
+</data>

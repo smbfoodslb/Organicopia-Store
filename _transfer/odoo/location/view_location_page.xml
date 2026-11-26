@@ -1,0 +1,91 @@
+<t t-name="website.smb_location_page">
+  <!-- "Pin my delivery location" (SMB, 26 Nov 2026). Public page /delivery-location?o=<order id>&t=<the order's own
+       portal token>. The customer drags the pin or taps "Use my current location" and saves; the page posts one
+       x_location_pin through Odoo's public website form and auto_location_pin.py checks it and writes the pin on the
+       order's delivery address. Map: Leaflet with OpenStreetMap tiles, so no Google key is shown to the public.
+       Referrer is cut to the origin so the token never reaches the map servers. -->
+  <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <meta name="robots" content="noindex, nofollow"/>
+      <meta name="referrer" content="origin"/>
+      <title>Delivery location</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+      <style>
+        body{margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f3f6f5;color:#1c2b28;font-size:16px;line-height:1.4}
+        .wrap{max-width:640px;margin:0 auto;padding:14px 14px 40px}
+        h1{font-size:21px;margin:6px 0 4px;color:#123d36}
+        .sub{color:#4a5f5a;margin-bottom:12px}
+        #map{height:56vh;min-height:320px;border-radius:12px;border:1px solid #d5e0dd;background:#e8eeec}
+        .b{display:block;width:100%;box-sizing:border-box;border:0;border-radius:10px;padding:14px;font-size:17px;font-weight:700;margin-top:10px;cursor:pointer}
+        .b.me{background:#fff;color:#123d36;border:1px solid #123d36}
+        .b.ok{background:#123d36;color:#fff}.b[disabled]{opacity:.5}
+        .msg{margin-top:10px;padding:12px;border-radius:10px;text-align:center}
+        .msg.good{background:#e2f3e7;color:#14532d;font-weight:700}.msg.bad{background:#fde8e8;color:#9b1c1c}
+        .msg[hidden]{display:none}
+        .hint{color:#4a5f5a;font-size:14px;margin-top:8px;text-align:center}
+        .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
+      </style>
+    </head>
+    <body>
+      <t t-set="oid" t-value="request.params.get('o') or ''"/>
+      <t t-set="tok" t-value="request.params.get('t') or ''"/>
+      <t t-set="order" t-value="oid.isdigit() and len(tok) &gt;= 20 and request.env['sale.order'].sudo().search([('id', '=', int(oid)), ('access_token', '=', tok), ('state', '!=', 'cancel')], limit=1)"/>
+      <t t-set="open" t-value="order and order.delivery_status != 'full' and (datetime.datetime.now() - order.date_order).days &lt;= 60"/>
+      <div class="wrap">
+        <t t-if="not open">
+          <div class="gone">This link is not valid any more. Please reply to our message and we will help you.</div>
+        </t>
+        <t t-else="">
+          <t t-set="ship" t-value="order.partner_shipping_id"/>
+          <t t-set="has" t-value="bool(ship.partner_latitude or ship.partner_longitude)"/>
+          <h1>Where should we deliver?</h1>
+          <div class="sub">Order <t t-out="order.name"/> · <t t-out="'Organicopia' if order.website_id.id == 1 else 'SMB Foods'"/>. Move the map so the pin sits on your door, then save.</div>
+          <div id="map" t-att-data-o="order.id" t-att-data-t="tok" t-att-data-c="request.csrf_token()" t-att-data-lat="ship.partner_latitude if has else ''" t-att-data-lng="ship.partner_longitude if has else ''"/>
+          <button type="button" class="b me" id="me">Use my current location</button>
+          <button type="button" class="b ok" id="save">Save delivery location</button>
+          <div class="msg good" id="good" t-att-hidden="None if has else 'hidden'">Location saved. Thank you! You can change it until we deliver.</div>
+          <div class="msg bad" id="bad" hidden="hidden"/>
+          <div class="hint">Not at the delivery address right now? Drag the map to the right spot instead.</div>
+        </t>
+      </div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"/>
+      <script>
+        (function () {
+          var el = document.getElementById('map'); if (!el || !window.L) { return; }
+          var lat = parseFloat(el.getAttribute('data-lat')), lng = parseFloat(el.getAttribute('data-lng')), has = !isNaN(lat) &amp;&amp; !isNaN(lng);
+          var map = L.map(el, { zoomControl: true }).setView(has ? [lat, lng] : [33.89, 35.55], has ? 17 : 9);
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&amp;copy; OpenStreetMap contributors' }).addTo(map);
+          var pin = L.marker(map.getCenter(), { draggable: true }).addTo(map), moved = has;
+          var good = document.getElementById('good'), bad = document.getElementById('bad'), save = document.getElementById('save'), me = document.getElementById('me');
+          function fail(t) { bad.textContent = t; bad.hidden = false; }
+          function touched() { moved = true; good.hidden = true; bad.hidden = true; }
+          map.on('move', function () { pin.setLatLng(map.getCenter()); });
+          map.on('dragstart zoomstart', touched);
+          pin.on('dragend', function () { touched(); map.panTo(pin.getLatLng()); });
+          map.on('click', function (e) { touched(); map.panTo(e.latlng); });
+          me.addEventListener('click', function () {
+            if (!navigator.geolocation) { fail('Your phone did not share its location. Drag the map to your door instead.'); return; }
+            me.disabled = true; bad.hidden = true;
+            navigator.geolocation.getCurrentPosition(function (p) { me.disabled = false; touched(); map.setView([p.coords.latitude, p.coords.longitude], 18); },
+              function () { me.disabled = false; fail('Your phone did not share its location. Drag the map to your door instead.'); }, { enableHighAccuracy: true, timeout: 15000 });
+          });
+          save.addEventListener('click', function () {
+            var c = map.getCenter();
+            if (!moved || map.getZoom() &lt; 15) { fail('Please zoom in and place the pin on your door first.'); return; }
+            if (c.lat &lt; 33.0 || c.lat &gt; 34.75 || c.lng &lt; 35.0 || c.lng &gt; 36.7) { fail('We deliver in Lebanon only. Please place the pin in Lebanon.'); return; }
+            var fd = new FormData();
+            fd.append('csrf_token', el.getAttribute('data-c')); fd.append('x_name', 'pin'); fd.append('x_order', el.getAttribute('data-o')); fd.append('x_token', el.getAttribute('data-t'));
+            fd.append('x_lat', c.lat.toFixed(7)); fd.append('x_lng', c.lng.toFixed(7));
+            save.disabled = true; bad.hidden = true;
+            fetch('/website/form/x_location_pin', { method: 'POST', body: fd })
+              .then(function (r) { return r.json(); })
+              .then(function (j) { if (!j || !j.id) { throw new Error('no id'); } save.disabled = false; good.hidden = false; })
+              .catch(function () { save.disabled = false; fail('Could not save. Please check your connection and try again.'); });
+          });
+        })();
+      </script>
+    </body>
+  </html>
+</t>
