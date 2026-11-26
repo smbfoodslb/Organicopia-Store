@@ -48,16 +48,18 @@
           <t t-set="waits" t-value="E['sale.order.line'].sudo().search([('order_id.state', '=', 'sent'), ('order_id.website_id', '!=', False), ('order_id.company_id', 'in', [1, 3]), ('product_id.is_storable', '=', True)])"/>
           <t t-set="mos" t-value="E['mrp.production'].sudo().search([('company_id', 'in', [1, 3]), ('state', 'in', ('confirmed', 'progress', 'to_close'))])"/>
           <t t-set="now" t-value="datetime.datetime.now()"/>
-          <t t-set="off" t-value="lambda d: d + datetime.timedelta(hours=3 if 4 &lt;= d.month &lt;= 10 else 2)"/>
-          <t t-set="today" t-value="off(now).date()"/>
-          <t t-set="day" t-value="lambda m: off(m.picking_id.scheduled_date or now).date()"/>
-          <t t-set="q" t-value="lambda v: ('%g' % round(v, 2))"/>
-          <t t-set="products" t-value="(moves.mapped('product_id') | waits.mapped('product_id')).sorted(lambda p: (p.default_code or '', p.name or ''))"/>
-          <t t-set="rows" t-value="[{'p': p, 'mv': moves.filtered(lambda m: m.product_id == p), 'wt': sum(waits.filtered(lambda l: l.product_id == p).mapped('product_uom_qty')), 'h3': p.with_context(allowed_company_ids=[3]).qty_available, 'h1': p.with_context(allowed_company_ids=[1]).qty_available, 'mk': sum(mos.filtered(lambda o: o.product_id == p).mapped('product_qty')), 'bom': bool(p.bom_ids or p.product_tmpl_id.bom_ids)} for p in products]"/>
-          <t t-set="rows" t-value="[dict(r, late=sum(r['mv'].filtered(lambda m: day(m) &lt; today).mapped('product_uom_qty')), d0=sum(r['mv'].filtered(lambda m: day(m) == today).mapped('product_uom_qty')), d1=sum(r['mv'].filtered(lambda m: day(m) == today + datetime.timedelta(days=1)).mapped('product_uom_qty')), d2=sum(r['mv'].filtered(lambda m: day(m) &gt; today + datetime.timedelta(days=1)).mapped('product_uom_qty')), tot=sum(r['mv'].mapped('product_uom_qty'))) for r in rows]"/>
-          <t t-set="rows" t-value="sorted([dict(r, need=max(0, r['tot'] - r['h3'] - r['h1'] - r['mk'])) for r in rows], key=lambda r: (-(1 if r['need'] &gt; 0 else 0), -r['need'], r['p'].default_code or ''))"/>
+          <!-- no lambdas that reach outside their own arguments: QWeb does not resolve template variables inside them -->
+          <t t-set="tzh" t-value="3 if 4 &lt;= now.month &lt;= 10 else 2"/>
+          <t t-set="today" t-value="(now + datetime.timedelta(hours=tzh)).date()"/>
+          <t t-set="tomorrow" t-value="today + datetime.timedelta(days=1)"/>
+          <t t-set="mday" t-value="{m.id: ((m.picking_id.scheduled_date or now) + datetime.timedelta(hours=tzh)).date() for m in moves}"/>
+          <t t-set="products" t-value="(moves.mapped('product_id') | waits.mapped('product_id')).sorted('default_code')"/>
+          <t t-set="rows" t-value="[{'p': p, 'mv': [m for m in moves if m.product_id.id == p.id], 'wt': sum([l.product_uom_qty for l in waits if l.product_id.id == p.id]), 'h3': p.with_context(allowed_company_ids=[3]).qty_available, 'h1': p.with_context(allowed_company_ids=[1]).qty_available, 'mk': sum([o.product_qty for o in mos if o.product_id.id == p.id]), 'bom': bool(p.bom_ids or p.product_tmpl_id.bom_ids)} for p in products]"/>
+          <t t-set="rows" t-value="[dict(r, late=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &lt; today]), d0=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == today]), d1=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == tomorrow]), d2=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &gt; tomorrow]), tot=sum([m.product_uom_qty for m in r['mv']])) for r in rows]"/>
+          <t t-set="rows" t-value="[dict(r, need=max(0, r['tot'] - r['h3'] - r['h1'] - r['mk'])) for r in rows]"/>
+          <t t-set="rows" t-value="[x[3] for x in sorted([(0 if r['need'] &gt; 0 else 1, -r['need'], i, r) for i, r in enumerate(rows)])]"/>
           <h1>To make</h1>
-          <div class="sub">Open customer deliveries of both companies · <t t-out="len(moves.mapped('picking_id'))"/> deliveries, <t t-out="len(rows)"/> products · <t t-out="off(now).strftime('%a %d %b, %H:%M')"/></div>
+          <div class="sub">Open customer deliveries of both companies · <t t-out="len(moves.mapped('picking_id'))"/> deliveries, <t t-out="len(rows)"/> products · <t t-out="(now + datetime.timedelta(hours=tzh)).strftime('%a %d %b, %H:%M')"/></div>
           <div class="chips">
             <button type="button" class="chip on" data-f="all">All</button>
             <button type="button" class="chip" data-f="need">Still needed</button>
@@ -72,20 +74,20 @@
                 <t t-foreach="rows" t-as="r">
                   <tr class="p" t-att-data-need="1 if r['need'] &gt; 0 else 0" t-att-data-kind="'make' if r['bom'] else 'buy'">
                     <td><span class="ref" t-if="r['p'].default_code" t-out="r['p'].default_code"/><span class="nm" t-out="r['p'].name"/><span t-attf-class="tag #{'mk' if r['bom'] else 'buy'}" t-out="'made by us' if r['bom'] else 'bought in'"/></td>
-                    <td t-attf-class="#{'late' if r['late'] else 'z'}" t-out="q(r['late']) if r['late'] else '–'"/>
-                    <td t-attf-class="#{'' if r['d0'] else 'z'}" t-out="q(r['d0']) if r['d0'] else '–'"/>
-                    <td t-attf-class="#{'' if r['d1'] else 'z'}" t-out="q(r['d1']) if r['d1'] else '–'"/>
-                    <td t-attf-class="#{'' if r['d2'] else 'z'}" t-out="q(r['d2']) if r['d2'] else '–'"/>
-                    <td><b t-out="q(r['tot'])"/></td>
-                    <td t-attf-class="#{'wait' if r['wt'] else 'z'}" t-out="('+' + q(r['wt'])) if r['wt'] else '–'"/>
-                    <td><t t-out="q(r['h3'] + r['h1'])"/><div class="st">SMBF <t t-out="q(r['h3'])"/> · smbfoods <t t-out="q(r['h1'])"/></div></td>
-                    <td t-attf-class="#{'' if r['mk'] else 'z'}" t-out="q(r['mk']) if r['mk'] else '–'"/>
-                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="q(r['need'])"/><span t-else="" class="okk">✓</span></td>
+                    <td t-attf-class="#{'late' if r['late'] else 'z'}" t-out="('%g' % round(r['late'], 2)) if r['late'] else '–'"/>
+                    <td t-attf-class="#{'' if r['d0'] else 'z'}" t-out="('%g' % round(r['d0'], 2)) if r['d0'] else '–'"/>
+                    <td t-attf-class="#{'' if r['d1'] else 'z'}" t-out="('%g' % round(r['d1'], 2)) if r['d1'] else '–'"/>
+                    <td t-attf-class="#{'' if r['d2'] else 'z'}" t-out="('%g' % round(r['d2'], 2)) if r['d2'] else '–'"/>
+                    <td><b t-out="('%g' % round(r['tot'], 2))"/></td>
+                    <td t-attf-class="#{'wait' if r['wt'] else 'z'}" t-out="('+' + ('%g' % round(r['wt'], 2))) if r['wt'] else '–'"/>
+                    <td><t t-out="('%g' % round(r['h3'] + r['h1'], 2))"/><div class="st">SMBF <t t-out="('%g' % round(r['h3'], 2))"/> · smbfoods <t t-out="('%g' % round(r['h1'], 2))"/></div></td>
+                    <td t-attf-class="#{'' if r['mk'] else 'z'}" t-out="('%g' % round(r['mk'], 2)) if r['mk'] else '–'"/>
+                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span></td>
                   </tr>
                   <tr class="d" hidden="hidden"><td colspan="10">
                     <ul>
-                      <li t-foreach="r['mv'].sorted(lambda m: (m.picking_id.scheduled_date or now, m.picking_id.name))" t-as="m"><b t-out="q(m.product_uom_qty)"/> · <t t-out="m.picking_id.partner_id.display_name"/> · <t t-out="m.picking_id.sale_id.name"/> · <t t-out="day(m).strftime('%a %d %b')"/> · <t t-out="'SMBF' if m.company_id.id == 3 else 'smbfoods'"/></li>
-                      <li t-if="r['wt']" class="wait">+<t t-out="q(r['wt'])"/> on website orders not confirmed yet</li>
+                      <li t-foreach="[x[3] for x in sorted([(mday[m.id], m.picking_id.name or '', m.id, m) for m in r['mv']])]" t-as="m"><b t-out="('%g' % round(m.product_uom_qty, 2))"/> · <t t-out="m.picking_id.partner_id.display_name"/> · <t t-out="m.picking_id.sale_id.name"/> · <t t-out="mday[m.id].strftime('%a %d %b')"/> · <t t-out="'SMBF' if m.company_id.id == 3 else 'smbfoods'"/></li>
+                      <li t-if="r['wt']" class="wait">+<t t-out="('%g' % round(r['wt'], 2))"/> on website orders not confirmed yet</li>
                     </ul>
                   </td></tr>
                 </t>
