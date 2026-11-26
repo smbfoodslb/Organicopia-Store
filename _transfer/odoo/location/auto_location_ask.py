@@ -17,7 +17,15 @@ for order in records.sudo():
         continue
     ship = order.partner_shipping_id
     has = bool(ship.partner_latitude or ship.partner_longitude)
-    tpl = Tpl.search([('template_name', '=', 'delivery_location_known' if has else 'delivery_location_ask'), ('status', '=', 'approved'), ('wa_account_id', '=', 3)], limit=1)
+    # 26 Nov 2026 (owner): a customer who pinned the location for THIS order (thank-you page or link, x_location_pin
+    # "applied") is told "to the location you pinned" (template delivery_location_pinned) rather than "the same location
+    # as last time"; while that template is not approved yet, the "known" one is used.
+    name = 'delivery_location_ask'
+    if has:
+        name = 'delivery_location_known'
+        if env['x_location_pin'].sudo().search_count([('x_order', '=', order.id), ('x_name', '=like', 'applied%')]) and Tpl.search_count([('template_name', '=', 'delivery_location_pinned'), ('status', '=', 'approved'), ('wa_account_id', '=', 3)]):
+            name = 'delivery_location_pinned'
+    tpl = Tpl.search([('template_name', '=', name), ('status', '=', 'approved'), ('wa_account_id', '=', 3)], limit=1)
     if not tpl:
         continue
     vals = {'res_model': 'sale.order', 'res_ids': str([order.id]), 'wa_template_id': tpl.id, 'phone': order.partner_id.phone}
