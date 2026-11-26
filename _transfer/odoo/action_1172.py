@@ -20,13 +20,18 @@ for tx in records:
             order.message_unsubscribe(partner_ids=owner_partner.ids)
         else:
             order.message_subscribe(partner_ids=owner_partner.ids)
+        # SMB, 26 Nov 2026: a branch contact is named after its place only ("Ghazieh"); say whose branch it is ("Earth-ona, Ghazieh")
+        buyer, firm = order.partner_id, order.partner_id.commercial_partner_id
+        who = buyer.name or firm.name or ''
+        if firm and firm != buyer and firm.name and firm.name not in who:
+            who = '%s, %s' % (firm.name, buyer.name) if buyer.name else firm.name
         site = order.website_id.domain or order.website_id.name
         sym = order.currency_id.symbol
         ship = order.partner_shipping_id or order.partner_id
         lines = ''.join('<li>%s x %s - %s %.2f</li>' % (int(l.product_uom_qty) if l.product_uom_qty == int(l.product_uom_qty) else l.product_uom_qty, esc(l.name.replace('\n', ' ')), sym, l.price_total) for l in order.order_line if not l.is_delivery and not l.display_type)
         details = '<p>Phone: %s<br/>Delivery: %s<br/>Address: %s</p>' % (esc(order.x_shop_phone) or '-', esc(order.carrier_id.name) or '-', esc(', '.join([p for p in [ship.street, ship.street2, ship.city] if p])) or '-')
-        body = '<p>New website order (quotation, not confirmed) <b>%s</b> from <b>%s</b> on %s.</p><ul>%s</ul><p>Total: <b>%s %.2f</b></p>%s<p><a href="%s/odoo/sales/%d">Open in Odoo</a></p>' % (order.name, esc(order.partner_id.name), site, lines, sym, order.amount_total, details, env['ir.config_parameter'].sudo().get_param('web.base.url'), order.id)
-        env['mail.mail'].sudo().create({'subject': 'New order %s from %s' % (order.name, order.partner_id.name), 'email_to': OWNER_EMAIL, 'body_html': body, 'model': 'sale.order', 'res_id': order.id}).send()
+        body = '<p>New website order (quotation, not confirmed) <b>%s</b> from <b>%s</b> on %s.</p><ul>%s</ul><p>Total: <b>%s %.2f</b></p>%s<p><a href="%s/odoo/sales/%d">Open in Odoo</a></p>' % (order.name, esc(who), site, lines, sym, order.amount_total, details, env['ir.config_parameter'].sudo().get_param('web.base.url'), order.id)
+        env['mail.mail'].sudo().create({'subject': 'New order %s from %s' % (order.name, who), 'email_to': OWNER_EMAIL, 'body_html': body, 'model': 'sale.order', 'res_id': order.id}).send()
         # Prefer the Organicopia production number (whatsapp.account 3, prod DB); fall back to any approved copy
         tpl = env['whatsapp.template'].sudo().search([('template_name', '=', 'new_order_alert'), ('status', '=', 'approved'), ('wa_account_id', '=', 3)], limit=1) or env['whatsapp.template'].sudo().search([('template_name', '=', 'new_order_alert'), ('status', '=', 'approved')], limit=1)
         if tpl:
