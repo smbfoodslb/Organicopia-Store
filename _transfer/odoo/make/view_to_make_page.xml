@@ -1,0 +1,108 @@
+<t t-name="website.smb_to_make">
+  <!-- "To make" (SMB, 26 Nov 2026): one row per product on the open customer deliveries of both companies, with what is
+       ordered (by delivery date), what is on hand, what is already being made and what is left to make or to get.
+       Website page /to-make, restricted to the owner (group 30) and the shop tablet (group 111). Everything is read
+       with sudo and computed here; the page writes nothing. Deliveries between our own companies are left out.
+       "Awaiting" = website orders the owner has not confirmed yet; they do not count in "To make".
+       Day buckets use the delivery's scheduled date in Beirut time (UTC+2, UTC+3 April to October). -->
+  <t t-set="E" t-value="request.env"/>
+  <t t-set="internal" t-value="E.user.has_group('base.group_user')"/>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1"/>
+      <meta name="robots" content="noindex, nofollow"/>
+      <title>To make</title>
+      <style>
+        *{box-sizing:border-box}body{margin:0;background:#f3f3f0;color:#1d2b28;font:16px/1.4 -apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+        .wrap{max-width:1100px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+        h1{font-size:24px;margin:4px 0 2px;color:#123d36}.sub{color:#5d6f6a;font-size:14px;margin-bottom:14px}
+        .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+        .chip{border:1px solid #cfd8d5;background:#fff;border-radius:20px;padding:8px 14px;font:inherit;font-weight:600;color:#34443f}
+        .chip.on{background:#123d36;border-color:#123d36;color:#fff}
+        .tbl{background:#fff;border:1px solid #dfe5e2;border-radius:10px;overflow-x:auto}
+        table{border-collapse:collapse;width:100%;min-width:760px}
+        th,td{padding:10px 10px;text-align:right;border-bottom:1px solid #eef1f0;white-space:nowrap}
+        th{font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#5d6f6a;background:#f8faf9;position:sticky;top:0}
+        th:first-child,td:first-child{text-align:left;white-space:normal;min-width:230px}
+        tr.p{cursor:pointer}tr.p:hover td{background:#f8faf9}
+        .nm{font-weight:600}.ref{color:#5d6f6a;font-size:13px;margin-right:6px}
+        .tag{display:inline-block;font-size:11px;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:6px;vertical-align:middle}
+        .tag.mk{background:#e3efe9;color:#1d6b3f}.tag.buy{background:#eef0f4;color:#3d4b66}
+        .z{color:#b4bfbb}.late{color:#9b1c1c;font-weight:700}
+        .need{font-weight:800;font-size:18px;color:#9b1c1c}.okk{color:#1d6b3f;font-weight:700}
+        .wait{color:#8a5a00}
+        tr.d td{background:#fbfcfb;text-align:left;white-space:normal;padding:8px 14px 12px}
+        tr.d ul{margin:0;padding-left:18px}tr.d li{margin:2px 0}
+        .st{font-size:12px;color:#5d6f6a}
+        .empty{padding:28px;text-align:center;color:#5d6f6a}
+        .foot{color:#5d6f6a;font-size:13px;margin-top:12px}
+      </style>
+    </head>
+    <body>
+      <div class="wrap">
+        <t t-if="not internal"><div class="empty">Please sign in to Odoo to see this page.</div></t>
+        <t t-else="">
+          <t t-set="own" t-value="E['res.company'].sudo().search([]).mapped('partner_id').ids"/>
+          <t t-set="moves" t-value="E['stock.move'].sudo().search([('company_id', 'in', [1, 3]), ('picking_id.picking_type_code', '=', 'outgoing'), ('state', 'in', ('confirmed', 'waiting', 'partially_available', 'assigned')), ('picking_id.sale_id', '!=', False), ('picking_id.partner_id.commercial_partner_id', 'not in', own), ('product_id.is_storable', '=', True)])"/>
+          <t t-set="waits" t-value="E['sale.order.line'].sudo().search([('order_id.state', '=', 'sent'), ('order_id.website_id', '!=', False), ('order_id.company_id', 'in', [1, 3]), ('product_id.is_storable', '=', True)])"/>
+          <t t-set="mos" t-value="E['mrp.production'].sudo().search([('company_id', 'in', [1, 3]), ('state', 'in', ('confirmed', 'progress', 'to_close'))])"/>
+          <t t-set="now" t-value="datetime.datetime.now()"/>
+          <t t-set="off" t-value="lambda d: d + datetime.timedelta(hours=3 if 4 &lt;= d.month &lt;= 10 else 2)"/>
+          <t t-set="today" t-value="off(now).date()"/>
+          <t t-set="day" t-value="lambda m: off(m.picking_id.scheduled_date or now).date()"/>
+          <t t-set="q" t-value="lambda v: ('%g' % round(v, 2))"/>
+          <t t-set="products" t-value="(moves.mapped('product_id') | waits.mapped('product_id')).sorted(lambda p: (p.default_code or '', p.name or ''))"/>
+          <t t-set="rows" t-value="[{'p': p, 'mv': moves.filtered(lambda m: m.product_id == p), 'wt': sum(waits.filtered(lambda l: l.product_id == p).mapped('product_uom_qty')), 'h3': p.with_context(allowed_company_ids=[3]).qty_available, 'h1': p.with_context(allowed_company_ids=[1]).qty_available, 'mk': sum(mos.filtered(lambda o: o.product_id == p).mapped('product_qty')), 'bom': bool(p.bom_ids or p.product_tmpl_id.bom_ids)} for p in products]"/>
+          <t t-set="rows" t-value="[dict(r, late=sum(r['mv'].filtered(lambda m: day(m) &lt; today).mapped('product_uom_qty')), d0=sum(r['mv'].filtered(lambda m: day(m) == today).mapped('product_uom_qty')), d1=sum(r['mv'].filtered(lambda m: day(m) == today + datetime.timedelta(days=1)).mapped('product_uom_qty')), d2=sum(r['mv'].filtered(lambda m: day(m) &gt; today + datetime.timedelta(days=1)).mapped('product_uom_qty')), tot=sum(r['mv'].mapped('product_uom_qty'))) for r in rows]"/>
+          <t t-set="rows" t-value="sorted([dict(r, need=max(0, r['tot'] - r['h3'] - r['h1'] - r['mk'])) for r in rows], key=lambda r: (-(1 if r['need'] &gt; 0 else 0), -r['need'], r['p'].default_code or ''))"/>
+          <h1>To make</h1>
+          <div class="sub">Open customer deliveries of both companies · <t t-out="len(moves.mapped('picking_id'))"/> deliveries, <t t-out="len(rows)"/> products · <t t-out="off(now).strftime('%a %d %b, %H:%M')"/></div>
+          <div class="chips">
+            <button type="button" class="chip on" data-f="all">All</button>
+            <button type="button" class="chip" data-f="need">Still needed</button>
+            <button type="button" class="chip" data-f="make">Made by us</button>
+            <button type="button" class="chip" data-f="buy">Bought in</button>
+          </div>
+          <div class="tbl">
+            <div t-if="not rows" class="empty">Nothing is waiting to be delivered.</div>
+            <table t-else="">
+              <thead><tr><th>Product</th><th>Late</th><th>Today</th><th>Tomorrow</th><th>Later</th><th>Ordered</th><th>Awaiting</th><th>In stock</th><th>Being made</th><th>To make / get</th></tr></thead>
+              <tbody>
+                <t t-foreach="rows" t-as="r">
+                  <tr class="p" t-att-data-need="1 if r['need'] &gt; 0 else 0" t-att-data-kind="'make' if r['bom'] else 'buy'">
+                    <td><span class="ref" t-if="r['p'].default_code" t-out="r['p'].default_code"/><span class="nm" t-out="r['p'].name"/><span t-attf-class="tag #{'mk' if r['bom'] else 'buy'}" t-out="'made by us' if r['bom'] else 'bought in'"/></td>
+                    <td t-attf-class="#{'late' if r['late'] else 'z'}" t-out="q(r['late']) if r['late'] else '–'"/>
+                    <td t-attf-class="#{'' if r['d0'] else 'z'}" t-out="q(r['d0']) if r['d0'] else '–'"/>
+                    <td t-attf-class="#{'' if r['d1'] else 'z'}" t-out="q(r['d1']) if r['d1'] else '–'"/>
+                    <td t-attf-class="#{'' if r['d2'] else 'z'}" t-out="q(r['d2']) if r['d2'] else '–'"/>
+                    <td><b t-out="q(r['tot'])"/></td>
+                    <td t-attf-class="#{'wait' if r['wt'] else 'z'}" t-out="('+' + q(r['wt'])) if r['wt'] else '–'"/>
+                    <td><t t-out="q(r['h3'] + r['h1'])"/><div class="st">SMBF <t t-out="q(r['h3'])"/> · smbfoods <t t-out="q(r['h1'])"/></div></td>
+                    <td t-attf-class="#{'' if r['mk'] else 'z'}" t-out="q(r['mk']) if r['mk'] else '–'"/>
+                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="q(r['need'])"/><span t-else="" class="okk">✓</span></td>
+                  </tr>
+                  <tr class="d" hidden="hidden"><td colspan="10">
+                    <ul>
+                      <li t-foreach="r['mv'].sorted(lambda m: (m.picking_id.scheduled_date or now, m.picking_id.name))" t-as="m"><b t-out="q(m.product_uom_qty)"/> · <t t-out="m.picking_id.partner_id.display_name"/> · <t t-out="m.picking_id.sale_id.name"/> · <t t-out="day(m).strftime('%a %d %b')"/> · <t t-out="'SMBF' if m.company_id.id == 3 else 'smbfoods'"/></li>
+                      <li t-if="r['wt']" class="wait">+<t t-out="q(r['wt'])"/> on website orders not confirmed yet</li>
+                    </ul>
+                  </td></tr>
+                </t>
+              </tbody>
+            </table>
+          </div>
+          <div class="foot">Tap a product to see the orders behind it. "To make / get" = ordered, minus stock in both companies, minus what is already being made. "Awaiting" is not counted until the order is confirmed.</div>
+        </t>
+      </div>
+      <script>
+        (function(){var f='all';
+          function apply(){Array.prototype.forEach.call(document.querySelectorAll('tr.p'),function(r){var ok=f==='all'||(f==='need'&amp;&amp;r.getAttribute('data-need')==='1')||(f===r.getAttribute('data-kind'));r.hidden=!ok;if(!ok){r.nextElementSibling.hidden=true;}});}
+          document.addEventListener('click',function(e){var c=e.target.closest?e.target.closest('.chip'):null;
+            if(c){f=c.getAttribute('data-f');Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(x){x.classList.toggle('on',x===c);});apply();return;}
+            var r=e.target.closest?e.target.closest('tr.p'):null;if(r){r.nextElementSibling.hidden=!r.nextElementSibling.hidden;}});
+        })();
+      </script>
+    </body>
+  </html>
+</t>
