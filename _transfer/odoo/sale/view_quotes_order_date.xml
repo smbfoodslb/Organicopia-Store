@@ -1,0 +1,11 @@
+<data>
+  <!-- Quotations list: show the order date (for website orders: when the customer placed the order, see
+       auto_website_order_date.py) instead of the date the basket was first opened; "Creation Date" stays available
+       in the column chooser (SMB, 26 Nov 2026). -->
+  <field name="create_date" position="before">
+    <field name="date_order" string="Order Date" optional="show"/>
+  </field>
+  <field name="create_date" position="attributes">
+    <attribute name="optional">hide</attribute>
+  </field>
+</data>
