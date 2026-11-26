@@ -1,0 +1,23 @@
+<data inherit_id="website_sale.website_sale_layout" priority="99">
+  <!-- Organicopia product pages: the product data Google reads (JSON-LD written by Odoo) gains what Search Console
+       listed as missing for merchant listings (owner, 26 Nov 2026): "description" (the product's own web description,
+       as plain text) and "shippingDetails" on every offer (Lebanon; free from $40, otherwise $3 to $5 by governorate;
+       sent within 0-1 days, delivered within 1-2 days). Website 1 only; every other page keeps Odoo's own data.
+       The amounts mirror DELIVERY_FEE / FREE_FROM in org/retail.js: change both together. No return policy and no
+       ratings are declared here. -->
+  <xpath expr="//script[@t-if='product_markup_data']" position="replace">
+    <t t-if="product_markup_data and website and website.id == 1 and product and product._name == 'product.template'">
+      <t t-set="smb_md" t-value="json.loads(str(product_markup_data))"/>
+      <t t-set="smb_md" t-value="smb_md if isinstance(smb_md, list) else [smb_md]"/>
+      <t t-set="smb_desc" t-value="' '.join((product.sudo().description_ecommerce or '').striptags().replace('Ingredients:', ' Ingredients:').split())[:4900]"/>
+      <t t-set="smb_prods" t-value="[d for d in smb_md if isinstance(d, dict) and d.get('@type') in ('Product', 'ProductGroup')]"/>
+      <t t-if="smb_desc" t-set="nothing" t-value="[d.update({'description': smb_desc}) for d in smb_prods if not d.get('description')]"/>
+      <t t-set="smb_offers" t-value="[d.get('offers') for d in smb_prods] + [v.get('offers') for d in smb_prods for v in (d.get('hasVariant') or []) if isinstance(v, dict)]"/>
+      <t t-set="nothing" t-value="[o.update({'shippingDetails': {'@type': 'OfferShippingDetails', 'shippingRate': ({'@type': 'MonetaryAmount', 'value': 0, 'currency': 'USD'} if float(o.get('price') or 0) &gt;= 40 else {'@type': 'MonetaryAmount', 'minValue': 3, 'maxValue': 5, 'currency': 'USD'}), 'shippingDestination': {'@type': 'DefinedRegion', 'addressCountry': 'LB'}, 'deliveryTime': {'@type': 'ShippingDeliveryTime', 'handlingTime': {'@type': 'QuantitativeValue', 'minValue': 0, 'maxValue': 1, 'unitCode': 'DAY'}, 'transitTime': {'@type': 'QuantitativeValue', 'minValue': 1, 'maxValue': 2, 'unitCode': 'DAY'}}}}) for o in smb_offers if isinstance(o, dict)]"/>
+      <script type="application/ld+json" t-out="json.dumps(smb_md, indent=2)"/>
+    </t>
+    <t t-else="">
+      <script t-if="product_markup_data" type="application/ld+json" t-out="product_markup_data"/>
+    </t>
+  </xpath>
+</data>
