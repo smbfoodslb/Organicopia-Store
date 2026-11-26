@@ -3,8 +3,8 @@
 # Our driver that were not asked yet (x_loc_asked empty). Owner's rules: retail orders only (placed on the Organicopia
 # site, or entered by staff for a person, not a company); never pick-ups or FlyPost (FlyPost contacts the customer
 # itself); always from the Organicopia number (whatsapp.account 3). A delivery address that already has a pin gets
-# "same location as last time" (template delivery_location_same); otherwise the request with the link to
-# /delivery-location (template delivery_location_request). Sent once per order. Nothing is sent while the template
+# "same location as last time" (template delivery_location_known); otherwise the request with the link to
+# /delivery-location (template delivery_location_ask). Sent once per order. Nothing is sent while the template
 # is not approved, to orders older than 7 days, or to orders already delivered.
 OWN = env['res.company'].sudo().search([]).mapped('partner_id').ids
 Tpl = env['whatsapp.template'].sudo()
@@ -17,7 +17,7 @@ for order in records.sudo():
         continue
     ship = order.partner_shipping_id
     has = bool(ship.partner_latitude or ship.partner_longitude)
-    tpl = Tpl.search([('template_name', '=', 'delivery_location_same' if has else 'delivery_location_request'), ('status', '=', 'approved'), ('wa_account_id', '=', 3)], limit=1)
+    tpl = Tpl.search([('template_name', '=', 'delivery_location_known' if has else 'delivery_location_ask'), ('status', '=', 'approved'), ('wa_account_id', '=', 3)], limit=1)
     if not tpl:
         continue
     vals = {'res_model': 'sale.order', 'res_ids': str([order.id]), 'wa_template_id': tpl.id, 'phone': order.partner_id.phone}
