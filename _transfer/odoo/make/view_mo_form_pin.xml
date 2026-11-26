@@ -1,0 +1,6 @@
+<data>
+  <!-- manufacturing order form: "Melissa's PIN", only while the order is new (auto_mo_melissa_pin.py) -->
+  <xpath expr="//field[@name='bom_id']" position="after">
+    <field name="x_pin" string="Melissa's PIN" password="True" invisible="id" placeholder="Shop tablet: needed to start an order"/>
+  </xpath>
+</data>

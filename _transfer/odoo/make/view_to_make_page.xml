@@ -36,6 +36,17 @@
         tr.d ul{margin:0;padding-left:18px}tr.d li{margin:2px 0}
         .st{font-size:12px;color:#5d6f6a}
         .empty{padding:28px;text-align:center;color:#5d6f6a}
+        .own{background:#fff8ec;border:1px solid #e6c98a;border-radius:10px;padding:14px 16px;margin-bottom:14px}
+        .oh{font-weight:700;color:#6b4a00;margin-bottom:6px}.own ul{margin:0 0 10px;padding-left:18px}
+        .btn{background:#123d36;color:#fff;border:0;border-radius:8px;padding:11px 16px;font:inherit;font-weight:700}
+        .btn.sec{background:#fff;color:#123d36;border:1px solid #cfd8d5}.btn[disabled]{opacity:.5}
+        .mk{margin-left:10px;border:1px solid #123d36;background:#fff;color:#123d36;border-radius:7px;padding:6px 10px;font:inherit;font-size:14px;font-weight:700}
+        .ov{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(18,61,54,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+        .ov[hidden]{display:none}.dlg{background:#fff;border-radius:12px;padding:18px;max-width:440px;width:100%}
+        .dt{font-weight:700;font-size:18px;color:#123d36;margin-bottom:10px}.dlg label{display:block;font-weight:600;margin-bottom:10px}
+        .dlg input,.dlg select{display:block;width:100%;margin-top:4px;padding:10px;border:1px solid #cfd8d5;border-radius:8px;font:inherit}
+        .dm{color:#34443f;margin-bottom:10px;white-space:pre-line}.err{color:#9b1c1c;font-weight:600;margin-bottom:10px}
+        .dlg .btn{display:block;width:100%;margin-top:8px}
         .foot{color:#5d6f6a;font-size:13px;margin-top:12px}
       </style>
     </head>
@@ -54,12 +65,25 @@
           <t t-set="tomorrow" t-value="today + datetime.timedelta(days=1)"/>
           <t t-set="mday" t-value="{m.id: ((m.picking_id.scheduled_date or now) + datetime.timedelta(hours=tzh)).date() for m in moves}"/>
           <t t-set="products" t-value="(moves.mapped('product_id') | waits.mapped('product_id')).sorted('default_code')"/>
-          <t t-set="rows" t-value="[{'p': p, 'mv': [m for m in moves if m.product_id.id == p.id], 'wt': sum([l.product_uom_qty for l in waits if l.product_id.id == p.id]), 'h3': p.with_context(allowed_company_ids=[3]).qty_available, 'h1': p.with_context(allowed_company_ids=[1]).qty_available, 'mk': sum([o.product_qty for o in mos if o.product_id.id == p.id]), 'bom': bool(p.bom_ids or p.product_tmpl_id.bom_ids)} for p in products]"/>
-          <t t-set="rows" t-value="[dict(r, late=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &lt; today]), d0=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == today]), d1=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == tomorrow]), d2=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &gt; tomorrow]), tot=sum([m.product_uom_qty for m in r['mv']])) for r in rows]"/>
+          <t t-set="rows" t-value="[{'p': p, 'mv': [m for m in moves if m.product_id.id == p.id], 'wt': sum([l.product_uom_qty for l in waits if l.product_id.id == p.id]), 'h3': p.with_context(allowed_company_ids=[3]).qty_available, 'h1': p.with_context(allowed_company_ids=[1]).qty_available, 'mk': sum([o.product_qty for o in mos if o.product_id.id == p.id]), 'mk3': sum([o.product_qty for o in mos if o.product_id.id == p.id and o.company_id.id == 3]), 'bom': bool(p.bom_ids or p.product_tmpl_id.bom_ids)} for p in products]"/>
+          <t t-set="rows" t-value="[dict(r, late=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &lt; today]), d0=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == today]), d1=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == tomorrow]), d2=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &gt; tomorrow]), tot=sum([m.product_uom_qty for m in r['mv']]), dem3=sum([m.product_uom_qty for m in r['mv'] if m.company_id.id == 3]), dem1=sum([m.product_uom_qty for m in r['mv'] if m.company_id.id == 1])) for r in rows]"/>
           <t t-set="rows" t-value="[dict(r, need=max(0, r['tot'] - r['h3'] - r['h1'] - r['mk'])) for r in rows]"/>
+          <!-- owner only: what SMBF lacks for its own deliveries and smbfoods can spare after its own (Route A, action_route_a_bring.py) -->
+          <t t-set="rows" t-value="[dict(r, bring=max(0, min(max(0, r['dem3'] - r['h3'] - r['mk3']), max(0, r['h1'] - r['dem1'])))) for r in rows]"/>
+          <t t-set="owner" t-value="30 in E.user.all_group_ids.ids"/>
+          <t t-set="ra" t-value="E['ir.actions.server'].sudo().search([('name', '=', 'Route A: bring from smbfoods to SMBF')], limit=1).id"/>
+          <t t-set="bring" t-value="[r for r in rows if r['bring'] &gt; 0]"/>
           <t t-set="rows" t-value="[x[3] for x in sorted([(0 if r['need'] &gt; 0 else 1, -r['need'], i, r) for i, r in enumerate(rows)])]"/>
           <h1>To make</h1>
           <div class="sub">Open customer deliveries of both companies · <t t-out="len(moves.mapped('picking_id'))"/> deliveries, <t t-out="len(rows)"/> products · <t t-out="(now + datetime.timedelta(hours=tzh)).strftime('%a %d %b, %H:%M')"/></div>
+          <div t-if="owner and ra and bring" class="own" id="own" t-att-data-ra="ra">
+            <div class="oh">Short in SMBF, available in smbfoods</div>
+            <ul>
+              <li t-foreach="bring" t-as="r" t-att-data-pid="r['p'].id" t-att-data-qty="('%g' % round(r['bring'], 3))"><b t-out="('%g' % round(r['bring'], 2))"/> × <t t-out="r['p'].display_name"/> <span class="st">(SMBF needs <t t-out="('%g' % round(r['dem3'], 2))"/>, has <t t-out="('%g' % round(r['h3'], 2))"/>; smbfoods has <t t-out="('%g' % round(r['h1'], 2))"/>, needs <t t-out="('%g' % round(r['dem1'], 2))"/>)</span></li>
+            </ul>
+            <button type="button" class="btn" id="bringbtn">Bring from smbfoods</button>
+            <div class="st">One transfer for everything listed: purchase order, receipt and bill in SMBF; sales order, delivery and invoice in smbfoods.</div>
+          </div>
           <div class="chips">
             <button type="button" class="chip on" data-f="all">All</button>
             <button type="button" class="chip" data-f="need">Still needed</button>
@@ -82,7 +106,7 @@
                     <td t-attf-class="#{'wait' if r['wt'] else 'z'}" t-out="('+' + ('%g' % round(r['wt'], 2))) if r['wt'] else '–'"/>
                     <td><t t-out="('%g' % round(r['h3'] + r['h1'], 2))"/><div class="st">SMBF <t t-out="('%g' % round(r['h3'], 2))"/> · smbfoods <t t-out="('%g' % round(r['h1'], 2))"/></div></td>
                     <td t-attf-class="#{'' if r['mk'] else 'z'}" t-out="('%g' % round(r['mk'], 2)) if r['mk'] else '–'"/>
-                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span></td>
+                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span><button t-if="r['bom'] and r['need'] &gt; 0" type="button" class="mk" t-att-data-pid="r['p'].id" t-att-data-name="r['p'].display_name" t-att-data-need="('%g' % round(r['need'], 3))" t-att-data-co="3 if (r['dem3'] &gt; 0 or r['dem1'] == 0) else 1">Create MO</button></td>
                   </tr>
                   <tr class="d" hidden="hidden"><td colspan="10">
                     <ul>
@@ -97,12 +121,39 @@
           <div class="foot">Tap a product to see the orders behind it. "To make / get" = ordered, minus stock in both companies, minus what is already being made. "Awaiting" is not counted until the order is confirmed.</div>
         </t>
       </div>
+      <div class="ov" id="ov" hidden="hidden"><div class="dlg">
+        <div class="dt" id="dt"/>
+        <div id="dmo">
+          <label>Quantity to make<input type="number" id="dq" min="0" step="any"/></label>
+          <label>Company<select id="dc"><option value="3">SMBF</option><option value="1">smbfoods</option></select></label>
+          <label t-if="not owner">Melissa's PIN<input type="password" id="dp" inputmode="numeric" autocomplete="off"/></label>
+        </div>
+        <div class="dm" id="dm"/>
+        <div class="err" id="derr" hidden="hidden"/>
+        <button type="button" class="btn" id="dok"/>
+        <button type="button" class="btn sec" id="dno">Go back</button>
+      </div></div>
       <script>
         (function(){var f='all';
           function apply(){Array.prototype.forEach.call(document.querySelectorAll('tr.p'),function(r){var ok=f==='all'||(f==='need'&amp;&amp;r.getAttribute('data-need')==='1')||(f===r.getAttribute('data-kind'));r.hidden=!ok;if(!ok){r.nextElementSibling.hidden=true;}});}
           document.addEventListener('click',function(e){var c=e.target.closest?e.target.closest('.chip'):null;
             if(c){f=c.getAttribute('data-f');Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(x){x.classList.toggle('on',x===c);});apply();return;}
+            var mk=e.target.closest?e.target.closest('.mk'):null;if(mk){e.stopPropagation();openMo(mk);return;}
             var r=e.target.closest?e.target.closest('tr.p'):null;if(r){r.nextElementSibling.hidden=!r.nextElementSibling.hidden;}});
+          function rpc(model,method,args,kwargs){return fetch('/web/dataset/call_kw',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'call',params:{model:model,method:method,args:args,kwargs:kwargs||{}}})}).then(function(r){return r.json();}).then(function(j){if(j.error){throw new Error((j.error.data&amp;&amp;j.error.data.message)||'It did not work.');}return j.result;});}
+          var ov=document.getElementById('ov'),$=function(i){return document.getElementById(i);},run=null;
+          function show(title,msg,okText,mo,fn){$('dt').textContent=title;$('dm').textContent=msg||'';$('dok').textContent=okText;$('dok').disabled=false;$('dok').hidden=false;$('dmo').hidden=!mo;$('derr').hidden=true;run=fn;ov.hidden=false;}
+          function fail(e){$('derr').textContent=e.message;$('derr').hidden=false;$('dok').disabled=false;}
+          function openMo(b){$('dq').value=b.getAttribute('data-need');$('dc').value=b.getAttribute('data-co');if($('dp')){$('dp').value='';}
+            show('Make '+b.getAttribute('data-name'),'','Create the manufacturing order',true,function(){var co=+$('dc').value,q=parseFloat($('dq').value)||0;if(q&lt;=0){fail(new Error('Enter a quantity.'));return;}
+              var vals={product_id:+b.getAttribute('data-pid'),product_qty:q,company_id:co,picking_type_id:co===3?77:55};if($('dp')){vals.x_pin=$('dp').value;}
+              rpc('mrp.production','create',[vals],{context:{allowed_company_ids:[co,co===3?1:3],default_company_id:co}}).then(function(id){location.href='/odoo/action-1319/'+id;}).catch(fail);});}
+          $('dno').addEventListener('click',function(){ov.hidden=true;if(run===null){location.reload();}});
+          $('dok').addEventListener('click',function(){if(run){$('dok').disabled=true;$('derr').hidden=true;run();}});
+          var bb=$('bringbtn');if(bb){bb.addEventListener('click',function(){var own=$('own'),items=[],txt=[];
+            Array.prototype.forEach.call(own.querySelectorAll('li'),function(li){items.push([+li.getAttribute('data-pid'),parseFloat(li.getAttribute('data-qty'))]);txt.push(li.textContent.replace(/\s*\(SMBF needs.*$/,'').replace(/\s+/g,' ').trim());});
+            show('Bring from smbfoods to SMBF?',txt.join('\n')+'\n\nThis posts one invoice in smbfoods and one bill in SMBF.','Yes, bring them',false,function(){
+              rpc('ir.actions.server','run',[[+own.getAttribute('data-ra')]],{context:{smb_bring:items,allowed_company_ids:[3,1]}}).then(function(res){$('dt').textContent='Done';$('dm').textContent=(res&amp;&amp;res.params&amp;&amp;res.params.message)||'Done.';$('dok').hidden=true;$('dno').textContent='Close';run=null;}).catch(fail);});});}
         })();
       </script>
     </body>
