@@ -6,7 +6,7 @@
        /website/form/shop.sale.order while typing, on leaving the box and on any button of the page; it is remembered in
        this browser tab for three hours so both pages show the same text. An emptied note is saved as one space. -->
   <div class="col-12 mt-3 mb-3" id="smb_order_note">
-    <label for="smb_order_note_text" class="col-form-label fw-bold">Note for your order <span class="fw-normal text-muted">(optional)</span></label>
+    <label for="smb_order_note_text" class="col-form-label fw-bold label_optional">Note for your order <span class="fw-normal text-muted">(optional)</span></label>
     <textarea id="smb_order_note_text" class="form-control" rows="3" maxlength="500" placeholder="Delivery instructions, preferred time, anything we should know…"/>
     <small id="smb_order_note_ok" class="text-success" style="display:none">Saved with your order.</small>
     <script>(function(){var t=document.getElementById('smb_order_note_text');if(!t||t.getAttribute('data-on')){return;}t.setAttribute('data-on','1');
