@@ -44,7 +44,7 @@
           <div class="sub">Order <t t-out="order.name"/> · <t t-out="'Organicopia' if order.website_id.id == 1 else 'SMB Foods'"/>. Move the map so the pin sits on your door, then save.</div>
           <div id="map" t-att-data-o="order.id" t-att-data-t="tok" t-att-data-c="request.csrf_token()" t-att-data-lat="ship.partner_latitude if has else ''" t-att-data-lng="ship.partner_longitude if has else ''"/>
           <button type="button" class="b me" id="me">Use my current location</button>
-          <button type="button" class="b ok" id="save">Save delivery location</button>
+          <button type="button" class="b ok" id="save">Save pinned location</button>
           <div class="msg good" id="good" t-att-hidden="None if has else 'hidden'">Location saved. Thank you! You can change it until we deliver.</div>
           <div class="msg bad" id="bad" hidden="hidden"/>
           <div class="hint">Not at the delivery address right now? Drag the map to the right spot instead.</div>
