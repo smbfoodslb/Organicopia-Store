@@ -1,0 +1,7 @@
+<data>
+  <!-- Customer credit note: "Goods are being returned" (SMB, 26 Nov 2026). Ticked by default; when the note is posted
+       the stock return is prepared (auto_credit_note_return.py). Untick before posting for a credit with no goods back. -->
+  <xpath expr="//group[@id='header_right_group']" position="inside">
+    <field name="x_goods_returned" invisible="move_type != 'out_refund'" readonly="state != 'draft'"/>
+  </xpath>
+</data>
