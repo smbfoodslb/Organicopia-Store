@@ -1,14 +1,16 @@
 # A product tagged 'Not available' / 'Coming soon' was put back on sale (tag removed): tell everyone waiting for it, like action 1170 does when stock arrives
 BLOCK = {'Not available', 'Coming soon'}
 # 26 Nov 2026: "back" means exactly what the sites show as orderable (same rule as views 5037 / 5040 and the feed 5084):
-# free stock above the product's own "out of stock at or below", or, for a product ticked "Sell when out of stock", a bakery
+# free stock above the product's own "out of stock at or below", or, for a product ticked "Made by us", a bakery
 # item, no recipe, or every ingredient (packaging aside) above its reserve.
+# 26 Nov 2026 (later): the tick is now our own field x_made_by_us. Odoo's "Sell when out of stock" is ticked on every product
+# because Odoo otherwise cuts cart quantities to the stock of the website's company alone (SMBF), ignoring smbfoods.
 def orderable(p):
     p = p.sudo().with_context(allowed_company_ids=[1, 3])
     tm = p.product_tmpl_id
     if not p.is_storable or p.free_qty > (tm.x_web_min_stock or 0):
         return True
-    if not tm.allow_out_of_stock_order:
+    if not tm.x_made_by_us:
         return False
     if tm.public_categ_ids.filtered(lambda c: 'Bakery' in (c.display_name or '') or 'Oven' in (c.display_name or '')):
         return True

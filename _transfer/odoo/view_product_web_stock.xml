@@ -1,12 +1,20 @@
 <data>
   <!-- Website stock rules on the product form, Sales tab (SMB, 26 Nov 2026).
+       x_made_by_us: our own "sell when out of stock" tick. A ticked product stays orderable on the sites at zero stock
+         when it is a bakery item, has no recipe, or every ingredient (packaging aside) is above its reserve.
        x_web_min_stock: the product itself shows sold out on the sites at or below this quantity.
-       x_reserve_qty: for an ingredient. A product made from it and ticked "Sell when out of stock" stays orderable
-       only while more than this quantity of the ingredient is free (SMBF + smbfoods); the rest is kept for our own use. -->
+       x_reserve_qty: for an ingredient: the quantity kept for our own use (see x_made_by_us).
+       Odoo's own "Out-of-Stock: Continue Selling" (allow_out_of_stock_order) is hidden and ticked on every product: when it
+       is off, Odoo cuts the quantity in the customer's cart down to the stock of the website's company (SMBF) alone,
+       ignoring smbfoods, without telling our pages (S00719: 265 lollipops became 190, 10 coffees became 5). -->
   <xpath expr="//page[@name='sales']" position="inside">
     <group string="Website stock rules" name="smb_web_stock">
+      <field name="x_made_by_us"/>
       <field name="x_web_min_stock"/>
       <field name="x_reserve_qty"/>
     </group>
+  </xpath>
+  <xpath expr="//field[@name='allow_out_of_stock_order']" position="attributes">
+    <attribute name="invisible">1</attribute>
   </xpath>
 </data>
