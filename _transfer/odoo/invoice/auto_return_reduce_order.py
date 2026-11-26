@@ -19,7 +19,20 @@ for picking in records:
         new = max(line.product_uom_qty - mv.quantity, line.qty_delivered, line.qty_invoiced, 0)
         if new < line.product_uom_qty - 0.0001:
             old = line.product_uom_qty
-            line.write({'product_uom_qty': new})
+            # price and discount are sent along: Odoo would otherwise recompute them for the new quantity
+            line.write({'product_uom_qty': new, 'price_unit': line.price_unit, 'discount': line.discount})
+            changes.setdefault(order.id, []).append('%s: %g -> %g' % (line.product_id.display_name, old, new))
+    # what the same credit note refunded besides goods (delivery fee, a free or discount line): nothing comes back to
+    # stock for those, so they are settled here, at the same moment
+    for cl in picking.x_credit_note_id.invoice_line_ids.filtered(lambda l: l.product_id and not l.product_id.is_storable and l.quantity > 0 and l.sale_line_ids):
+        line = cl.sale_line_ids[:1].sudo()
+        order = line.order_id
+        if order.state != 'sale' or order.locked:
+            continue
+        new = max(line.product_uom_qty - cl.quantity, line.qty_invoiced, 0)
+        if new < line.product_uom_qty - 0.0001:
+            old = line.product_uom_qty
+            line.write({'product_uom_qty': new, 'price_unit': line.price_unit, 'discount': line.discount})
             changes.setdefault(order.id, []).append('%s: %g -> %g' % (line.product_id.display_name, old, new))
     for order_id, rows in changes.items():
         env['sale.order'].sudo().browse(order_id).message_post(body='Goods returned (%s, credit note %s): ordered quantity reduced. %s' % (picking.name, picking.x_credit_note_id.name, '; '.join(rows)))
