@@ -1,0 +1,18 @@
+<t t-name="website.org_returns">
+  <!-- Organicopia "Our promise to you" (returns), website 1, /returns. Wording approved by the owner on 26 Nov 2026:
+       7 days from delivery, any reason, replacement only (no refund), collected by us at no cost. The same terms are
+       declared to Google in odoo/sale/web_product_markup_org.xml: change both together. -->
+  <t t-call="website.layout">
+    <t t-set="additional_title">Our promise to you</t>
+    <div id="wrap">
+      <section class="container py-5" style="max-width:720px">
+        <h1 class="mb-4">Our promise to you</h1>
+        <p>We choose and make every Organicopia product with care, and we want you to love what you receive. If you are not satisfied with a product for any reason, please tell us within 7 days of delivery. Message us on WhatsApp or reply to your order email, and we will make it right with a replacement.</p>
+        <p>If something arrives damaged or is not what you ordered, send us a photo and we will replace it at no cost to you.</p>
+        <p>We will arrange to collect the item from you when we bring your replacement.</p>
+        <p>Thank you for trusting us with what goes on your table.</p>
+        <p class="mt-4"><a class="btn btn-primary" href="https://wa.me/96170649386" target="_blank" rel="noopener">Message us on WhatsApp</a> <a class="btn btn-link" href="/store">Back to the store</a></p>
+      </section>
+    </div>
+  </t>
+</t>
