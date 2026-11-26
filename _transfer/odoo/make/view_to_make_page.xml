@@ -40,7 +40,7 @@
         .oh{font-weight:700;color:#6b4a00;margin-bottom:6px}.own ul{margin:0 0 10px;padding-left:18px}
         .btn{background:#123d36;color:#fff;border:0;border-radius:8px;padding:11px 16px;font:inherit;font-weight:700}
         .btn.sec{background:#fff;color:#123d36;border:1px solid #cfd8d5}.btn[disabled]{opacity:.5}
-        .mk{margin-left:10px;border:1px solid #123d36;background:#fff;color:#123d36;border-radius:7px;padding:6px 10px;font:inherit;font-size:14px;font-weight:700}
+        .mkbtn{margin-left:10px;border:1px solid #123d36;background:#fff;color:#123d36;border-radius:7px;padding:6px 10px;font:inherit;font-size:14px;font-weight:700}
         .ov{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(18,61,54,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
         .ov[hidden]{display:none}.dlg{background:#fff;border-radius:12px;padding:18px;max-width:440px;width:100%}
         .dt{font-weight:700;font-size:18px;color:#123d36;margin-bottom:10px}.dlg label{display:block;font-weight:600;margin-bottom:10px}
@@ -106,7 +106,7 @@
                     <td t-attf-class="#{'wait' if r['wt'] else 'z'}" t-out="('+' + ('%g' % round(r['wt'], 2))) if r['wt'] else '–'"/>
                     <td><t t-out="('%g' % round(r['h3'] + r['h1'], 2))"/><div class="st">SMBF <t t-out="('%g' % round(r['h3'], 2))"/> · smbfoods <t t-out="('%g' % round(r['h1'], 2))"/></div></td>
                     <td t-attf-class="#{'' if r['mk'] else 'z'}" t-out="('%g' % round(r['mk'], 2)) if r['mk'] else '–'"/>
-                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span><button t-if="r['bom'] and r['need'] &gt; 0" type="button" class="mk" t-att-data-pid="r['p'].id" t-att-data-name="r['p'].display_name" t-att-data-need="('%g' % round(r['need'], 3))" t-att-data-co="3 if (r['dem3'] &gt; 0 or r['dem1'] == 0) else 1">Create MO</button></td>
+                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span><button t-if="r['bom'] and r['need'] &gt; 0" type="button" class="mkbtn" t-att-data-pid="r['p'].id" t-att-data-name="r['p'].display_name" t-att-data-need="('%g' % round(r['need'], 3))" t-att-data-co="3 if (r['dem3'] &gt; 0 or r['dem1'] == 0) else 1">Create MO</button></td>
                   </tr>
                   <tr class="d" hidden="hidden"><td colspan="10">
                     <ul>
@@ -138,7 +138,7 @@
           function apply(){Array.prototype.forEach.call(document.querySelectorAll('tr.p'),function(r){var ok=f==='all'||(f==='need'&amp;&amp;r.getAttribute('data-need')==='1')||(f===r.getAttribute('data-kind'));r.hidden=!ok;if(!ok){r.nextElementSibling.hidden=true;}});}
           document.addEventListener('click',function(e){var c=e.target.closest?e.target.closest('.chip'):null;
             if(c){f=c.getAttribute('data-f');Array.prototype.forEach.call(document.querySelectorAll('.chip'),function(x){x.classList.toggle('on',x===c);});apply();return;}
-            var mk=e.target.closest?e.target.closest('.mk'):null;if(mk){e.stopPropagation();openMo(mk);return;}
+            var mk=e.target.closest?e.target.closest('.mkbtn'):null;if(mk){e.stopPropagation();openMo(mk);return;}
             var r=e.target.closest?e.target.closest('tr.p'):null;if(r){r.nextElementSibling.hidden=!r.nextElementSibling.hidden;}});
           function rpc(model,method,args,kwargs){return fetch('/web/dataset/call_kw',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'call',params:{model:model,method:method,args:args,kwargs:kwargs||{}}})}).then(function(r){return r.json();}).then(function(j){if(j.error){throw new Error((j.error.data&amp;&amp;j.error.data.message)||'It did not work.');}return j.result;});}
           var ov=document.getElementById('ov'),$=function(i){return document.getElementById(i);},run=null;
