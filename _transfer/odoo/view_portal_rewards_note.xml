@@ -1,0 +1,7 @@
+<data inherit_id="portal.side_content" priority="99">
+  <!-- Customer's account page: under the Organicopia Rewards balance, what the points are worth and the minimum that
+       can be redeemed (owner, 26 Nov 2026). Program 10 only. -->
+  <xpath expr="//p[@id='card_points']" position="after">
+    <p t-if="program.id == 10" class="m-0 text-600 small" id="smb_points_note">500 points = $5 off. Minimum redemption is 500 points.</p>
+  </xpath>
+</data>

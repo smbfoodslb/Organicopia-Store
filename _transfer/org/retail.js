@@ -8,7 +8,7 @@ const CATALOG = JSON.parse(document.getElementById("orgData").textContent);
 // when a code is already on the basket, or for testing with localStorage.orgCouponTest = "1".
 const COUPON_BOX_FROM = Date.parse("2026-11-28T00:00:00+02:00");
 let coupons = CATALOG.coupon || [], couponTimer = 0;
-// ---- Organicopia Rewards (18 Nov 2026): 5 points per $1 paid, 100 points = $1, used in steps of 500 points ($5). Odoo holds
+// ---- Organicopia Rewards (18 Nov 2026): 5 points per $1 paid, 500 points = $5, used in steps of 500 points ($5). Odoo holds
 // the balance and applies the points (reward CATALOG.rewards.reward); the basket shows the balance and offers to use them.
 let REWARDS = CATALOG.rewards || { member: false, points: 0, reward: 0 };
 const PTS_RATE = 5, PTS_STEP = 500;
@@ -161,8 +161,8 @@ function renderCart() {
   const cbox = $("couponForm"); if (cbox) cbox.hidden = !couponBoxOn();
   const rb = $("rewardsBox"); if (rb) { const earn = Math.round(pay * PTS_RATE), nf = n => Math.round(n).toLocaleString("en-US"), used = coupons.some(c => c.kind === "points");
     rb.innerHTML = !REWARDS.member
-      ? `<b>Organicopia Rewards</b>Earn 5 points for every $1. 100 points = $1 off.${nums.length ? ` This order would earn ${nf(earn)} points.` : ""} <a href="/web/signup?redirect=/store">Create a free account</a> or <a href="/web/login?redirect=/store">sign in</a>.`
-      : `<b>Organicopia Rewards</b>You have ${nf(REWARDS.points)} points (${money(REWARDS.points / 100)}).${nums.length ? ` This order earns ${nf(earn)} points.` : ""}` + (used ? "" : REWARDS.points >= PTS_STEP ? (nums.length ? ` <button type="button" class="linkbtn" id="usePoints">Use my points</button>` : "") : ` Points can be used from ${PTS_STEP} points ($5).`) }
+      ? `<b>Organicopia Rewards</b>Earn 5 points for every $1. 500 points = $5 off.${nums.length ? ` This order would earn ${nf(earn)} points.` : ""} <a href="/web/signup?redirect=/store">Create a free account</a> or <a href="/web/login?redirect=/store">sign in</a>.`
+      : `<b>Organicopia Rewards</b>You have ${nf(REWARDS.points)} points (${money(REWARDS.points / 100)}).${nums.length ? ` This order earns ${nf(earn)} points.` : ""}` + (REWARDS.points >= PTS_STEP ? "" : ` Minimum redemption is ${PTS_STEP} points ($5 off).`) + (used || !nums.length || REWARDS.points <= 0 ? "" : ` <button type="button" class="linkbtn" id="usePoints">Use my points</button>`) }
   const fee = !nums.length ? 0 : pay >= FREE_FROM ? 0 : DELIVERY_FEE;
   $("count").textContent = count; $("cartTotal").textContent = money(total + disc);
   // 17 Nov 2026: the basket shows the goods total only (what the customer pays after the discount, VAT included) and a bar
@@ -281,7 +281,10 @@ else { let settled = false; const still = () => animBox.classList.add("done");
 })();
 renderCatalog(); renderCart();
 { const rbox = $("rewardsBox");
-  if (rbox) rbox.addEventListener("click", ev => { if (!ev.target.closest("#usePoints")) return; rbox.classList.add("busy");
+  if (rbox) rbox.addEventListener("click", ev => { if (!ev.target.closest("#usePoints")) return;
+    // 26 Nov 2026 (owner): fewer than 500 points cannot be redeemed - say so instead of hiding the button
+    if (REWARDS.points < PTS_STEP) { toast(`You need at least ${PTS_STEP} points to redeem. You have ${Math.round(REWARDS.points).toLocaleString("en-US")}.`); return }
+    rbox.classList.add("busy");
     syncChain = syncChain.then(() => fetch("/shop/claimreward?reward_id=" + REWARDS.reward, { credentials: "same-origin" })).then(() => couponRefresh()).then(() => { if (!coupons.some(c => c.kind === "points")) toast("Your points could not be applied to this basket.") }).catch(() => toast("Could not apply your points. Please try again.")).then(() => rbox.classList.remove("busy")) }) }
 { const cform = $("couponForm");
   if (cform) cform.addEventListener("submit", ev => { ev.preventDefault();
