@@ -65,11 +65,19 @@
           map.on('dragstart zoomstart', touched);
           pin.on('dragend', function () { touched(); map.panTo(pin.getLatLng()); });
           map.on('click', function (e) { touched(); map.panTo(e.latlng); });
+          /* 26 Nov 2026: say why the phone gave no position (blocked for the site, switched off, or too slow) and, when the
+             precise fix fails, try once more with the quick network position before giving up */
+          var why = { 1: 'Location is blocked for this site. Tap the lock icon next to the address bar, allow Location, then try again. Or drag the map to your door.',
+                      2: 'Your phone could not find its position. Turn on Location (GPS) and try again, or drag the map to your door.',
+                      3: 'Finding your position took too long. Try again, or drag the map to your door.' };
+          function locate(precise) {
+            navigator.geolocation.getCurrentPosition(function (p) { me.disabled = false; me.textContent = 'Use my current location'; touched(); map.setView([p.coords.latitude, p.coords.longitude], 18); },
+              function (e) { if (precise &amp;&amp; e.code !== 1) { locate(false); return; } me.disabled = false; me.textContent = 'Use my current location'; fail(why[e.code] || why[2]); },
+              precise ? { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 } : { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
+          }
           me.addEventListener('click', function () {
-            if (!navigator.geolocation) { fail('Your phone did not share its location. Drag the map to your door instead.'); return; }
-            me.disabled = true; bad.hidden = true;
-            navigator.geolocation.getCurrentPosition(function (p) { me.disabled = false; touched(); map.setView([p.coords.latitude, p.coords.longitude], 18); },
-              function () { me.disabled = false; fail('Your phone did not share its location. Drag the map to your door instead.'); }, { enableHighAccuracy: true, timeout: 15000 });
+            if (!navigator.geolocation) { fail(why[2]); return; }
+            me.disabled = true; me.textContent = 'Finding your location…'; bad.hidden = true; locate(true);
           });
           save.addEventListener('click', function () {
             var c = map.getCenter();

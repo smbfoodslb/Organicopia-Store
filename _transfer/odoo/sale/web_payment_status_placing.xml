@@ -1,0 +1,15 @@
+<data inherit_id="payment.payment_status">
+  <!-- "Confirm order" on the sites goes through Odoo's payment status page for a few seconds before the thank-you page.
+       For our pay-on-delivery methods (provider code "custom") that page showed "Finalize your payment" with an amount
+       and a reference, which reads as if something were still due. It now shows only "Placing your order…" while Odoo
+       finishes; everything Odoo's own script needs stays in the page, hidden (owner, 26 Nov 2026). -->
+  <xpath expr="//t[@t-call='payment.state_header']" position="before">
+    <div t-if="tx.provider_id.sudo().code == 'custom' and tx.state in ('draft', 'pending')" id="smb_placing" class="text-center my-5">
+      <style>div[name="o_payment_status"] > :not(#smb_placing), .o_portal_breadcrumb, ol.breadcrumb{display:none!important}</style>
+      <i class="fa fa-cog fa-spin fa-2x text-muted"/>
+      <h3 class="mt-3">Placing your order…</h3>
+      <p class="text-muted">One moment please.</p>
+      <a t-att-href="tx.landing_route" class="small text-muted">Continue</a>
+    </div>
+  </xpath>
+</data>
