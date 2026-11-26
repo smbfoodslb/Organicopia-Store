@@ -30,6 +30,9 @@ for tx in records:
         ship = order.partner_shipping_id or order.partner_id
         lines = ''.join('<li>%s x %s - %s %.2f</li>' % (int(l.product_uom_qty) if l.product_uom_qty == int(l.product_uom_qty) else l.product_uom_qty, esc(l.name.replace('\n', ' ')), sym, l.price_total) for l in order.order_line if not l.is_delivery and not l.display_type)
         details = '<p>Phone: %s<br/>Delivery: %s<br/>Address: %s</p>' % (esc(order.x_shop_phone) or '-', esc(order.carrier_id.name) or '-', esc(', '.join([p for p in [ship.street, ship.street2, ship.city] if p])) or '-')
+        # SMB, 26 Nov 2026: what the customer wrote in "Note for your order" at checkout
+        if (order.x_customer_note or '').strip():
+            details = details + '<p><b>Note:</b> %s</p>' % esc(order.x_customer_note.strip()).replace('\n', '<br/>')
         body = '<p>New website order (quotation, not confirmed) <b>%s</b> from <b>%s</b> on %s.</p><ul>%s</ul><p>Total: <b>%s %.2f</b></p>%s<p><a href="%s/odoo/sales/%d">Open in Odoo</a></p>' % (order.name, esc(who), site, lines, sym, order.amount_total, details, env['ir.config_parameter'].sudo().get_param('web.base.url'), order.id)
         env['mail.mail'].sudo().create({'subject': 'New order %s from %s' % (order.name, who), 'email_to': OWNER_EMAIL, 'body_html': body, 'model': 'sale.order', 'res_id': order.id}).send()
         # SMB, 26 Nov 2026: the alert comes from the number of the site the order was placed on: wholesale (website 6)

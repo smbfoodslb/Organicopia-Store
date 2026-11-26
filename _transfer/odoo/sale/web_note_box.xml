@@ -1,0 +1,23 @@
+<t t-name="smb.order_note_box">
+  <!-- Customer's note on the checkout (SMB, 26 Nov 2026). Shown at the end of the address form (new and guest customers)
+       and at the end of the address-selection page (customers with a saved address); see web_note_address.xml and
+       web_note_checkout.xml. Deliberately no server expression: nothing here can break the checkout. The text is saved on
+       the customer's basket (sale.order.x_customer_note, whitelisted for website forms) through Odoo's own
+       /website/form/shop.sale.order while typing, on leaving the box and on any button of the page; it is remembered in
+       this browser tab for three hours so both pages show the same text. An emptied note is saved as one space. -->
+  <div class="col-12 mt-3 mb-3" id="smb_order_note">
+    <label for="smb_order_note_text" class="col-form-label fw-bold">Note for your order <span class="fw-normal text-muted">(optional)</span></label>
+    <textarea id="smb_order_note_text" class="form-control" rows="3" maxlength="500" placeholder="Delivery instructions, preferred time, anything we should know…"/>
+    <small id="smb_order_note_ok" class="text-success" style="display:none">Saved with your order.</small>
+    <script>(function(){var t=document.getElementById('smb_order_note_text');if(!t||t.getAttribute('data-on')){return;}t.setAttribute('data-on','1');
+var ok=document.getElementById('smb_order_note_ok'),K='smb_order_note',timer=null,last=null;
+try{var s=JSON.parse(sessionStorage.getItem(K)||'null');if(s&amp;&amp;Date.now()-s.at&lt;10800000){t.value=s.v;}}catch(e){}
+function save(){var v=t.value.trim();if(v===last){return;}var fd=new FormData();fd.append('csrf_token',(window.odoo&amp;&amp;odoo.csrf_token)||'');fd.append('x_customer_note',v||' ');
+fetch('/website/form/shop.sale.order',{method:'POST',body:fd}).then(function(r){return r.json();}).then(function(j){if(j&amp;&amp;j.id){last=v;ok.style.display=v?'block':'none';}}).catch(function(){});
+try{sessionStorage.setItem(K,JSON.stringify({v:t.value,at:Date.now()}));}catch(e){}}
+t.addEventListener('input',function(){ok.style.display='none';clearTimeout(timer);timer=setTimeout(save,700);});
+t.addEventListener('blur',function(){clearTimeout(timer);save();});
+document.addEventListener('click',function(e){if(e.target.closest&amp;&amp;e.target.closest('a,button')){clearTimeout(timer);save();}},true);
+if(t.value.trim()){save();}})();</script>
+  </div>
+</t>

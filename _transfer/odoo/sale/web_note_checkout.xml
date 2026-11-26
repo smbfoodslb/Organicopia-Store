@@ -1,0 +1,7 @@
+<data>
+  <!-- inherits website_sale.checkout: customers with a saved address never see the address form, so the same box
+       closes the page where they pick the address -->
+  <xpath expr="//div[@id='shop_checkout']" position="inside">
+    <div class="row"><t t-call="smb.order_note_box"/></div>
+  </xpath>
+</data>

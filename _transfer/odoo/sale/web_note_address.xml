@@ -1,0 +1,6 @@
+<data>
+  <!-- inherits website_sale.address: the note box closes the address form, after country and governorate -->
+  <xpath expr="//form[@name='address_form']/div[hasclass('row')]" position="inside">
+    <t t-call="smb.order_note_box"/>
+  </xpath>
+</data>

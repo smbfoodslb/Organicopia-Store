@@ -1,0 +1,6 @@
+<data>
+  <!-- sale order form: what the customer wrote at checkout (SMB, 26 Nov 2026); shown only when there is a note -->
+  <xpath expr="//group[@name='order_details']" position="inside">
+    <field name="x_customer_note" invisible="not x_customer_note"/>
+  </xpath>
+</data>
