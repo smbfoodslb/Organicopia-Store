@@ -76,6 +76,15 @@ Pay on delivery
 </td></tr>
 </table>
 </td></tr>
+<!-- SMB, 26 Nov 2026: optional "pin my delivery location" (page /delivery-location), only while the delivery address has no pin and the order is not a pick-up -->
+<t t-set="o_purl" t-value="object.get_portal_url() or ''"/>
+<tr t-if="'access_token=' in o_purl and not (o_ship.partner_latitude or o_ship.partner_longitude) and 'pick' not in (object.carrier_id.name or '').lower()"><td align="center" style="padding:26px 32px 0 32px;">
+<div style="font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:21px;color:#5b6a68;padding:0 8px 10px 8px;">Help our driver find you: pin your delivery location on the map (optional).</div>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;"><tr>
+<td align="center" style="background-color:#F6E9D6;border:1px solid #033649;border-radius:999px;">
+<a t-attf-href="https://www.organicopia-lb.com/delivery-location?o={{ object.id }}&amp;t={{ o_purl.split('access_token=')[1].split('&amp;')[0] }}" style="display:inline-block;padding:12px 28px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;font-weight:600;color:#033649;text-decoration:none;">Pin my delivery location</a>
+</td></tr></table>
+</td></tr>
 <tr><td align="center" style="padding:26px 32px 6px 32px;">
 <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;"><tr>
 <td align="center" style="background-color:#033649;border-radius:999px;">
