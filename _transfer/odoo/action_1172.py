@@ -32,8 +32,11 @@ for tx in records:
         details = '<p>Phone: %s<br/>Delivery: %s<br/>Address: %s</p>' % (esc(order.x_shop_phone) or '-', esc(order.carrier_id.name) or '-', esc(', '.join([p for p in [ship.street, ship.street2, ship.city] if p])) or '-')
         body = '<p>New website order (quotation, not confirmed) <b>%s</b> from <b>%s</b> on %s.</p><ul>%s</ul><p>Total: <b>%s %.2f</b></p>%s<p><a href="%s/odoo/sales/%d">Open in Odoo</a></p>' % (order.name, esc(who), site, lines, sym, order.amount_total, details, env['ir.config_parameter'].sudo().get_param('web.base.url'), order.id)
         env['mail.mail'].sudo().create({'subject': 'New order %s from %s' % (order.name, who), 'email_to': OWNER_EMAIL, 'body_html': body, 'model': 'sale.order', 'res_id': order.id}).send()
-        # Prefer the Organicopia production number (whatsapp.account 3, prod DB); fall back to any approved copy
-        tpl = env['whatsapp.template'].sudo().search([('template_name', '=', 'new_order_alert'), ('status', '=', 'approved'), ('wa_account_id', '=', 3)], limit=1) or env['whatsapp.template'].sudo().search([('template_name', '=', 'new_order_alert'), ('status', '=', 'approved')], limit=1)
+        # SMB, 26 Nov 2026: the alert comes from the number of the site the order was placed on: wholesale (website 6)
+        # from the SMB Foods number (whatsapp.account 2), the Organicopia store from the Organicopia number (account 3);
+        # the other approved copy only if that one is missing.
+        Tpl = env['whatsapp.template'].sudo()
+        tpl = Tpl.search([('template_name', '=', 'new_order_alert'), ('status', '=', 'approved'), ('wa_account_id', '=', 2 if order.website_id.id == 6 else 3)], limit=1) or Tpl.search([('template_name', '=', 'new_order_alert'), ('status', '=', 'approved')], limit=1)
         if tpl:
             try:
                 composer = env['whatsapp.composer'].sudo().with_context(active_model='sale.order', active_id=order.id).create({'res_model': 'sale.order', 'res_ids': str([order.id]), 'wa_template_id': tpl.id, 'phone': OWNER_PHONE, 'free_text_1': site})
