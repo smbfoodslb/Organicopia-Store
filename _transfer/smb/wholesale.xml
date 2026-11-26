@@ -29,7 +29,7 @@
 <link rel="icon" href="/smb/favicon.svg" type="image/svg+xml"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/smb/wholesale.css?v=b2b5b38a"/>
+<link rel="stylesheet" href="/smb/wholesale.css?v=7fce28ef"/>
 <!-- Odoo Analytics (Plausible), 15 Nov 2026: same tag as website.layout, so /wholesale counts in Website > Reporting > Analytics; skipped for editors -->
 <script t-if="request.website.plausible_shared_key and not editable" id="plausible_script" name="plausible" defer="defer" t-att-data-domain="request.website.plausible_site" t-att-src="request.website._get_plausible_script_url()"/>
 

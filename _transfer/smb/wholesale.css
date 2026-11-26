@@ -276,7 +276,8 @@ footer a{color:var(--band-fg)}
   .chips{padding-bottom:4px;scrollbar-width:none} .chips::-webkit-scrollbar{display:none} .chip{padding:6px 11px;font-size:12px}
 }
 @media (max-width:560px){ .fields{grid-template-columns:1fr} .iconbtn.searchjump{display:none} .card .photo{margin:6px 6px 0} }
-@media (max-width:420px){ .grid{grid-template-columns:1fr} }
+/* phones: two cards per row like the retail store; the quantity stepper drops under the price when the card is too narrow for both (owner, 26 Nov 2026) */
+@media (max-width:420px){ .card .body{padding:10px 9px 10px} .pricebox{flex-wrap:wrap} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} html{scroll-behavior:auto} }
 
 /* Odoo additions */
