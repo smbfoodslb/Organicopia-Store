@@ -1,0 +1,12 @@
+<data>
+  <!-- Website stock rules on the product form, Sales tab (SMB, 26 Nov 2026).
+       x_web_min_stock: the product itself shows sold out on the sites at or below this quantity.
+       x_reserve_qty: for an ingredient. A product made from it and ticked "Sell when out of stock" stays orderable
+       only while more than this quantity of the ingredient is free (SMBF + smbfoods); the rest is kept for our own use. -->
+  <xpath expr="//page[@name='sales']" position="inside">
+    <group string="Website stock rules" name="smb_web_stock">
+      <field name="x_web_min_stock"/>
+      <field name="x_reserve_qty"/>
+    </group>
+  </xpath>
+</data>
