@@ -8,6 +8,35 @@ today = datetime.date.today()
 for rep in records.sudo():
     tok = (rep.x_token or '').strip()
     run = env['x_delivery_run'].sudo().search([('x_token', '=', tok), ('x_state', '!=', 'cancel')], limit=1) if len(tok) == 32 else env['x_delivery_run']
+    # "Return?" on a stop (27 Nov 2026): the driver sent one to three photos of the customer's return invoice, or of the
+    # returned goods, with an optional note. One x_delivery_return is created for the customer of that stop, the owner
+    # gets a to-do on the customer and an email with the photos, and the photos are removed from this report. Accepted
+    # for 7 days after the run's date, also after the deliveries were confirmed. No stock or accounting here.
+    if (rep.x_name or '') == 'return':
+        photos = [ph for ph in (rep.x_photo1, rep.x_photo2, rep.x_photo3) if ph]
+        lines = run.x_line_ids.filtered(lambda l: l.x_stop == rep.x_stop) if run else run
+        if run and run.x_date and (today - run.x_date).days <= 7 and lines and photos:
+            partners = env['stock.picking'].sudo().browse(lines.mapped('x_picking')).exists().mapped('partner_id')
+            partner = partners.filtered(lambda q: q.id == rep.x_partner)[:1] or partners[:1]
+            who = dict(run._fields['x_who'].selection).get(run.x_who, '') if run.x_who else ''
+            ret = env['x_delivery_return'].sudo().create({
+                'x_name': 'Return - %s' % (partner.display_name or 'stop %s' % rep.x_stop),
+                'x_run_id': run.id, 'x_stop': rep.x_stop, 'x_partner_id': partner.id, 'x_customer_id': partner.commercial_partner_id.id,
+                'x_date': datetime.datetime.now(), 'x_driver': who, 'x_note': (rep.x_note or '').strip()[:200] or False,
+                'x_photo1': photos[0], 'x_photo2': photos[1] if len(photos) > 1 else False, 'x_photo3': photos[2] if len(photos) > 2 else False,
+                'x_state': 'new',
+            })
+            owner = env['res.users'].sudo().browse(6)
+            text = 'Return reported by %s at %s (%s, stop %s)%s. Open "Driver returns" to see the photo%s and enter the return invoice.' % (who or 'the driver', partner.display_name or '?', run.x_name, rep.x_stop, (': ' + ret.x_note) if ret.x_note else '', 's' if len(photos) > 1 else '')
+            if partner:
+                partner.commercial_partner_id.activity_schedule('mail.mail_activity_data_todo', user_id=6, summary='Return to enter: %s' % partner.display_name, note=text)
+            atts = env['ir.attachment'].sudo().create([{'name': 'return-%s-%s.jpg' % (ret.id, n + 1), 'datas': ph, 'res_model': 'x_delivery_return', 'res_id': ret.id, 'mimetype': 'image/jpeg'} for n, ph in enumerate(photos)])
+            if owner.email:
+                env['mail.mail'].sudo().create({'subject': 'Return to enter: %s' % (partner.display_name or run.x_name), 'email_to': owner.email, 'body_html': '<p>%s</p>' % text, 'attachment_ids': [(6, 0, atts.ids)], 'auto_delete': True})
+            rep.write({'x_name': 'applied: return %s' % ret.id, 'x_photo1': False, 'x_photo2': False, 'x_photo3': False, 'x_token': False})
+        else:
+            rep.write({'x_name': 'refused return', 'x_photo1': False, 'x_photo2': False, 'x_photo3': False})
+        continue
     # Where the collected cash is now (driver, bottom of the stop list): "keep" = he kept it, "5" = handed to Melissa,
     # "owner" = handed to Mustafa. Only recorded here: the payments stay on the driver's statement until Melissa accepts
     # with her PIN on the run form (action_run_cash_accept.py) or the owner confirms the entries. Can be changed until

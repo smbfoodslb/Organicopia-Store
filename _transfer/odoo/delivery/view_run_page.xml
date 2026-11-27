@@ -23,6 +23,10 @@
         .nav{display:inline-block;margin-top:8px;font-size:15px;color:#123d36;font-weight:600}
         .note{background:#fff8e1;border:1px solid #f0dc9c;border-radius:9px;padding:10px 12px;margin-bottom:12px}
         .rep{margin-top:10px;padding-top:10px;border-top:1px solid #e6efec}
+        .ret{margin-top:8px}.retl{font-size:14px;color:#6b4a00;text-decoration:underline}.retn{font-size:14px;color:#1d6b3f;font-weight:600}
+        .retb{background:#fff8ec;border:1px solid #e6c98a;border-radius:8px;padding:10px;margin-top:6px}.retb[hidden],.retw[hidden]{display:none}
+        .rett{font-size:15px;margin-bottom:8px}.retb input,.retb select{font:inherit;width:100%;box-sizing:border-box;margin:0 0 8px}
+        .retb input[type=text],.retb select{padding:10px;border:1px solid #b9c7c3;border-radius:8px}.b.rets{background:#123d36;color:#fff;margin:0}.retw{font-size:15px;margin-top:6px}
         .st{font-weight:700;margin-bottom:8px}.st.ok{color:#1d6b3f}.st.no{color:#9b1c1c}
         .b{font:inherit;font-weight:600;padding:10px 14px;border-radius:8px;border:2px solid #123d36;background:#fff;color:#123d36;margin:0 8px 6px 0}
         .b.on.ok{background:#1d6b3f;border-color:#1d6b3f;color:#fff}.b.on.no{background:#9b1c1c;border-color:#9b1c1c;color:#fff}
@@ -105,6 +109,22 @@
                   <div class="err" hidden="hidden">Not saved. Check the connection and try again.</div>
                 </t>
               </div>
+              <!-- 27 Nov 2026 (owner): "Return?" - the driver photographs the customer's return invoice (or the returned goods);
+                   posted as an x_delivery_report named "return" with up to three photos, see auto_delivery_report.py -->
+              <div t-if="sl" class="ret" t-att-data-stop="st['n']">
+                <t t-set="rp" t-value="request.env['stock.picking'].sudo().browse(sl.mapped('x_picking')).exists().mapped('partner_id')"/>
+                <t t-set="rn" t-value="request.env['x_delivery_return'].sudo().search_count([('x_run_id', '=', run.id), ('x_stop', '=', st['n'])])"/>
+                <a href="#" class="retl">Return?</a><span t-if="rn" class="retn"> · <t t-out="rn"/> return report(s) sent</span>
+                <div class="retb" hidden="hidden">
+                  <div class="rett">Take a photo of the return invoice. If there is no return invoice, take a photo of the returned products.</div>
+                  <select t-if="len(rp) &gt; 1" class="retp"><t t-foreach="rp" t-as="pp"><option t-att-value="pp.id" t-out="pp.display_name"/></t></select>
+                  <input type="file" class="retf" accept="image/*" multiple="multiple"/>
+                  <input type="text" class="retx" maxlength="200" placeholder="Note (optional)"/>
+                  <button type="button" class="b rets">Send return photo</button>
+                  <div class="retw" hidden="hidden">Sending…</div>
+                  <div class="err" hidden="hidden">Not sent. Check the connection and try again.</div>
+                </div>
+              </div>
               <a t-if="st['lat'] and st['lng']" class="nav" target="_blank" rel="noopener" t-attf-href="https://www.google.com/maps/dir/?api=1&amp;destination=#{st['lat']},#{st['lng']}">Navigate to this stop</a>
             </div>
           </t>
@@ -180,6 +200,28 @@
           }
           document.getElementById('askn').addEventListener('click', function () { pending = null; ask.hidden = true; });
           document.getElementById('asky').addEventListener('click', function () { var go = pending; pending = null; ask.hidden = true; if (go) { go(); } });
+          /* "Return?": photos are shrunk in the phone (longest side 1600 px, JPEG) before they are sent, at most three */
+          function shrink(file) { return new Promise(function (res) { var img = new Image();
+            img.onload = function () { var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+              c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); c.toBlob(function (b) { URL.revokeObjectURL(img.src); res(b || file); }, 'image/jpeg', 0.8); };
+            img.onerror = function () { res(file); }; img.src = URL.createObjectURL(file); }); }
+          document.addEventListener('click', function (e) {
+            var l = e.target.closest ? e.target.closest('.retl') : null;
+            if (l) { e.preventDefault(); var bx = l.parentNode.querySelector('.retb'); bx.hidden = !bx.hidden; return; }
+            var sb = e.target.closest ? e.target.closest('.rets') : null; if (!sb) { return; }
+            var box = sb.closest('.ret'), files = Array.prototype.slice.call(box.querySelector('.retf').files || [], 0, 3), err = box.querySelector('.err'), wait = box.querySelector('.retw');
+            if (!files.length) { err.textContent = 'Choose or take a photo first.'; err.hidden = false; return; }
+            sb.disabled = true; err.hidden = true; wait.hidden = false;
+            Promise.all(files.map(shrink)).then(function (blobs) {
+              var fd = new FormData(), sel = box.querySelector('.retp');
+              fd.append('csrf_token', C); fd.append('x_name', 'return'); fd.append('x_token', T); fd.append('x_stop', box.getAttribute('data-stop'));
+              fd.append('x_note', box.querySelector('.retx').value.trim()); fd.append('x_partner', sel ? sel.value : '0');
+              blobs.forEach(function (b, i) { fd.append('x_photo' + (i + 1), b, 'return-' + (i + 1) + '.jpg'); });
+              return fetch('/website/form/x_delivery_report', { method: 'POST', body: fd }); })
+              .then(function (r) { return r.json(); })
+              .then(function (j) { if (!j || !j.id) { throw new Error('no id'); } location.hash = 's' + box.getAttribute('data-stop'); location.reload(); })
+              .catch(function () { sb.disabled = false; wait.hidden = true; err.textContent = 'Not sent. Check the connection and try again.'; err.hidden = false; });
+          });
           document.addEventListener('click', function (e) {
             var btn = e.target.closest ? e.target.closest('.rep .b') : null; if (!btn) { return; }
             var box = btn.closest('.rep'), s = btn.getAttribute('data-s');

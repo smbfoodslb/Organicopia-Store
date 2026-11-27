@@ -1,0 +1,10 @@
+<list string="Driver returns" default_order="x_date desc, id desc" create="0" decoration-bf="x_state == 'new'" decoration-muted="x_state == 'done'">
+  <field name="x_date" string="Reported"/>
+  <field name="x_customer_id" string="Customer"/>
+  <field name="x_partner_id" string="Delivery address" optional="show"/>
+  <field name="x_driver" string="Driver"/>
+  <field name="x_run_id" string="Delivery run" optional="show"/>
+  <field name="x_note" string="Note"/>
+  <field name="x_credit_note_id" string="Return invoice" optional="show"/>
+  <field name="x_state" string="Status" widget="badge" decoration-warning="x_state == 'new'" decoration-success="x_state == 'done'"/>
+</list>
