@@ -33,6 +33,8 @@
         .b.no{border-color:#9b1c1c;color:#9b1c1c}
         .why input{font:inherit;width:100%;box-sizing:border-box;padding:10px;border:1px solid #b9c7c3;border-radius:8px;margin:4px 0 8px}
         .cash{margin:0 0 10px}.cash label{display:block;font-weight:600;color:#9b1c1c;margin-bottom:4px}
+        .cash .lw{font-weight:600;color:#1f5d3a;margin-bottom:4px}
+        .cash .sw{display:block;margin-top:6px;background:none;border:0;padding:4px 0;font:inherit;font-size:14px;color:#3b5bdb;text-decoration:underline}
         .cash input{font:inherit;font-size:20px;font-weight:700;width:170px;padding:9px 10px;border:2px solid #9b1c1c;border-radius:8px}
         .err{color:#9b1c1c;font-size:15px;margin-top:4px}
         .info{background:#e6efec;border-radius:9px;padding:10px 12px;margin-bottom:12px}
@@ -67,7 +69,7 @@
           <t t-set="cashdone" t-value="{e.x_sale_id.id: e for e in request.env['x_staff_entry'].sudo().search([('x_run_id', '=', run.id), ('x_type', '=', 'cash')])}"/>
           <div t-if="lines and locked" class="info">The manager has confirmed the deliveries of this run.</div>
           <div t-elif="lines and run.x_reported == 'all'" class="info">Every stop is reported. The manager will confirm the deliveries.</div>
-          <div t-elif="lines" class="info">At each stop, tap Delivered or Not delivered. Where money is collected, check the amount first and change it if the customer paid a different amount. The manager confirms afterwards.</div>
+          <div t-elif="lines" class="info">At each stop, tap Delivered or Not delivered. Where money is collected, check the amount first and change it if the customer paid a different amount. If the customer pays by Whish instead of cash, or cash instead of Whish, tap the blue line under the amount. The manager confirms afterwards.</div>
           <a t-if="run.x_route_url" class="go" t-att-href="run.x_route_url" target="_blank" rel="noopener">Open the whole route in Google Maps</a>
           <t t-foreach="json.loads(run.x_stops_json or '[]')" t-as="st">
             <div class="stop" t-attf-id="s#{st['n']}">
@@ -92,10 +94,19 @@
                 <div t-if="r == 'failed'" class="st no">Reported: not delivered<t t-if="sl[0].x_report_note">, <t t-out="sl[0].x_report_note"/></t></div>
                 <t t-foreach="st.get('cash') or []" t-as="c">
                   <t t-set="en" t-value="cashdone.get(c['sale'])"/>
-                  <div t-if="en and en.x_state == 'expected' and not locked" class="cash">
-                    <label>Cash received<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t> ($)</label>
+                  <div t-if="en and en.x_state == 'expected' and not locked" class="cash" data-m="cash" data-o="collect">
+                    <label class="lc">Cash received<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t> ($)</label>
                     <input type="number" inputmode="decimal" min="0" step="0.01" t-att-data-sale="c['sale']" t-att-value="'%.2f' % (en.x_input or c['amt'])"/>
+                    <div class="lw" hidden="hidden">Pays by Whish<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t>: nothing to collect</div>
+                    <button type="button" class="sw" data-c="Pays by Whish instead" data-w="Paid cash instead">Pays by Whish instead</button>
                   </div>
+                  <div t-elif="c.get('mode') == 'whish' and not en and not locked" class="cash" data-m="whish" data-o="whish">
+                    <label class="lc" hidden="hidden">Cash received<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t> ($)</label>
+                    <input type="number" inputmode="decimal" min="0" step="0.01" hidden="hidden" t-att-data-sale="c['sale']" t-att-value="'%.2f' % c['amt']"/>
+                    <div class="lw">Pays by Whish<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t>: nothing to collect</div>
+                    <button type="button" class="sw" data-c="Pays by Whish instead" data-w="Paid cash instead">Paid cash instead</button>
+                  </div>
+                  <div t-elif="en and en.x_state == 'rejected' and 'By Whish' in (en.x_name or '')" class="st ok">Pays by Whish<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t></div>
                   <div t-elif="en and en.x_state in ('review', 'confirmed')" class="st ok">Cash reported<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t>: $<t t-out="'%.2f' % en.x_input"/></div>
                   <div t-elif="en and en.x_state == 'rejected'" class="st no">Cash not collected<t t-if="len(st.get('cash')) &gt; 1"> for <t t-out="c['order']"/></t></div>
                 </t>
@@ -162,12 +173,18 @@
       <script>
         (function () {
           var wrap = document.querySelector('.wrap'), T = wrap.getAttribute('data-t'), C = wrap.getAttribute('data-c');
+          /* cash or Whish, switched on one order of a stop (27 Nov 2026) */
+          document.addEventListener('click', function (ev) { var b = ev.target.closest ? ev.target.closest('.sw') : null; if (!b) { return; }
+            var d = b.parentNode, cashNow = d.getAttribute('data-m') === 'cash'; d.setAttribute('data-m', cashNow ? 'whish' : 'cash');
+            d.querySelector('.lc').hidden = cashNow; d.querySelector('input').hidden = cashNow; d.querySelector('.lw').hidden = !cashNow;
+            b.textContent = cashNow ? b.getAttribute('data-w') : b.getAttribute('data-c'); });
           function send(box, status, note, btn) {
             var fd = new FormData();
             fd.append('csrf_token', C); fd.append('x_name', 'report'); fd.append('x_token', T);
             fd.append('x_stop', box.getAttribute('data-stop')); fd.append('x_status', status); fd.append('x_note', note || '');
             var cash = [];
-            if (status === 'delivered') { Array.prototype.forEach.call(box.querySelectorAll('.cash input'), function (i) { cash.push(i.getAttribute('data-sale') + '=' + (parseFloat(i.value) || 0)); }); }
+            if (status === 'delivered') { Array.prototype.forEach.call(box.querySelectorAll('.cash'), function (d) { var i = d.querySelector('input'), m = d.getAttribute('data-m'), o = d.getAttribute('data-o');
+              if (m === 'cash') { cash.push(i.getAttribute('data-sale') + '=' + (parseFloat(i.value) || 0)); } else if (o === 'collect') { cash.push(i.getAttribute('data-sale') + '=whish'); } }); }
             fd.append('x_cash', cash.join(','));
             btn.disabled = true; box.querySelector('.err').hidden = true;
             fetch('/website/form/x_delivery_report', { method: 'POST', body: fd })
@@ -189,8 +206,10 @@
           var ask = document.getElementById('ask'), pending = null;
           function confirmFirst(box, status, note, btn) {
             var stop = box.closest('.stop'), title = stop.querySelector('.t').textContent, ok = status === 'delivered', lines = [title], cash = [];
-            if (ok) { Array.prototype.forEach.call(box.querySelectorAll('.cash input'), function (i) { cash.push('$' + (parseFloat(i.value) || 0).toFixed(2)); }); }
+            var wh = 0;
+            if (ok) { Array.prototype.forEach.call(box.querySelectorAll('.cash'), function (d) { if (d.getAttribute('data-m') === 'cash') { cash.push('$' + (parseFloat(d.querySelector('input').value) || 0).toFixed(2)); } else { wh += 1; } }); }
             if (cash.length) { lines.push('Cash received: ' + cash.join(' + ')); }
+            if (wh) { lines.push('Pays by Whish: nothing collected'); }
             if (!ok) { lines.push(note ? 'Reason: ' + note : 'No reason written'); }
             var q = document.getElementById('askq'), y = document.getElementById('asky');
             q.textContent = 'Stop ' + box.getAttribute('data-stop') + ': ' + (ok ? 'delivered?' : 'NOT delivered?'); q.className = 'askq ' + (ok ? '' : 'no');

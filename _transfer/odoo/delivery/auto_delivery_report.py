@@ -76,15 +76,35 @@ for rep in records.sudo():
                     if len(bits) != 2 or not bits[0].strip().isdigit():
                         continue
                     sid = int(bits[0])
+                    if sid not in allowed:
+                        continue
+                    # Cash <-> Whish, switched by the driver at the door (27 Nov 2026). "saleId=whish": the customer will
+                    # send the money by Whish instead of paying cash - the "To collect" entry is closed and the order
+                    # is marked Whish. An amount for an order marked Whish: the customer paid cash after all - the order
+                    # goes back to collect and the cash is entered like any other.
+                    if bits[1].strip() == 'whish':
+                        entry = env['x_staff_entry'].sudo().search([('x_run_id', '=', run.id), ('x_sale_id', '=', sid), ('x_type', '=', 'cash'), ('x_state', '=', 'expected')], limit=1)
+                        if entry:
+                            entry.write({'x_state': 'rejected', 'x_amount': 0.0, 'x_name': (entry.x_name or '').replace('To collect:', 'By Whish, not collected:', 1)})
+                        wsale = env['sale.order'].sudo().browse(sid)
+                        if wsale.x_collect != 'whish':
+                            wsale.write({'x_collect': 'whish'})
+                        continue
                     try:
                         amount = round(float(bits[1]), 2)
                     except Exception:
                         continue
-                    if sid not in allowed or amount < 0 or amount > 1000000:
+                    if amount < 0 or amount > 1000000:
                         continue
                     entry = env['x_staff_entry'].sudo().search([('x_run_id', '=', run.id), ('x_sale_id', '=', sid), ('x_type', '=', 'cash'), ('x_state', '=', 'expected')], limit=1)
                     if not entry:
-                        continue
+                        wsale = env['sale.order'].sudo().browse(sid)
+                        other = env['x_staff_entry'].sudo().search([('x_run_id', '=', run.id), ('x_sale_id', '=', sid), ('x_type', '=', 'cash')], limit=1)
+                        if wsale.x_collect != 'whish' or amount < 0.005 or other:
+                            continue
+                        wsale.write({'x_collect': 'collect'})
+                        entry = env['x_staff_entry'].sudo().create({'x_type': 'cash', 'x_state': 'expected', 'x_who': run.x_who if run.x_who in ('5', '7') else False, 'x_run_id': run.id, 'x_sale_id': sid,
+                                                                  'x_partner_id': wsale.partner_id.commercial_partner_id.id, 'x_input': amount})
                     if amount < 0.005:
                         entry.write({'x_state': 'rejected', 'x_amount': 0.0, 'x_name': (entry.x_name or '').replace('To collect:', 'Not collected:', 1)})
                         continue

@@ -217,6 +217,7 @@
 
   function payTag(s) {
     if (s.collect === 'account') { return '<span class="tag">On account</span>'; }
+    if (s.collect === 'whish') { return (s.invoiced && s.due < 0.005) ? '<span class="tag ok">Paid</span>' : '<span class="tag warn">Whish $' + (s.custom > 0.005 ? s.custom : s.due).toFixed(2) + '</span>'; }
     if (s.custom > 0.005) { return '<span class="tag bad">Collect $' + s.custom.toFixed(2) + ' (other amount)</span>'; }
     if (s.invoiced && s.due < 0.005) { return '<span class="tag ok">Paid</span>'; }
     return '<span class="tag bad">Collect $' + s.due.toFixed(2) + '</span>';
@@ -230,7 +231,7 @@
   }
   function setCollect(s, mode) {
     S.msg = ''; S.err = '';
-    rpc('sale.order', 'write', [[s.sale], { x_collect: mode }]).then(function () { s.collect = mode; S.saved = null; S.msg = s.order + (mode === 'collect' ? ': the driver collects.' : ': on account, nothing to collect.'); render(); })
+    rpc('sale.order', 'write', [[s.sale], { x_collect: mode }]).then(function () { s.collect = mode; S.saved = null; S.msg = s.order + (mode === 'collect' ? ': the driver collects.' : mode === 'whish' ? ': pays by Whish, nothing to collect.' : ': on account, nothing to collect.'); render(); })
       .catch(function (e) { S.err = 'Not changed: ' + e.message; render(); });
   }
 
@@ -375,6 +376,7 @@
         '<button class="small" data-a="' + (s.fly ? 'nofly' : 'fly') + '" data-id="' + s.id + '">' + (s.fly ? 'Back to our driver' : 'Send with FlyPost') + '</button>' +
         (s.fly ? '<button class="small" data-a="handed" data-id="' + s.id + '">Handed to FlyPost</button>' : '') +
         '<button class="small" data-a="' + (s.collect === 'collect' ? 'account' : 'collect') + '" data-id="' + s.id + '">' + (s.collect === 'collect' ? 'Put on account' : 'Collect on delivery') + '</button>' +
+        (s.fly ? '' : '<button class="small" data-a="' + (s.collect === 'whish' ? 'account' : 'whish') + '" data-id="' + s.id + '">' + (s.collect === 'whish' ? 'Put on account' : 'Pays by Whish') + '</button>') +
         (s.collect !== 'collect' || s.fly ? '' : S.amt === s.id ? '<input class="amtin" type="number" min="0" step="0.01" value="' + (s.custom > 0.005 ? s.custom.toFixed(2) : '') + '" placeholder="Amount $" style="width:90px;padding:2px 4px;font-size:12px;margin:4px 4px 0 0"><button class="small" data-a="amtok" data-id="' + s.id + '">OK</button>' : '<button class="small" data-a="amt" data-id="' + s.id + '">Other amount</button>') +
         (function () { if (s.fly || !s.on) { return ''; } var m = members(s.g), out = '';
           if (m.some(function (o) { return o.partner !== s.partner; })) { out += '<button class="small" data-a="split" data-id="' + s.id + '">Split into its own stop</button>'; }
@@ -428,7 +430,7 @@
     else if (a === 'handed') { handed(s); }
     else if (a === 'split') { split(s); }
     else if (a === 'join') { combine(s, byId(parseInt(t.getAttribute('data-to'), 10))); }
-    else if (a === 'collect' || a === 'account') { setCollect(s, a); }
+    else if (a === 'collect' || a === 'account' || a === 'whish') { setCollect(s, a); }
     else if (a === 'amt') { S.amt = s.id; render(); }
     else if (a === 'amtok') { var box = document.querySelector('.amtin'); setAmount(s, box ? box.value : 0); }
     else if (a === 'copylist') {

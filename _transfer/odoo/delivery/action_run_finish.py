@@ -77,13 +77,20 @@ for run in records.sudo():
         due = sale.x_amount_open if invoiced else sale.amount_total
         if mode == 'account':
             return ('account', 0.0)
+        if mode == 'whish':
+            # the customer sends the money by Whish to the owner: nothing for the driver to collect (27 Nov 2026).
+            # The amount is carried so the driver can switch the stop to cash on the page.
+            if invoiced and due < 0.005:
+                return ('paid', 0.0)
+            return ('whish', sale.x_collect_amount if sale.x_collect_amount > 0.005 else due)
         if sale.x_collect_amount > 0.005:
             # the owner set another amount to collect on the order (more or less than the invoice)
             return ('collect', sale.x_collect_amount)
         if invoiced and due < 0.005:
             return ('paid', 0.0)
         return ('collect', due)
-    WORDS = {'account': 'on account, do not collect', 'paid': 'PAID, nothing to collect'}
+    WORDS = {'account': 'on account, do not collect', 'paid': 'PAID, nothing to collect', 'whish': 'pays by Whish, nothing to collect'}
+    SHORT = {'account': 'on account', 'paid': 'paid', 'whish': 'Whish'}
     for stop in stops:
         number += 1
         if stop.get('orders') is not None:
@@ -122,15 +129,15 @@ for run in records.sudo():
             if kinds == set(['collect']):
                 what = 'collect $%.2f (%s)' % (total, ' + '.join('%s $%.2f' % (label(r), r[2][1]) for r in rows))
             elif 'collect' in kinds:
-                what = 'collect $%.2f (%s)' % (total, '; '.join(('%s $%.2f' % (label(r), r[2][1])) if r[2][0] == 'collect' else ('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account')) for r in rows))
+                what = 'collect $%.2f (%s)' % (total, '; '.join(('%s $%.2f' % (label(r), r[2][1])) if r[2][0] == 'collect' else ('%s %s' % (label(r), SHORT[r[2][0]])) for r in rows))
             elif len(kinds) == 1:
                 what = '%s (%s)' % (WORDS[list(kinds)[0]], ', '.join(label(r) for r in rows))
             else:
-                what = 'nothing to collect (%s)' % '; '.join('%s %s' % (label(r), 'paid' if r[2][0] == 'paid' else 'on account') for r in rows)
+                what = 'nothing to collect (%s)' % '; '.join('%s %s' % (label(r), SHORT[r[2][0]]) for r in rows)
         parts.append('%d) %s: %s' % (number, title, what))
         page.append({'n': number, 'title': title, 'what': what, 'collect': what.startswith('collect'), 'lat': stop.get('lat'), 'lng': stop.get('lng'), 'people': people([stop] + (stop.get('group') or [])),
                      # the orders with cash to collect at this stop: the driver enters what he received on the page (25 Nov 2026)
-                     'cash': [{'sale': r[3], 'order': r[1], 'name': r[0], 'amt': round(r[2][1], 2)} for r in rows if r[2][0] == 'collect' and r[2][1] > 0.005]})
+                     'cash': [{'sale': r[3], 'order': r[1], 'name': r[0], 'amt': round(r[2][1], 2), 'mode': r[2][0]} for r in rows if r[2][0] in ('collect', 'whish') and r[2][1] > 0.005]})
     vals['x_collect_text'] = ' | '.join(parts) or '-'
     vals['x_stops_json'] = json.dumps(page)
     # The run's own-driver deliveries, for the owner's "Confirm deliveries" list on the run form (owner, 23 Nov 2026).
