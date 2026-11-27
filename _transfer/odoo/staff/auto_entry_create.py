@@ -23,6 +23,11 @@ for r in records.sudo():
     if r.x_type == 'expense':
         if r.x_input <= 0:
             raise UserError('Enter the amount you paid.')
+        # 27 Nov 2026: the same expense entered twice (same person, day, amount and description, not rejected) is refused
+        same = env['x_staff_entry'].sudo().search([('id', '!=', r.id), ('x_type', '=', 'expense'), ('x_who', '=', r.x_who), ('x_date', '=', r.x_date or datetime.date.today()), ('x_state', 'in', ('review', 'confirmed'))])
+        same = same.filtered(lambda o: abs(o.x_input - r.x_input) < 0.005 and (o.x_desc or '').strip().lower() == (r.x_desc or '').strip().lower())
+        if same:
+            raise UserError('This expense is already saved: "%s", $%.2f. It was not added a second time. If it really is another purchase, write something different in "What did you buy?".' % (r.x_desc or '', r.x_input))
         vals['x_amount'] = round(r.x_input, 2)
         vals['x_name'] = 'Expense: %s' % (r.x_desc or '')
     elif r.x_type == 'vehicle':

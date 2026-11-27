@@ -26,7 +26,7 @@
       <button name="__NOTCOLLECTED__" type="action" string="Not collected" class="btn btn-secondary btn-lg" confirm="Mark this as not collected?"/>
     </div>
     <div class="d-flex gap-2 mt-3" invisible="id">
-      <button special="save" string="Save" class="btn btn-primary btn-lg"/>
+      <button name="__SAVED__" type="action" string="Save" class="btn btn-primary btn-lg"/>
       <button special="cancel" string="Cancel" class="btn btn-secondary btn-lg"/>
     </div>
   </sheet>
