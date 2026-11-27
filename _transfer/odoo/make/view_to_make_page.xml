@@ -112,7 +112,7 @@
                     <td t-attf-class="#{'wait' if r['wt'] else 'z'}" t-out="('+' + ('%g' % round(r['wt'], 2))) if r['wt'] else '–'"/>
                     <td><t t-out="('%g' % round(r['h3'] + r['h1'], 2))"/><div class="st">SMBF <t t-out="('%g' % round(r['h3'], 2))"/> · smbfoods <t t-out="('%g' % round(r['h1'], 2))"/></div></td>
                     <td t-attf-class="#{'' if r['mk'] else 'z'}" t-out="('%g' % round(r['mk'], 2)) if r['mk'] else '–'"/>
-                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span><button t-if="r['bom'] and r['need'] &gt; 0" type="button" class="mkbtn" t-att-data-pid="r['p'].id" t-att-data-name="r['p'].display_name" t-att-data-need="('%g' % round(r['need'], 3))" t-att-data-co="3 if (r['dem3'] &gt; 0 or r['dem1'] == 0) else 1">Create MO</button></td>
+                    <td><span t-if="r['need'] &gt; 0" class="need" t-out="('%g' % round(r['need'], 2))"/><span t-else="" class="okk">✓</span><button t-if="r['bom'] and r['need'] &gt; 0" type="button" class="mkbtn" t-att-data-pid="r['p'].id" t-att-data-name="r['p'].display_name" t-att-data-need="('%g' % round(r['need'], 3))" t-att-data-note="'\n'.join([n[0] + ': ' + n[1] for n in r['nt']])" t-att-data-co="3 if (r['dem3'] &gt; 0 or r['dem1'] == 0) else 1">Create MO</button></td>
                   </tr>
                   <tr class="d" hidden="hidden"><td colspan="10">
                     <ul>
@@ -151,8 +151,8 @@
           function show(title,msg,okText,mo,fn){$('dt').textContent=title;$('dm').textContent=msg||'';$('dok').textContent=okText;$('dok').disabled=false;$('dok').hidden=false;$('dmo').hidden=!mo;$('derr').hidden=true;run=fn;ov.hidden=false;}
           function fail(e){$('derr').textContent=e.message;$('derr').hidden=false;$('dok').disabled=false;}
           function openMo(b){$('dq').value=b.getAttribute('data-need');$('dc').value=b.getAttribute('data-co');if($('dp')){$('dp').value='';}
-            show('Make '+b.getAttribute('data-name'),'','Create the manufacturing order',true,function(){var co=+$('dc').value,q=parseFloat($('dq').value)||0;if(q&lt;=0){fail(new Error('Enter a quantity.'));return;}
-              var vals={product_id:+b.getAttribute('data-pid'),product_qty:q,company_id:co,picking_type_id:co===3?77:55};if($('dp')){vals.x_pin=$('dp').value;}
+            var nt=b.getAttribute('data-note')||'';show('Make '+b.getAttribute('data-name'),nt?'Order note (copied onto the manufacturing order):\n'+nt:'','Create the manufacturing order',true,function(){var co=+$('dc').value,q=parseFloat($('dq').value)||0;if(q&lt;=0){fail(new Error('Enter a quantity.'));return;}
+              var vals={product_id:+b.getAttribute('data-pid'),product_qty:q,company_id:co,picking_type_id:co===3?77:55};if($('dp')){vals.x_pin=$('dp').value;}if(nt){vals.x_order_note=nt;}
               rpc('mrp.production','create',[vals],{context:{allowed_company_ids:[co,co===3?1:3],default_company_id:co}}).then(function(id){location.href='/odoo/action-1319/'+id;}).catch(fail);});}
           $('dno').addEventListener('click',function(){ov.hidden=true;if(run===null){location.reload();}});
           $('dok').addEventListener('click',function(){if(run){$('dok').disabled=true;$('derr').hidden=true;run();}});

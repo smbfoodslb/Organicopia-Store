@@ -1,0 +1,6 @@
+<data>
+  <!-- delivery screen: the sales-order note of each product, next to the product (field_move_order_note.py) -->
+  <xpath expr="//field[@name='move_ids']/list/field[@name='product_id']" position="after">
+    <field name="x_order_note" string="Order note" readonly="1" optional="show" decoration-warning="x_order_note"/>
+  </xpath>
+</data>

@@ -1,0 +1,6 @@
+<data>
+  <!-- manufacturing order form: "Order note", filled from the To make page with the notes under the product on the orders -->
+  <xpath expr="//field[@name='bom_id']" position="after">
+    <field name="x_order_note" string="Order note" placeholder="Customer note from the sales order" decoration-warning="x_order_note"/>
+  </xpath>
+</data>
