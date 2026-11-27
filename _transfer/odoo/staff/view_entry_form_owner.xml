@@ -19,8 +19,9 @@
         <field name="x_km" invisible="x_type != 'vehicle'" readonly="x_state != 'review'"/>
         <field name="x_vehicle" invisible="x_type != 'vehicle'" readonly="x_state != 'review'"/>
         <field name="x_partner_id" invisible="x_type != 'cash'" readonly="x_state != 'review'"/>
-        <field name="x_invoice_id" invisible="x_type != 'cash'" readonly="x_state != 'review'" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial'))]"/>
-        <field name="x_sale_id" invisible="x_type != 'cash' or (not x_sale_id and x_state != 'review')" readonly="x_state != 'review'"/>
+        <field name="x_invoice_id" invisible="x_type != 'cash'" readonly="x_state != 'review'" domain="[('move_type', '=', 'out_invoice'), ('state', '=', 'posted'), ('payment_state', 'in', ('not_paid', 'partial')), '|', '|', ('partner_id', '=', x_partner_id), ('commercial_partner_id', '=', x_partner_id), ('id', '&gt;', x_partner_id and 2000000000 or 0)]"/>
+        <!-- invoice and order lists: only the chosen customer's documents; everything while no customer is chosen (27 Nov 2026) -->
+        <field name="x_sale_id" invisible="x_type != 'cash' or (not x_sale_id and x_state != 'review')" readonly="x_state != 'review'" domain="['|', '|', ('partner_id', '=', x_partner_id), ('partner_id.commercial_partner_id', '=', x_partner_id), ('id', '&gt;', x_partner_id and 2000000000 or 0)]"/>
         <field name="x_run_id" invisible="not x_run_id" readonly="1"/>
         <field name="x_payment_id" invisible="x_type != 'cash' or (not x_payment_id and x_state != 'review')" readonly="x_state != 'review'" domain="[('payment_type', '=', 'inbound'), ('state', 'in', ('in_process', 'paid'))]" options="{'no_create': True}" placeholder="Only for a payment recorded beforehand"/>
       </group>
