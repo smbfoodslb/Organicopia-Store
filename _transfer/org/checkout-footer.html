@@ -47,7 +47,7 @@
   var NAMES = { '1895': 'Beirut & Greater Beirut', '1899': 'Mount Lebanon (outside Greater Beirut)' }, AR = /[\u0600-\u06FF]/;
   var MAP = 'https://maps.app.goo.gl/a3Eh8v68L6VqcUJJ7';
   var get = function () { try { var f = JSON.parse(sessionStorage.getItem(KEY) || 'null'); return f && Date.now() - f.t < 600000 ? f : null; } catch (e) { return null; } };
-  var put = function (m, d) { try { sessionStorage.setItem(KEY, JSON.stringify({ m: m, t: Date.now(), d: d || 0 })); return true; } catch (e) { return false; } };
+  var put = function (m, d, w) { try { sessionStorage.setItem(KEY, JSON.stringify({ m: m, t: Date.now(), d: d || 0, w: w || '' })); return true; } catch (e) { return false; } };
   /* total of the discounts Odoo reports for the order (promotion, coupon) */
   var disc = function (r) { return Math.round((r.discount_reward_amounts || []).reduce(function (s, x) { return s + Math.abs(num(x)); }, 0) * 100) / 100; };
   var drop = function () { try { sessionStorage.removeItem(KEY); } catch (e) {} };
@@ -80,11 +80,14 @@
   }
 
   if (p === '/shop/payment' && flow) {
-    /* last page: one payment method (pay on delivery), already selected - press its Confirm for the customer */
-    drop(); var v2 = veil(), n2 = 0, clicks = 0;
+    /* last page: two payment methods since 27 Nov 2026 (pay on delivery, Whish) - select the one chosen on the
+       details page (flow.w), then press its Confirm for the customer */
+    drop(); var v2 = veil(), n2 = 0, clicks = 0, want = flow.w === 'whish' ? 'whish' : 'cash_on_delivery';
     var t2 = setInterval(function () {
       n2++;
       var b = [].slice.call(document.querySelectorAll('[name="o_payment_submit_button"]')).filter(function (x) { return x.offsetParent !== null; })[0];
+      var wr = document.querySelector('input[name="o_payment_radio"][data-payment-method-code="' + want + '"]') || document.querySelector('input[name="o_payment_radio"]');
+      if (wr && !wr.checked && clicks === 0) { wr.click(); return; }
       var r = document.querySelector('input[name="o_payment_radio"]:checked');
       if (b && r && !b.disabled && ((clicks === 0 && n2 >= 8) || (clicks === 1 && n2 >= 40))) { clicks++; b.click(); }
       if (n2 > 100) { clearInterval(t2); v2.remove(); }
@@ -118,23 +121,34 @@
     if (form) {
       /* ---- Delivery or Pickup, free-delivery bar, totals ---- */
       var sel = flow && flow.m === PICKUP ? PICKUP : DELIVERY;
+      var payWith = flow && flow.w === 'whish' ? 'whish' : '';
       var ship = document.createElement('div'); ship.id = 'smbShip';
       ship.innerHTML = '<div class="smb-h">How would you like to get your order?</div>' +
         '<label class="smb-opt"><input type="radio" name="smb_m" value="' + DELIVERY + '"/><span><b>Delivery</b><small id="smbDelTxt"></small></span></label>' +
         '<label class="smb-opt"><input type="radio" name="smb_m" value="' + PICKUP + '"/><span><b>Pickup at our shop in New Rawda</b><small>Free · <a href="' + MAP + '" target="_blank" rel="noopener">See on the map</a></small></span></label>' +
         '<div class="smb-bar" id="smbBar"><div id="smbBarTxt"></div><div class="smb-track"><i id="smbBarFill"></i></div></div>';
       form.parentNode.insertBefore(ship, form);
+      /* ---- Cash or Whish (27 Nov 2026) ---- */
+      var payBox = document.createElement('div'); payBox.id = 'smbPayBox'; payBox.style.marginTop = '14px';
+      payBox.innerHTML = '<div class="smb-h">How would you like to pay?</div>' +
+        '<label class="smb-opt"><input type="radio" name="smb_p" value=""/><span><b>Cash</b><small>Pay when you receive your order</small></span></label>' +
+        '<label class="smb-opt"><input type="radio" name="smb_p" value="whish"/><span><b>Whish</b><small>Send to 78 879 350 after we confirm your total, any time up to the end of your delivery day</small></span></label>';
+      form.parentNode.insertBefore(payBox, form);
+      var payPaint = function () { payBox.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === payWith; l.classList.toggle('on', i.value === payWith); });
+        var pp = document.getElementById('smbPay'); if (pp && payWith === 'whish') { pp.textContent = 'You pay by Whish to 78 879 350 after we confirm your total.'; } };
+      payBox.addEventListener('change', function (ev) { if (ev.target.name === 'smb_p') { payWith = ev.target.value; payPaint(); if (payWith !== 'whish') { var pp = document.getElementById('smbPay'); if (pp) { pp.textContent = sel === PICKUP ? 'You pay when you pick up your order.' : 'You pay on delivery.'; } } } });
       var sum = document.createElement('div'); sum.id = 'smbSum';
       sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div class="r" id="smbDiscRow" style="display:none"><span>Discounts included</span><span id="smbDisc"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
       /* phones: under the form. Desktop: in Odoo's right-hand card, in place of its own totals (which do not follow the choice) */
       var oc = document.querySelector('.o_total_card .o_cart_total');
       if (oc && oc.offsetParent !== null) { oc.style.display = 'none'; oc.parentNode.insertBefore(sum, oc); sum.style.margin = '0 0 14px'; } else form.appendChild(sum);
       var id = function (x) { return document.getElementById(x); };
+      payPaint();
       var goods = (function () { var t = num((id('amount_total_summary') || {}).innerHTML), d = document.querySelector('[name="o_order_delivery"] .monetary_field:not(.d-none)'); return Math.max(0, t - (d ? num(d.innerHTML) : 0)); })();
       var paint = function (g, del, tot) {
         var pick = sel === PICKUP, left = FREE_FROM - g;
         id('smbSub').textContent = money(g); id('smbDelLbl').textContent = pick ? 'Pickup' : 'Delivery'; id('smbDel').textContent = del === null ? 'Choose your governorate' : del > 0 ? money(del) : 'Free'; id('smbTot').textContent = money(tot);
-        id('smbPay').textContent = pick ? 'You pay when you pick up your order.' : 'You pay on delivery.';
+        id('smbPay').textContent = payWith === 'whish' ? 'You pay by Whish to 78 879 350 after we confirm your total.' : (pick ? 'You pay when you pick up your order.' : 'You pay on delivery.');
         id('smbDelTxt').textContent = left > 0.004 ? money(FEES[BEIRUT]) + ' Beirut & Greater Beirut \u00b7 ' + money(FEES[OUTSIDE]) + ' other governorates' : 'Free';
         id('smbBar').style.display = pick ? 'none' : '';
         id('smbBarTxt').innerHTML = left > 0.004 ? money(g) + ' of ' + money(FREE_FROM) + ' \u00b7 add <b>' + money(left) + '</b> more for free delivery' : '<b>You have free delivery</b>';
@@ -207,7 +221,7 @@
       document.addEventListener('click', function (ev) {
         var btn = ev.target.closest('[name="website_sale_main_button"]'); if (!btn) return;
         if (!form.checkValidity()) { ev.preventDefault(); ev.stopPropagation(); show(); }
-        else put(sel === PICKUP ? PICKUP : zone(), lastDisc);
+        else put(sel === PICKUP ? PICKUP : zone(), lastDisc, payWith);
       }, true);
       form.addEventListener('input', function (ev) {
         var el = ev.target; if (el.classList && el.classList.contains('smb-bad') && el.checkValidity()) {
