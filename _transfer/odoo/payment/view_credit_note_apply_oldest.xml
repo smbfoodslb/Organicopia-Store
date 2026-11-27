@@ -1,0 +1,9 @@
+<data>
+  <!-- credit note form: tick before confirming, or the button afterwards (action_credit_note_apply_oldest.py) -->
+  <xpath expr="//header" position="inside">
+    <button name="__APPLY__" type="action" string="Apply to oldest invoices" invisible="state != 'posted' or move_type not in ('out_refund', 'in_refund') or payment_state not in ('not_paid', 'partial')" confirm="Apply what is left on this credit note to this partner's oldest open invoices?"/>
+  </xpath>
+  <xpath expr="//field[@name='partner_id']" position="after">
+    <field name="x_apply_oldest" string="Apply to oldest invoices" invisible="state != 'draft' or move_type not in ('out_refund', 'in_refund') or reversed_entry_id"/>
+  </xpath>
+</data>
