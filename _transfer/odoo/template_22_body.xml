@@ -20,7 +20,7 @@ Thank you for your order
 </td></tr>
 <tr><td align="center" style="padding:14px 40px 4px 40px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:24px;color:#033649;">
 Hello <t t-out="(object.partner_id.name or '').split(' ')[0]"/>, we have received your order.
-We will contact you by phone to confirm your order and the delivery time. You pay on delivery.
+We will contact you by phone to confirm your order and the delivery time.<t t-if="object.x_collect == 'whish' or 'whish' in object.sudo().transaction_ids.mapped('payment_method_code')"> You pay by Whish to 78 879 350 after we confirm your total.</t><t t-else=""> You pay on delivery.</t>
 </td></tr>
 <tr><td style="padding:26px 32px 0 32px;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
@@ -72,7 +72,7 @@ We will contact you by phone to confirm your order and the delivery time. You pa
 </td></tr>
 <tr><td style="padding:12px 20px 18px 20px;font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#033649;">
 <span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#7C8466;">Payment</span><br/>
-Pay on delivery
+<t t-if="object.x_collect == 'whish' or 'whish' in object.sudo().transaction_ids.mapped('payment_method_code')">Whish to 78 879 350, after we confirm your total</t><t t-else="">Pay on delivery</t>
 </td></tr>
 </table>
 </td></tr>
@@ -120,7 +120,7 @@ Need to change something? Reply to this email or message us on WhatsApp at +961 
 </td></tr>
 <tr><td align="center" t-attf-style="padding:24px 40px 4px 40px;{{ f_body }}font-size:15px;line-height:24px;color:#1c2b28;">
 Hello <t t-out="(object.partner_id.name or '').split(' ')[0]"/>, we have received your order.
-Our team will contact you to confirm stock, final pricing and delivery. You pay on delivery.
+Our team will contact you to confirm stock, final pricing and delivery.<t t-if="object.x_collect == 'whish' or 'whish' in object.sudo().transaction_ids.mapped('payment_method_code')"> You pay by Whish to 78 879 350 after we confirm your total.</t><t t-else=""> You pay on delivery.</t>
 </td></tr>
 <tr><td style="padding:24px 32px 0 32px;">
 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;border-collapse:collapse;">
@@ -172,7 +172,7 @@ Our team will contact you to confirm stock, final pricing and delivery. You pay 
 </td></tr>
 <tr><td t-attf-style="padding:12px 20px 18px 20px;{{ f_body }}font-size:14px;line-height:22px;color:#1c2b28;">
 <span style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#3fa06f;">Payment</span><br/>
-Pay on delivery
+<t t-if="object.x_collect == 'whish' or 'whish' in object.sudo().transaction_ids.mapped('payment_method_code')">Whish to 78 879 350, after we confirm your total</t><t t-else="">Pay on delivery</t>
 </td></tr>
 </table>
 </td></tr>
