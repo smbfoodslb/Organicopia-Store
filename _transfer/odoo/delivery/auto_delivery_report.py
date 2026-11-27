@@ -29,7 +29,7 @@ for rep in records.sudo():
             owner = env['res.users'].sudo().browse(6)
             text = 'Return reported by %s at %s (%s, stop %s)%s. Open "Driver returns" to see the photo%s and enter the return invoice.' % (who or 'the driver', partner.display_name or '?', run.x_name, rep.x_stop, (': ' + ret.x_note) if ret.x_note else '', 's' if len(photos) > 1 else '')
             if partner:
-                partner.commercial_partner_id.activity_schedule('mail.mail_activity_data_todo', user_id=6, summary='Return to enter: %s' % partner.display_name, note=text)
+                partner.commercial_partner_id.with_context(mail_activity_quick_update=True).activity_schedule('mail.mail_activity_data_todo', user_id=6, summary='Return to enter: %s' % partner.display_name, note=text)
             atts = env['ir.attachment'].sudo().create([{'name': 'return-%s-%s.jpg' % (ret.id, n + 1), 'datas': ph, 'res_model': 'x_delivery_return', 'res_id': ret.id, 'mimetype': 'image/jpeg'} for n, ph in enumerate(photos)])
             if owner.email:
                 env['mail.mail'].sudo().create({'subject': 'Return to enter: %s' % (partner.display_name or run.x_name), 'email_to': owner.email, 'body_html': '<p>%s</p>' % text, 'attachment_ids': [(6, 0, atts.ids)], 'auto_delete': True})
