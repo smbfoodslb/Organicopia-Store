@@ -36,6 +36,7 @@
         tr.d ul{margin:0;padding-left:18px}tr.d li{margin:2px 0}
         .st{font-size:12px;color:#5d6f6a}
         .empty{padding:28px;text-align:center;color:#5d6f6a}
+        .pnote{display:block;margin-top:4px;font-size:13px;font-weight:400;background:#fff8e1;border:1px solid #f0dc9c;border-radius:6px;padding:3px 7px;color:#6b4a00;white-space:pre-wrap}
         .own{background:#fff8ec;border:1px solid #e6c98a;border-radius:10px;padding:14px 16px;margin-bottom:14px}
         .oh{font-weight:700;color:#6b4a00;margin-bottom:6px}.own ul{margin:0 0 10px;padding-left:18px}
         .btn{background:#123d36;color:#fff;border:0;border-radius:8px;padding:11px 16px;font:inherit;font-weight:700}
@@ -68,6 +69,11 @@
           <t t-set="rows" t-value="[{'p': p, 'mv': [m for m in moves if m.product_id.id == p.id], 'wt': sum([l.product_uom_qty for l in waits if l.product_id.id == p.id]), 'h3': p.with_context(allowed_company_ids=[3]).qty_available, 'h1': p.with_context(allowed_company_ids=[1]).qty_available, 'mk': sum([o.product_qty for o in mos if o.product_id.id == p.id]), 'mk3': sum([o.product_qty for o in mos if o.product_id.id == p.id and o.company_id.id == 3]), 'bom': bool(p.bom_ids or p.product_tmpl_id.bom_ids)} for p in products]"/>
           <t t-set="rows" t-value="[dict(r, late=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &lt; today]), d0=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == today]), d1=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] == tomorrow]), d2=sum([m.product_uom_qty for m in r['mv'] if mday[m.id] &gt; tomorrow]), tot=sum([m.product_uom_qty for m in r['mv']]), dem3=sum([m.product_uom_qty for m in r['mv'] if m.company_id.id == 3]), dem1=sum([m.product_uom_qty for m in r['mv'] if m.company_id.id == 1])) for r in rows]"/>
           <t t-set="rows" t-value="[dict(r, need=max(0, r['tot'] - r['h3'] - r['h1'] - r['mk'])) for r in rows]"/>
+          <!-- 27 Nov 2026 (owner): a note line placed under a product on the sales order belongs to that product; it is shown
+               here with its order number, on the product's row and beside the order in the detail -->
+          <t t-set="olines" t-value="{o.id: list(o.order_line.sorted(lambda l: (l.sequence, l.id))) for o in (moves.mapped('sale_line_id.order_id') | waits.mapped('order_id'))}"/>
+          <t t-set="lnote" t-value="{L[j].id: ' / '.join([(L[i].name or '').strip() for i in range(j + 1, len(L)) if L[i].display_type == 'line_note' and not [k for k in range(j + 1, i) if L[k].display_type != 'line_note']]) for L in olines.values() for j in range(len(L)) if not L[j].display_type}"/>
+          <t t-set="rows" t-value="[dict(r, nt=list(dict.fromkeys([(m.sale_line_id.order_id.name, lnote.get(m.sale_line_id.id)) for m in r['mv'] if lnote.get(m.sale_line_id.id)] + [(l.order_id.name, lnote.get(l.id)) for l in waits if l.product_id.id == r['p'].id and lnote.get(l.id)]))) for r in rows]"/>
           <!-- owner only: what SMBF lacks for its own deliveries and smbfoods can spare after its own (Route A, action_route_a_bring.py) -->
           <t t-set="rows" t-value="[dict(r, bring=max(0, min(max(0, r['dem3'] - r['h3'] - r['mk3']), max(0, r['h1'] - r['dem1'])))) for r in rows]"/>
           <t t-set="owner" t-value="30 in E.user.all_group_ids.ids"/>
@@ -97,7 +103,7 @@
               <tbody>
                 <t t-foreach="rows" t-as="r">
                   <tr class="p" t-att-data-need="1 if r['need'] &gt; 0 else 0" t-att-data-kind="'make' if r['bom'] else 'buy'">
-                    <td><span class="ref" t-if="r['p'].default_code" t-out="r['p'].default_code"/><span class="nm" t-out="r['p'].name"/><span t-attf-class="tag #{'mk' if r['bom'] else 'buy'}" t-out="'made by us' if r['bom'] else 'bought in'"/></td>
+                    <td><span class="ref" t-if="r['p'].default_code" t-out="r['p'].default_code"/><span class="nm" t-out="r['p'].name"/><span t-attf-class="tag #{'mk' if r['bom'] else 'buy'}" t-out="'made by us' if r['bom'] else 'bought in'"/><span t-foreach="r['nt']" t-as="n" class="pnote">Note · <t t-out="n[0]"/>: <t t-out="n[1]"/></span></td>
                     <td t-attf-class="#{'late' if r['late'] else 'z'}" t-out="('%g' % round(r['late'], 2)) if r['late'] else '–'"/>
                     <td t-attf-class="#{'' if r['d0'] else 'z'}" t-out="('%g' % round(r['d0'], 2)) if r['d0'] else '–'"/>
                     <td t-attf-class="#{'' if r['d1'] else 'z'}" t-out="('%g' % round(r['d1'], 2)) if r['d1'] else '–'"/>
@@ -110,7 +116,7 @@
                   </tr>
                   <tr class="d" hidden="hidden"><td colspan="10">
                     <ul>
-                      <li t-foreach="[x[3] for x in sorted([(mday[m.id], m.picking_id.name or '', m.id, m) for m in r['mv']])]" t-as="m"><b t-out="('%g' % round(m.product_uom_qty, 2))"/> · <t t-out="m.picking_id.partner_id.display_name"/> · <t t-out="m.picking_id.sale_id.name"/> · <t t-out="mday[m.id].strftime('%a %d %b')"/> · <t t-out="'SMBF' if m.company_id.id == 3 else 'smbfoods'"/></li>
+                      <li t-foreach="[x[3] for x in sorted([(mday[m.id], m.picking_id.name or '', m.id, m) for m in r['mv']])]" t-as="m"><b t-out="('%g' % round(m.product_uom_qty, 2))"/> · <t t-out="m.picking_id.partner_id.display_name"/> · <t t-out="m.picking_id.sale_id.name"/> · <t t-out="mday[m.id].strftime('%a %d %b')"/> · <t t-out="'SMBF' if m.company_id.id == 3 else 'smbfoods'"/><span t-if="lnote.get(m.sale_line_id.id)" class="pnote">Note: <t t-out="lnote.get(m.sale_line_id.id)"/></span></li>
                       <li t-if="r['wt']" class="wait">+<t t-out="('%g' % round(r['wt'], 2))"/> on website orders not confirmed yet</li>
                     </ul>
                   </td></tr>
