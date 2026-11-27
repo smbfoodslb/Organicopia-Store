@@ -1,0 +1,6 @@
+<data>
+  <!-- contact form: "Collect payment on delivery" - new orders of this customer default to collect (auto_collect_*.py) -->
+  <xpath expr="//field[@name='property_product_pricelist']" position="after">
+    <field name="x_collect_delivery" string="Collect payment on delivery"/>
+  </xpath>
+</data>
