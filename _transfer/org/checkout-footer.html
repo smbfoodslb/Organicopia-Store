@@ -103,6 +103,23 @@
     });
   }
 
+  /* Coupon codes (28 Nov 2026). Odoo compares codes exactly, so "holiday26", "Holiday26" (a phone capitalises the first
+     letter) or a trailing space were refused. The code is tried as typed, then trimmed, then in capitals. */
+  var tryCode = function (typed, csrf) {
+    var list = [], add = function (c) { if (c && list.indexOf(c) < 0) list.push(c); }; add(typed); add(typed.trim()); add(typed.trim().toUpperCase());
+    var one = function (i) { if (i >= list.length) return Promise.resolve('');
+      var b = new URLSearchParams(); b.append('csrf_token', csrf); b.append('promo', list[i]);
+      return fetch('/shop/pricelist', { method: 'POST', body: b, credentials: 'same-origin', redirect: 'manual' })
+        .then(function () { return fetch('/shop/cart', { credentials: 'same-origin' }); }).then(function (r) { return r.text(); })
+        .then(function (h) { return new DOMParser().parseFromString(h, 'text/html').querySelector('.o_total_card .alert-success') ? list[i] : one(i + 1); }); };
+    return one(0); };
+  if (p === '/shop/cart') {
+    document.addEventListener('submit', function (ev) { var f = ev.target; if (!f || f.getAttribute('name') !== 'coupon_code') return;
+      var inp = f.querySelector('[name="promo"]'), tok = f.querySelector('[name="csrf_token"]'), btn = f.querySelector('button[type="submit"]'); if (!inp || !tok || !inp.value.trim()) return;
+      ev.preventDefault(); if (btn) btn.disabled = true;
+      tryCode(inp.value, tok.value).then(function (ok) { location.href = ok ? '/shop/cart' : '/shop/cart?code_not_available=1'; }).catch(function () { location.href = '/shop/cart?code_not_available=1'; }); }, true);
+  }
+
   if (p === '/shop/address') {
     var st = document.createElement('style');
     st.textContent = 'form .s_website_form_mark{display:none!important}' +
@@ -147,15 +164,13 @@
       var cmsg = function (cls, t) { var m = document.getElementById('smbCouponMsg'); m.className = cls; m.textContent = t; };
       /* The code is sent in the background (Odoo's own redirect breaks on this page's address). Refused: say so, nothing
          reloads. Accepted: the page reloads to show the new totals, and what was chosen and typed is put back. */
-      cp.addEventListener('submit', function (ev) { ev.preventDefault(); var code = cp.querySelector('[name="promo"]').value.trim(), btn = cp.querySelector('button'); if (!code || btn.disabled) return;
+      cp.addEventListener('submit', function (ev) { ev.preventDefault(); var code = cp.querySelector('[name="promo"]').value, btn = cp.querySelector('button'); if (!code.trim() || btn.disabled) return;
         btn.disabled = true; cmsg('', '');
-        var b = new URLSearchParams(); b.append('csrf_token', cp.querySelector('[name="csrf_token"]').value); b.append('promo', code);
-        fetch('/shop/pricelist', { method: 'POST', body: b, credentials: 'same-origin', redirect: 'manual' })
-          .then(function () { return fetch('/shop/cart', { credentials: 'same-origin' }); }).then(function (r) { return r.text(); })
-          .then(function (h) { var ok = new DOMParser().parseFromString(h, 'text/html').querySelector('.o_total_card .alert-success');
+        tryCode(code, cp.querySelector('[name="csrf_token"]').value)
+          .then(function (ok) {
             if (!ok) { btn.disabled = false; cmsg('smb-missing', 'This code is not valid for this order.'); return; }
             try { var v = {}; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return; if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked) v[e.name + '\u0001' + e.value] = 1; } else v[e.name] = e.value; });
-              sessionStorage.setItem('smbAddr', JSON.stringify({ m: sel, w: payWith, v: v, t: Date.now(), c: code })); } catch (e) {}
+              sessionStorage.setItem('smbAddr', JSON.stringify({ m: sel, w: payWith, v: v, t: Date.now(), c: ok })); } catch (e) {}
             location.reload(); })
           .catch(function () { btn.disabled = false; cmsg('smb-missing', 'Could not check the code. Please try again.'); }); });
       var putBack = function () { if (!stash || !stash.v) return; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return;
