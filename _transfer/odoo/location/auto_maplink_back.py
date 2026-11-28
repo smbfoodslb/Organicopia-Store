@@ -2,7 +2,7 @@
 # The helper https://organicopia-store.vercel.app/api/maplink (repository smbfoodslb/Organicopia-Store, api/maplink.js)
 # opened the short link Odoo sent it and posts back {id, link, lat, lng}. The pin is written only when the contact still
 # carries that exact link and the point lies in Lebanon, so a call from anyone else cannot move a pin. Open
-# "Location link received" to-dos on the contact's undelivered orders are closed, with a note.
+# "Location link received" to-dos on the contact's undelivered orders are closed (no note on the order: owner, 28 Nov 2026).
 link = str(payload.get('link') or '').strip()
 try:
     lat = round(float(payload.get('lat')), 7)
@@ -16,7 +16,6 @@ for partner in records.sudo():
         continue
     partner.write({'partner_latitude': lat, 'partner_longitude': lng})
     for order in env['sale.order'].sudo().search([('partner_shipping_id', '=', partner.id), ('state', '=', 'sale'), ('delivery_status', '!=', 'full')]):
-        order.message_post(body='Location read automatically from the Google Maps link (%s): %.7f, %.7f' % (partner.display_name, lat, lng))
         todo = order.activity_ids.filtered(lambda a: (a.summary or '').startswith('Location link received'))
         if todo:
             todo.action_feedback(feedback='Pin placed automatically from the link.')

@@ -8,7 +8,8 @@
 #     the pin is then placed once (delivery planner, or coordinates pasted into "Map location"). An older pin on that
 #     address is cleared, so the order shows under "Waiting for location".
 # In both cases: when the sender is a known contact, the target is the delivery address of that contact's latest
-# confirmed, undelivered order of the last 60 days (with a note on the order); with no such order, the contact itself.
+# confirmed, undelivered order of the last 60 days; with no such order, the contact itself. No note is written on the
+# order (owner, 28 Nov 2026); only the to-do for a link that cannot be read.
 # Points outside Lebanon and messages we sent are ignored.
 OWNER = 6
 MARKS = ('maps.app.goo.gl/', 'goo.gl/maps/', 'google.com/maps', 'maps.google.', 'g.co/kgs/')
@@ -45,8 +46,6 @@ for wm in records.sudo():
     target = order.partner_shipping_id if order else partner
     if lat is not None:
         target.write({'x_map_link': '%.7f, %.7f' % (lat, lng), 'partner_latitude': lat, 'partner_longitude': lng})
-        if order:
-            order.message_post(body='The customer sent the delivery location on WhatsApp (%s): %.7f, %.7f' % (target.display_name, lat, lng))
         continue
     before = (target.partner_latitude, target.partner_longitude)
     try:
@@ -58,9 +57,5 @@ for wm in records.sudo():
         # a new location was sent and cannot be read: the old pin would send the driver to the wrong place, so it is
         # cleared and the order shows under "Waiting for location" until the pin is placed
         target.write({'partner_latitude': 0, 'partner_longitude': 0})
-    if order:
-        if read:
-            order.message_post(body='The customer sent a Google Maps link on WhatsApp (%s). Location read from it: %.7f, %.7f' % (target.display_name, target.partner_latitude, target.partner_longitude))
-        else:
-            order.message_post(body='The customer sent a Google Maps link on WhatsApp (%s): %s - a short link has no coordinates, the pin still has to be placed.%s' % (target.display_name, link, (' Previous pin removed: %.7f, %.7f.' % before) if before[0] else ''))
-            order.activity_schedule('mail.mail_activity_data_todo', user_id=OWNER, summary='Location link received: place the pin', note='%s sent this Google Maps link on WhatsApp: %s' % (target.display_name, link))
+    if order and not read:
+        order.activity_schedule('mail.mail_activity_data_todo', user_id=OWNER, summary='Location link received: place the pin', note='%s sent this Google Maps link on WhatsApp: %s' % (target.display_name, link))

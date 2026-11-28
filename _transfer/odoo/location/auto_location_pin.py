@@ -16,5 +16,4 @@ for rep in records.sudo():
         continue
     ship = order.partner_shipping_id
     ship.write({'x_map_link': '%.7f, %.7f' % (lat, lng), 'partner_latitude': lat, 'partner_longitude': lng})
-    order.message_post(body='The customer pinned the delivery location on the map (%s): %.7f, %.7f' % (ship.display_name, lat, lng))
     rep.write({'x_name': 'applied: %s' % order.name, 'x_token': False})
