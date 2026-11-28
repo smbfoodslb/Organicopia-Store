@@ -113,7 +113,17 @@
         .then(function () { return fetch('/shop/cart', { credentials: 'same-origin' }); }).then(function (r) { return r.text(); })
         .then(function (h) { return new DOMParser().parseFromString(h, 'text/html').querySelector('.o_total_card .alert-success') ? list[i] : one(i + 1); }); };
     return one(0); };
+  /* What is applied on the order (coupon codes, rewards points), read from the store page's own data: Odoo's checkout
+     pages do not say which code is on the order (28 Nov 2026). */
+  var appliedOnOrder = function () { return fetch('/store', { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (h) {
+    var el = new DOMParser().parseFromString(h, 'text/html').getElementById('orgData'); return el ? (JSON.parse(el.textContent).coupon || []) : []; }); };
+  var escT = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   if (p === '/shop/cart') {
+    /* one coupon per order: once a code is on the order, Odoo's coupon form gives way to a line naming it */
+    var cartCode = null, showCode = function () { if (!cartCode) return; var f = document.querySelector('.coupon_form form[name="coupon_code"]'); if (!f || f.getAttribute('data-smb')) return;
+      f.setAttribute('data-smb', '1'); f.style.display = 'none'; var d = document.createElement('div'); d.className = 'small text-start mb-3'; d.style.cssText = 'margin-top:14px;color:#1f5d3a;font-weight:600';
+      d.textContent = 'Coupon ' + cartCode + ' applied.'; f.parentNode.insertBefore(d, f); };
+    appliedOnOrder().then(function (list) { var c = list.filter(function (x) { return x.kind === 'code'; })[0]; if (c) { cartCode = c.code || c.name; showCode(); } }).catch(function () {});
     /* Odoo's own rewards line ("points 137.0 / Rewards points / 1 points / Claim") reworded like the store basket
        (28 Nov 2026). Program 10's reward only; Odoo redraws the totals when a quantity changes, so it is re-applied. */
     var rewordPoints = function () { var rid = document.querySelector('form[name="claim_reward"] input[name="reward_id"][value="8"]'); if (!rid) return;
@@ -123,7 +133,7 @@
       var lab = f.querySelector('.flex-grow-1'); if (lab) lab.innerHTML = '<small>Use them on this order.</small>';
       var b = f.querySelector('[name="o_loyalty_claim"]'); if (b) b.textContent = 'Use my points'; };
     rewordPoints();
-    try { new MutationObserver(rewordPoints).observe(document.querySelector('#wrap') || document.body, { childList: true, subtree: true }); } catch (e) {}
+    try { new MutationObserver(function () { rewordPoints(); showCode(); }).observe(document.querySelector('#wrap') || document.body, { childList: true, subtree: true }); } catch (e) {}
     document.addEventListener('submit', function (ev) { var f = ev.target; if (!f || f.getAttribute('name') !== 'coupon_code') return;
       var inp = f.querySelector('[name="promo"]'), tok = f.querySelector('[name="csrf_token"]'), btn = f.querySelector('button[type="submit"]'); if (!inp || !tok || !inp.value.trim()) return;
       ev.preventDefault(); if (btn) btn.disabled = true;
@@ -190,16 +200,18 @@
         var pp = document.getElementById('smbPay'); if (pp && payWith === 'whish') { pp.textContent = 'You pay by Whish to 78 879 350 after we confirm your total.'; } };
       payBox.addEventListener('change', function (ev) { if (ev.target.name === 'smb_p') { payWith = ev.target.value; payPaint(); if (payWith !== 'whish') { var pp = document.getElementById('smbPay'); if (pp) { pp.textContent = sel === PICKUP ? 'You pay when you pick up your order.' : 'You pay on delivery.'; } } } });
       var sum = document.createElement('div'); sum.id = 'smbSum';
-      sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div class="r" id="smbDiscRow" style="display:none"><span>Discounts included</span><span id="smbDisc"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
+      sum.innerHTML = '<div class="smb-h">Your order</div><div class="r"><span>Subtotal</span><span id="smbSub"></span></div><div id="smbDiscRows"></div><div class="r" id="smbDiscRow" style="display:none"><span>Discounts included</span><span id="smbDisc"></span></div><div class="r"><span id="smbDelLbl"></span><span id="smbDel"></span></div><div class="r tot"><span>Total</span><span id="smbTot"></span></div><p id="smbPay"></p>';
       /* phones: under the form. Desktop: in Odoo's right-hand card, in place of its own totals (which do not follow the choice) */
       var oc = document.querySelector('.o_total_card .o_cart_total');
       if (oc && oc.offsetParent !== null) { oc.style.display = 'none'; oc.parentNode.insertBefore(sum, oc); sum.style.margin = '0 0 14px'; } else form.appendChild(sum);
       var id = function (x) { return document.getElementById(x); };
       payPaint();
       var goods = (function () { var t = num((id('amount_total_summary') || {}).innerHTML), d = document.querySelector('[name="o_order_delivery"] .monetary_field:not(.d-none)'); return Math.max(0, t - (d ? num(d.innerHTML) : 0)); })();
+      /* discounts on the order, one line each; the subtotal is shown before them (28 Nov 2026) */
+      var appliedSum = 0, hasRows = false;
       var paint = function (g, del, tot) {
         var pick = sel === PICKUP, left = FREE_FROM - g;
-        id('smbSub').textContent = money(g); id('smbDelLbl').textContent = pick ? 'Pickup' : 'Delivery'; id('smbDel').textContent = del === null ? 'Choose your governorate' : del > 0 ? money(del) : 'Free'; id('smbTot').textContent = money(tot);
+        id('smbSub').textContent = money(g + appliedSum); id('smbDelLbl').textContent = pick ? 'Pickup' : 'Delivery'; id('smbDel').textContent = del === null ? 'Choose your governorate' : del > 0 ? money(del) : 'Free'; id('smbTot').textContent = money(tot);
         id('smbPay').textContent = payWith === 'whish' ? 'You pay by Whish to 78 879 350 after we confirm your total.' : (pick ? 'You pay when you pick up your order.' : 'You pay on delivery.');
         id('smbDelTxt').textContent = left > 0.004 ? money(FEES[BEIRUT]) + ' Beirut & Greater Beirut \u00b7 ' + money(FEES[OUTSIDE]) + ' other governorates' : 'Free';
         id('smbBar').style.display = pick ? 'none' : '';
@@ -238,8 +250,15 @@
           lastDisc = disc(r);
           /* shown amount: the discount lines of Odoo's own order summary (VAT included); the figure in the answer is without VAT */
           var shown = 0, tb = document.querySelector('.o_cart_products_table'); if (tb) tb.querySelectorAll('[data-reward-type] .oe_currency_value').forEach(function (x) { shown += Math.abs(num(x.textContent)); });
-          id('smbDiscRow').style.display = lastDisc > 0 && shown > 0 ? '' : 'none'; id('smbDisc').textContent = '\u2212' + money(shown); }).catch(function () {});
+          id('smbDiscRow').style.display = !hasRows && lastDisc > 0 && shown > 0 ? '' : 'none'; id('smbDisc').textContent = '\u2212' + money(shown); }).catch(function () {});
       };
+      appliedOnOrder().then(function (list) { var html = '', sum = 0, code = null;
+        list.forEach(function (c) { var a = Math.abs(+c.amount || 0); sum += a; if (c.kind === 'code' && !code) code = { n: c.code || c.name, a: a };
+          html += '<div class="r"><span>' + (c.kind === 'points' ? 'Rewards points' : 'Coupon ' + escT(c.code || c.name)) + '</span><span>\u2212' + money(a) + '</span></div>'; });
+        if (!list.length) return;
+        appliedSum = Math.round(sum * 100) / 100; hasRows = true; id('smbDiscRows').innerHTML = html; id('smbDiscRow').style.display = 'none'; refresh();
+        /* one coupon per order: the box names the code instead of asking for another */
+        if (code) { cp.innerHTML = '<div class="smb-h">Coupon</div><div class="ok">Coupon ' + escT(code.n) + ' applied: \u2212' + money(code.a) + '</div>'; } }).catch(function () {});
       var choose = function (m) {
         sel = m; var pick = m === PICKUP;
         ship.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === m; l.classList.toggle('on', i.value === m); });
