@@ -258,7 +258,7 @@
         if (!list.length) return;
         appliedSum = Math.round(sum * 100) / 100; hasRows = true; id('smbDiscRows').innerHTML = html; id('smbDiscRow').style.display = 'none'; refresh();
         /* one coupon per order: the box names the code instead of asking for another */
-        if (code) { cp.innerHTML = '<div class="smb-h">Coupon</div><div class="ok">Coupon ' + escT(code.n) + ' applied: \u2212' + money(code.a) + '</div>'; } }).catch(function () {});
+        if (code) { cp.innerHTML = '<div class="smb-h">Coupon code</div><div class="ok">' + escT(code.n) + ' applied: \u2212' + money(code.a) + '</div>'; } }).catch(function () {});
       var choose = function (m) {
         sel = m; var pick = m === PICKUP;
         ship.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === m; l.classList.toggle('on', i.value === m); });
