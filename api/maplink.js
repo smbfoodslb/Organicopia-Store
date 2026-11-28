@@ -7,7 +7,8 @@
 //   3. It POSTs { id, link, lat, lng } back to Odoo, which writes the pin only if the contact still carries that
 //      exact link and the point is in Lebanon.
 // Nothing is stored here and no secret lives in this repository: the callback address travels in the request and
-// must be an Odoo webhook of smbfoods.odoo.com.
+// must be an Odoo webhook of smbfoods.odoo.com. Every answer is HTTP 200: Odoo turns any other status into an error on
+// the save that triggered the call.
 
 const ODOO_HOST = 'smbfoods.odoo.com';
 const SHORT_HOSTS = ['maps.app.goo.gl', 'goo.gl', 'g.co'];
@@ -38,16 +39,16 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 module.exports = async (req, res) => {
   try {
-    if (req.method !== 'POST') { res.status(405).json({ ok: false }); return; }
+    if (req.method !== 'POST') { res.status(200).json({ ok: false, why: 'method' }); return; }
     let cb;
-    try { cb = new URL(String(req.query.cb || '')); } catch (e) { res.status(400).json({ ok: false }); return; }
-    if (cb.protocol !== 'https:' || cb.hostname !== ODOO_HOST || cb.pathname.indexOf('/web/hook/') !== 0) { res.status(400).json({ ok: false }); return; }
+    try { cb = new URL(String(req.query.cb || '')); } catch (e) { res.status(200).json({ ok: false, why: 'input' }); return; }
+    if (cb.protocol !== 'https:' || cb.hostname !== ODOO_HOST || cb.pathname.indexOf('/web/hook/') !== 0) { res.status(200).json({ ok: false, why: 'input' }); return; }
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
     const id = parseInt(body.id || body._id, 10);
     const link = String(body.x_map_link || '').trim();
     let first;
-    try { first = new URL(link); } catch (e) { res.status(400).json({ ok: false }); return; }
-    if (!id || first.protocol !== 'https:' || SHORT_HOSTS.indexOf(first.hostname) < 0) { res.status(400).json({ ok: false }); return; }
+    try { first = new URL(link); } catch (e) { res.status(200).json({ ok: false, why: 'input' }); return; }
+    if (!id || first.protocol !== 'https:' || SHORT_HOSTS.indexOf(first.hostname) < 0) { res.status(200).json({ ok: false, why: 'input' }); return; }
 
     let address = link, found = null;
     for (let i = 0; i < 6 && !found; i++) {
