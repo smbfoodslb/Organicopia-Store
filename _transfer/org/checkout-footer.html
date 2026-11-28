@@ -114,6 +114,16 @@
         .then(function (h) { return new DOMParser().parseFromString(h, 'text/html').querySelector('.o_total_card .alert-success') ? list[i] : one(i + 1); }); };
     return one(0); };
   if (p === '/shop/cart') {
+    /* Odoo's own rewards line ("points 137.0 / Rewards points / 1 points / Claim") reworded like the store basket
+       (28 Nov 2026). Program 10's reward only; Odoo redraws the totals when a quantity changes, so it is re-applied. */
+    var rewordPoints = function () { var rid = document.querySelector('form[name="claim_reward"] input[name="reward_id"][value="8"]'); if (!rid) return;
+      var f = rid.closest('form'), row = f.closest('tr') || f.parentNode; if (f.getAttribute('data-smb')) return; f.setAttribute('data-smb', '1');
+      var pe = row.querySelector('[name="o_loyalty_points"]'), pts = pe ? parseFloat(pe.textContent) || 0 : 0, head = row.querySelector('.alert');
+      if (head) { head.innerHTML = '<span class="text-start small"><strong>Organicopia Rewards</strong> You have ' + Math.round(pts).toLocaleString('en-US') + ' points ($' + (pts / 100).toFixed(2) + ').</span>'; }
+      var lab = f.querySelector('.flex-grow-1'); if (lab) lab.innerHTML = '<small>Use them on this order.</small>';
+      var b = f.querySelector('[name="o_loyalty_claim"]'); if (b) b.textContent = 'Use my points'; };
+    rewordPoints();
+    try { new MutationObserver(rewordPoints).observe(document.querySelector('#wrap') || document.body, { childList: true, subtree: true }); } catch (e) {}
     document.addEventListener('submit', function (ev) { var f = ev.target; if (!f || f.getAttribute('name') !== 'coupon_code') return;
       var inp = f.querySelector('[name="promo"]'), tok = f.querySelector('[name="csrf_token"]'), btn = f.querySelector('button[type="submit"]'); if (!inp || !tok || !inp.value.trim()) return;
       ev.preventDefault(); if (btn) btn.disabled = true;
