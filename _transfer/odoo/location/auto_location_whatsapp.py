@@ -13,7 +13,9 @@ OWNER = 6
 MARKS = ('maps.app.goo.gl/', 'goo.gl/maps/', 'google.com/maps', 'maps.google.', 'g.co/kgs/')
 for wm in records.sudo():
     msg = wm.mail_message_id
-    body = msg.body or ''
+    # str(): the body is an HTML "Markup" value, whose replace()/split() escape their arguments - on it, split('"') and
+    # replace('<', ' ') never matched (found 28 Nov 2026 with the first pasted link)
+    body = str(msg.body or '')
     if wm.message_type != 'inbound' or msg.model != 'discuss.channel':
         continue
     lat = lng = None
