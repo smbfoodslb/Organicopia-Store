@@ -1,0 +1,12 @@
+<list string="Waiting for location" create="0">
+  <!-- tile "Waiting for location" (action 1566): the "Location link" column shows a Google Maps link the customer sent
+       that has no coordinates yet (sale.order.x_loc_link, related to the delivery address's "Map location") -->
+  <field name="name"/>
+  <field name="partner_id"/>
+  <field name="partner_shipping_id" optional="hide"/>
+  <field name="date_order" widget="date"/>
+  <field name="x_delivered_by" optional="show"/>
+  <field name="x_loc_asked" optional="show"/>
+  <field name="x_loc_link" string="Location link" widget="url"/>
+  <field name="amount_total" optional="hide"/>
+</list>
