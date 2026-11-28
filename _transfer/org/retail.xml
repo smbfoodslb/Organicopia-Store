@@ -14,7 +14,7 @@
 </t>
 <t t-set="order" t-value="request.cart"/>
 <t t-set="rcard" t-value="False if locked else env['loyalty.card'].sudo().search([('program_id', '=', 10), ('partner_id', '=', request.env.user.partner_id.commercial_partner_id.id)], limit=1)"/>
-<t t-set="data" t-value="{'locked': locked, 'categories': cats, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.sudo().order_line if order else []) if not l.is_delivery and not l.is_reward_line and not l.display_type}, 'user': ('' if locked else (request.env.user.partner_id.name or request.env.user.name)), 'coupon': [{'name': l.reward_id.description or '', 'amount': -l.price_total, 'code': '' if l.reward_id.program_id.program_type == 'loyalty' else (l.reward_id.program_id.rule_ids.filtered('code')[:1].code or ''), 'kind': 'points' if l.reward_id.program_id.program_type == 'loyalty' else 'code', 'line': l.id, 'pid': l.product_id.id} for l in (order.sudo().order_line if order else []) if l.is_reward_line and l.price_total &lt; 0 and (l.reward_id.program_id.trigger == 'with_code' or l.reward_id.program_id.program_type == 'loyalty')], 'rewards': {'reward': 8, 'member': not locked, 'points': int(rcard.points) if rcard else 0}, 'csrf': request.csrf_token(), 'phone': ('' if locked else (request.env.user.partner_id.phone or '')), 'notify': ([] if locked else [n.id for n in env['product.product'].sudo().search([('stock_notification_partner_ids', 'in', [request.env.user.partner_id.id])])])}"/>
+<t t-set="data" t-value="{'locked': locked, 'categories': cats, 'cart': {str(l.product_id.id): {'line': l.id, 'q': l.product_uom_qty} for l in (order.sudo().order_line if order else []) if not l.is_delivery and not l.is_reward_line and not l.display_type}, 'user': ('' if locked else (request.env.user.partner_id.name or request.env.user.name)), 'coupon': [{'name': l.reward_id.description or '', 'amount': -l.price_total, 'code': '' if l.reward_id.program_id.program_type == 'loyalty' else (l.reward_id.program_id.rule_ids.filtered('code')[:1].code or ''), 'kind': 'points' if l.reward_id.program_id.program_type == 'loyalty' else 'code', 'line': l.id, 'pid': l.product_id.id} for l in (order.sudo().order_line if order else []) if l.is_reward_line and l.price_total &lt; 0 and (l.reward_id.program_id.trigger == 'with_code' or l.reward_id.program_id.program_type == 'loyalty')], 'totals': {'goods': round((order.sudo().amount_total - sum(order.sudo().order_line.filtered('is_delivery').mapped('price_total'))) if order else 0.0, 2)}, 'rewards': {'reward': 8, 'member': not locked, 'points': int(rcard.points) if rcard else 0}, 'csrf': request.csrf_token(), 'phone': ('' if locked else (request.env.user.partner_id.phone or '')), 'notify': ([] if locked else [n.id for n in env['product.product'].sudo().search([('stock_notification_partner_ids', 'in', [request.env.user.partner_id.id])])])}"/>
 &lt;!DOCTYPE html&gt;
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
 <meta name="twitter:card" content="summary_large_image"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gilda+Display&amp;family=Inter:wght@400;500;600;700&amp;display=swap"/>
-<link rel="stylesheet" href="/org/retail.css?v=2230f264"/>
+<link rel="stylesheet" href="/org/retail.css?v=dfde583d"/>
 <!-- Odoo Analytics (Plausible), 15 Nov 2026: same tag as website.layout, so /store counts in Website > Reporting > Analytics; skipped for editors -->
 <script t-if="request.website.plausible_shared_key and not editable" id="plausible_script" name="plausible" defer="defer" t-att-data-domain="request.website.plausible_site" t-att-src="request.website._get_plausible_script_url()"/>
 <!-- Meta Pixel, 21 Nov 2026: the same base code as the Odoo pages (website 1 custom head), so visits to /store are counted; the events are in /org/pixel.js. Skipped for editors -->
@@ -149,11 +149,17 @@
 
 <div class="overlay" id="cartOverlay" hidden=""><aside class="drawer" role="dialog" aria-label="Your basket">
   <div class="drawer-head"><h2>Your basket</h2><button class="x" id="closeCart" type="button" aria-label="Close">×</button></div>
+  <!-- 28 Nov 2026: products, coupon box, rewards and notes scroll together; only the total and Check out stay fixed -->
+  <div class="drawer-scroll">
   <div class="drawer-body" id="cartItems"/>
   <div class="drawer-foot">
-    <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span id="cartTotal">$0.00</span></div><div class="fee sale" id="cartSaleRow" hidden="hidden"><span>Black Friday −25%</span><span id="cartSale"/></div><div id="cartCoupons"/><div class="grand"><span>Your total</span><span id="cartGrand">$0.00</span></div><div class="freebar" id="freeBar"><div class="t"/><div class="track"><i/></div></div><form class="coupon" id="couponForm" hidden=""><input id="couponCode" type="text" placeholder="Coupon code" autocomplete="off" maxlength="30" aria-label="Coupon code"/><button class="btn" type="submit">Apply</button></form><p class="note" id="couponMsg" hidden=""/><div class="rewards" id="rewardsBox"/><p class="note">Delivery or pickup is chosen at checkout.</p>
-    <a class="btn" id="confirm" href="/shop/checkout?from=store">Check out →</a>
+    <div class="total"><span>Subtotal <span class="vat">incl. VAT</span></span><span id="cartTotal">$0.00</span></div><div class="fee sale" id="cartSaleRow" hidden="hidden"><span>Black Friday −25%</span><span id="cartSale"/></div><div id="cartCoupons"/><div class="freebar" id="freeBar"><div class="t"/><div class="track"><i/></div></div><form class="coupon" id="couponForm" hidden=""><input id="couponCode" type="text" placeholder="Coupon code" autocomplete="off" maxlength="30" aria-label="Coupon code"/><button class="btn" type="submit">Apply</button></form><p class="note" id="couponMsg" hidden=""/><div class="rewards" id="rewardsBox"/><p class="note">Delivery or pickup is chosen at checkout.</p>
     <p class="note">Pay on delivery or at pickup. We confirm every order with you before it ships.</p>
+  </div>
+  </div>
+  <div class="drawer-bar">
+    <div class="grand"><span>Your total</span><span id="cartGrand">$0.00</span></div>
+    <a class="btn" id="confirm" href="/shop/checkout?from=store">Check out →</a>
   </div>
 </aside></div>
 
@@ -220,7 +226,7 @@
 <!-- data-order-id: tells Odoo's website_sale page cache this page is per-visitor (cart, pricelist, notify list) and must never be cached; the hidden sup keeps Odoo's cached-cart patch from crashing if a cached copy ever exists -->
 <sup class="my_cart_quantity d-none" aria-hidden="true">0</sup>
 <div id="orgData" hidden="hidden" data-order-id="" t-out="json.dumps(data)"/>
-<script src="/org/retail.js?v=6a6b17a5"/>
+<script src="/org/retail.js?v=ce6d09b5"/>
 </body>
 </html>
 </t>

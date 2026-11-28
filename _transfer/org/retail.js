@@ -11,9 +11,12 @@ let coupons = CATALOG.coupon || [], couponTimer = 0;
 // ---- Organicopia Rewards (18 Nov 2026): 5 points per $1 paid, 500 points = $5. No minimum since 28 Nov 2026 (owner): any balance worth $0.01 or more can be used. Odoo holds
 // the balance and applies the points (reward CATALOG.rewards.reward); the basket shows the balance and offers to use them.
 let REWARDS = CATALOG.rewards || { member: false, points: 0, reward: 0 };
+// 28 Nov 2026: the goods total as Odoo computes it (VAT rounded on the order, not per line). The basket uses it when it is
+// within a few cents of its own sum, so basket, cart page and checkout show the same figure.
+let SRV_GOODS = CATALOG.totals ? CATALOG.totals.goods : null;
 const PTS_RATE = 5, PTS_STEP = 500;
 const couponBoxOn = () => { if (Date.now() >= COUPON_BOX_FROM || coupons.length) return true; try { return localStorage.getItem("orgCouponTest") === "1" } catch (e) { return false } };
-const couponRefresh = () => fetch("/store", { credentials: "same-origin" }).then(r => r.text()).then(h => { const el = new DOMParser().parseFromString(h, "text/html").getElementById("orgData"); if (el) { const fresh = JSON.parse(el.textContent); coupons = fresh.coupon || []; REWARDS = fresh.rewards || REWARDS; renderCart() } }).catch(() => {});
+const couponRefresh = () => fetch("/store", { credentials: "same-origin" }).then(r => r.text()).then(h => { const el = new DOMParser().parseFromString(h, "text/html").getElementById("orgData"); if (el) { const fresh = JSON.parse(el.textContent); coupons = fresh.coupon || []; REWARDS = fresh.rewards || REWARDS; SRV_GOODS = fresh.totals ? fresh.totals.goods : null; renderCart() } }).catch(() => {});
 const couponSoon = () => { clearTimeout(couponTimer); couponTimer = setTimeout(couponRefresh, 700) };
 const WHATSAPP = "96170649386";
 const WHOLESALE_WA = "96178879350";
@@ -74,7 +77,7 @@ function syncQty(num, q, prev) {
     if (w) { toast(w); if (prev > 0) cart[num] = prev; else delete cart[num]; renderCart(); updateCard(num); return }
     const ln = r && r.notification_info && r.notification_info.lines && r.notification_info.lines[0];
     if (ln) LINES[num] = ln.id;
-  }).then(() => { if (coupons.length) couponSoon() }).catch(e => { toast("Could not update your basket. Please try again."); console.error(e) });
+  }).then(() => { couponSoon() }).catch(e => { toast("Could not update your basket. Please try again."); console.error(e) });
 }
 
 let query = "", cats = CATALOG.categories.filter(c => c.items.length).map(c => c.title), category = cats[0] || "";
@@ -156,9 +159,13 @@ function renderCart() {
   const disc = saleOn() ? Math.round(nums.reduce((s, n) => s + savings(byNum[n], cart[n]), 0) * 100) / 100 : 0;  // unit prices are already the sale prices; disc is what was taken off
   const sr = $("cartSaleRow"); if (sr) { sr.hidden = !(disc > 0); $("cartSale").textContent = "−" + money(disc) }
   // code-based discounts come from the server; "pay" is the goods total after them, and every threshold below measures it
-  const cdisc = nums.length ? Math.round(coupons.reduce((s, c) => s + c.amount, 0) * 100) / 100 : 0, pay = Math.max(0, Math.round((total - cdisc) * 100) / 100);
-  const cr = $("cartCoupons"); if (cr) cr.innerHTML = nums.length ? coupons.map(c => `<div class="fee sale"><span>${esc(c.name || "Coupon")}${c.code ? " · " + esc(c.code) : ""}</span><span>−${money(c.amount)}</span></div>`).join("") : "";
-  const cbox = $("couponForm"); if (cbox) cbox.hidden = !couponBoxOn();
+  const cdisc = nums.length ? Math.round(coupons.reduce((s, c) => s + c.amount, 0) * 100) / 100 : 0;
+  let pay = Math.max(0, Math.round((total - cdisc) * 100) / 100);
+  if (nums.length && SRV_GOODS != null && Math.abs(SRV_GOODS - pay) <= 0.05) { total += SRV_GOODS - pay; pay = SRV_GOODS }
+  const codeC = nums.length ? coupons.find(c => c.kind === "code") : null;
+  const cr = $("cartCoupons"); if (cr) cr.innerHTML = nums.length ? coupons.map(c => `<div class="fee sale"><span>${esc(c.name || "Coupon")}${c.code ? " · " + esc(c.code) : ""}${c.kind === "code" && c.line ? ` <button type="button" class="linkbtn crm" data-line="${c.line}" data-pid="${c.pid}">Remove</button>` : ""}</span><span>−${money(c.amount)}</span></div>`).join("") : "";
+  // one coupon per order: the box gives way once a code is on the order
+  const cbox = $("couponForm"); if (cbox) cbox.hidden = !couponBoxOn() || !!codeC;
   const rb = $("rewardsBox"); if (rb) { const earn = Math.round(pay * PTS_RATE), nf = n => Math.round(n).toLocaleString("en-US"), used = coupons.some(c => c.kind === "points");
     rb.innerHTML = !REWARDS.member
       ? `<b>Organicopia Rewards</b>Earn 5 points for every $1. 500 points = $5 off.${nums.length ? ` This order would earn ${nf(earn)} points.` : ""} <a href="/web/signup?redirect=/store">Create a free account</a> or <a href="/web/login?redirect=/store">sign in</a>.`
@@ -284,6 +291,9 @@ renderCatalog(); renderCart();
   if (rbox) rbox.addEventListener("click", ev => { if (!ev.target.closest("#usePoints")) return;
     rbox.classList.add("busy");
     syncChain = syncChain.then(() => fetch("/shop/claimreward?reward_id=" + REWARDS.reward, { credentials: "same-origin" })).then(() => couponRefresh()).then(() => { if (!coupons.some(c => c.kind === "points")) toast("Your points could not be applied to this basket.") }).catch(() => toast("Could not apply your points. Please try again.")).then(() => rbox.classList.remove("busy")) }) }
+{ const cr0 = $("cartCoupons");
+  if (cr0) cr0.addEventListener("click", ev => { const b = ev.target.closest(".crm"); if (!b || b.disabled) return; b.disabled = true; const m = $("couponMsg"); if (m) m.hidden = true;
+    syncChain = syncChain.then(() => fetch("/shop/cart/update", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", method: "call", params: { line_id: +b.dataset.line, product_id: +b.dataset.pid, quantity: 0 } }) })).then(() => couponRefresh()).catch(() => toast("Could not remove the coupon. Please try again.")) }) }
 { const cform = $("couponForm");
   if (cform) cform.addEventListener("submit", ev => { ev.preventDefault();
     const inp = $("couponCode"), msg = $("couponMsg"), code = inp.value.trim().toUpperCase(); if (!code) return;
