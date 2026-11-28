@@ -22,7 +22,7 @@
         .wrap{max-width:640px;margin:0 auto;padding:14px 14px 40px}
         h1{font-size:21px;margin:6px 0 4px;color:#123d36}
         .sub{color:#4a5f5a;margin-bottom:12px}
-        #map{height:56vh;min-height:320px;border-radius:12px;border:1px solid #d5e0dd;background:#e8eeec}
+        #map{position:relative;z-index:0;height:56vh;min-height:320px;border-radius:12px;border:1px solid #d5e0dd;background:#e8eeec}
         .b{display:block;width:100%;box-sizing:border-box;border:0;border-radius:10px;padding:14px;font-size:17px;font-weight:700;margin-top:10px;cursor:pointer}
         .b.me{background:#fff;color:#123d36;border:1px solid #123d36}
         .b.ok{background:#123d36;color:#fff}.b[disabled]{opacity:.5}
@@ -31,7 +31,7 @@
         .msg[hidden]{display:none}
         .hint{color:#4a5f5a;font-size:14px;margin-top:8px;text-align:center}
         .sw{position:relative;height:50px;margin-bottom:8px}.sw[hidden]{display:none}
-        .sw iframe{position:absolute;left:0;top:0;width:100%;height:50px;border:0;z-index:1000;background:transparent}
+        .sw iframe{position:absolute;left:0;top:0;width:100%;height:50px;border:0;z-index:1100;background:transparent}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
