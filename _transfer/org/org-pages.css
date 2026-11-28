@@ -53,3 +53,7 @@
 #wrapwrap .o_total_card .coupon_form form{margin-top:14px}
 @media (max-width:991.98px){#wrapwrap .o_total_card>.card-body{padding:16px!important}}
 #wrapwrap>footer .o_footer_copyright{display:none}
+
+/* 28 Nov 2026 wording pass: Odoo's "Quick reorder" (not offered on this site) and the developer link on the sign-in page */
+#wrapwrap #quick_reorder_button,#wrapwrap span:has(> #quick_reorder_button),#wrapwrap .oe_login_form button[value="/web/become"],#wrapwrap button[name="redirect"][value="/web/become"]{display:none!important}
+#wrapwrap .smb-rm{background:none;border:0;padding:0;margin-left:8px;font:inherit;font-size:13px;font-weight:400;color:#5b6a68;text-decoration:underline;cursor:pointer}

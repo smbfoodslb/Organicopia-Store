@@ -118,12 +118,42 @@
   var appliedOnOrder = function () { return fetch('/store', { credentials: 'same-origin' }).then(function (r) { return r.text(); }).then(function (h) {
     var el = new DOMParser().parseFromString(h, 'text/html').getElementById('orgData'); return el ? (JSON.parse(el.textContent).coupon || []) : []; }); };
   var escT = function (t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var jrpc = function (url, params) { return fetch(url, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jsonrpc: '2.0', method: 'call', params: params }) }).then(function (r) { return r.json(); }); };
+  var removeLine = function (c) { return jrpc('/shop/cart/update', { line_id: c.line, product_id: c.pid, quantity: 0 }); };
+  /* ---- wording pass (28 Nov 2026): one vocabulary on Odoo's own pages ---- */
+  if (p === '/payment/status') { var pv = veil(); setTimeout(function () { pv.remove(); }, 12000); }   /* same screen as the step before it; the page under it is view 5282 */
+  if (p === '/web/signup') { var sn = document.querySelector('input[name="name"]'), se = document.querySelector('input[name="login"]'); if (sn) sn.placeholder = 'Your name'; if (se) se.placeholder = 'Your email'; }
+  if (/^\/shop\/(cart|address|checkout|payment|confirmation)/.test(p)) {
+    if (/Cart/.test(document.title)) document.title = document.title.replace('Shopping Cart', 'Your basket');
+    var basketWords = function () { document.querySelectorAll('#wrap a, #wrap h1, #wrap h2, #wrap h3, #wrap h4, #wrap div.alert, #wrap p, #wrap span').forEach(function (e) { if (e.children.length > 1) return;
+      [].slice.call(e.childNodes).forEach(function (n) { if (n.nodeType !== 3) return; var t = n.nodeValue;
+        if (/Back to cart/.test(t)) n.nodeValue = t.replace('Back to cart', 'Back to basket');
+        else if (/Your cart is empty!?/.test(t)) n.nodeValue = t.replace(/Your cart is empty!?/, 'Your basket is empty.'); }); }); };
+    basketWords(); setTimeout(basketWords, 800);
+  }
+  if (p === '/shop/confirmation') { /* Odoo's bank-transfer line "Communication: S00123" means nothing for cash or Whish */
+    document.querySelectorAll('#wrap *').forEach(function (e) { if (e.children.length <= 2 && /^\s*Communication\s*:/.test(e.textContent) && e.textContent.trim().length < 60) e.style.display = 'none'; }); }
   if (p === '/shop/cart') {
+    /* totals card: one VAT-included subtotal like the store basket and the checkout page, and no "-" for delivery */
+    var cartTotals = function () { var num2 = function (el) { return el ? parseFloat((el.textContent || '').replace(/[^0-9.]/g, '')) || 0 : 0; };
+      var card = document.querySelector('.o_total_card'); if (!card) return;
+      var ru = card.querySelector('tr[name="o_order_total_untaxed"]'), rt = card.querySelector('tr[name="o_order_total_taxes"]'), rd = card.querySelector('tr[name="o_order_delivery"]'), ro = card.querySelector('tr[name="o_order_total"]');
+      if (!ru || !ro || ru.getAttribute('data-smb')) return; ru.setAttribute('data-smb', '1');
+      var tot = num2(ro.querySelector('.oe_currency_value')), dv = rd ? rd.querySelector('.monetary_field:not(.d-none) .oe_currency_value') : null, del = num2(dv), goods = Math.round((tot - del) * 100) / 100;
+      var uv = ru.querySelector('.oe_currency_value'); if (uv) uv.textContent = goods.toFixed(2);
+      var ul = ru.querySelector('td'); if (ul) ul.innerHTML = 'Subtotal <small class="text-muted">incl. VAT</small>';
+      if (rt) rt.style.display = 'none';
+      if (rd && del < 0.005) { var cell = rd.querySelectorAll('td')[1]; if (cell) cell.innerHTML = '<span class="text-muted">' + (goods >= FREE_FROM ? 'Free' : 'Calculated at checkout') + '</span>'; }
+      var ci = card.querySelector('.coupon_form input[name="promo"]'); if (ci) ci.placeholder = 'Coupon code'; };
+    cartTotals();
     /* one coupon per order: once a code is on the order, Odoo's coupon form gives way to a line naming it */
     var cartCode = null, showCode = function () { if (!cartCode) return; var f = document.querySelector('.coupon_form form[name="coupon_code"]'); if (!f || f.getAttribute('data-smb')) return;
       f.setAttribute('data-smb', '1'); f.style.display = 'none'; var d = document.createElement('div'); d.className = 'small text-start mb-3'; d.style.cssText = 'margin-top:14px;color:#1f5d3a;font-weight:600';
-      d.textContent = 'Coupon ' + cartCode + ' applied.'; f.parentNode.insertBefore(d, f); };
-    appliedOnOrder().then(function (list) { var c = list.filter(function (x) { return x.kind === 'code'; })[0]; if (c) { cartCode = c.code || c.name; showCode(); } }).catch(function () {});
+      d.textContent = 'Coupon ' + cartCode + ' applied.';
+      if (cartLine) { var rb = document.createElement('button'); rb.type = 'button'; rb.className = 'smb-rm'; rb.textContent = 'Remove'; rb.addEventListener('click', function () { rb.disabled = true; removeLine(cartLine).then(function () { location.href = '/shop/cart'; }, function () { location.href = '/shop/cart'; }); }); d.appendChild(rb); }
+      f.parentNode.insertBefore(d, f); };
+    var cartLine = null;
+    appliedOnOrder().then(function (list) { var c = list.filter(function (x) { return x.kind === 'code'; })[0]; if (c) { cartCode = c.code || c.name; cartLine = c.line ? c : null; showCode(); } }).catch(function () {});
     /* Odoo's own rewards line ("points 137.0 / Rewards points / 1 points / Claim") reworded like the store basket
        (28 Nov 2026). Program 10's reward only; Odoo redraws the totals when a quantity changes, so it is re-applied. */
     var rewordPoints = function () { var rid = document.querySelector('form[name="claim_reward"] input[name="reward_id"][value="8"]'); if (!rid) return;
@@ -133,7 +163,7 @@
       var lab = f.querySelector('.flex-grow-1'); if (lab) lab.innerHTML = '<small>Use them on this order.</small>';
       var b = f.querySelector('[name="o_loyalty_claim"]'); if (b) b.textContent = 'Use my points'; };
     rewordPoints();
-    try { new MutationObserver(function () { rewordPoints(); showCode(); }).observe(document.querySelector('#wrap') || document.body, { childList: true, subtree: true }); } catch (e) {}
+    try { new MutationObserver(function () { rewordPoints(); showCode(); cartTotals(); }).observe(document.querySelector('#wrap') || document.body, { childList: true, subtree: true }); } catch (e) {}
     document.addEventListener('submit', function (ev) { var f = ev.target; if (!f || f.getAttribute('name') !== 'coupon_code') return;
       var inp = f.querySelector('[name="promo"]'), tok = f.querySelector('[name="csrf_token"]'), btn = f.querySelector('button[type="submit"]'); if (!inp || !tok || !inp.value.trim()) return;
       ev.preventDefault(); if (btn) btn.disabled = true;
@@ -177,10 +207,12 @@
       form.parentNode.insertBefore(payBox, form);
       /* ---- Coupon code on the checkout page (28 Nov 2026): Odoo's own coupon form sits in the totals card this page hides */
       var cp = document.createElement('form'); cp.id = 'smbCoupon'; cp.method = 'post'; cp.action = '/shop/pricelist';
-      cp.innerHTML = '<div class="smb-h">Have a coupon code?</div><div class="rowc"><input name="promo" class="form-control" type="text" placeholder="Enter your code" autocomplete="off"/><button type="submit" class="btn btn-light border">Apply</button></div><input type="hidden" name="csrf_token"/><div id="smbCouponMsg"></div>';
+      cp.innerHTML = '<div class="smb-h">Have a coupon code?</div><div class="rowc"><input name="promo" class="form-control" type="text" placeholder="Coupon code" autocomplete="off"/><button type="submit" class="btn btn-light border">Apply</button></div><input type="hidden" name="csrf_token"/><div id="smbCouponMsg"></div>';
       var tok = form.querySelector('input[name="csrf_token"]'); cp.querySelector('[name="csrf_token"]').value = tok ? tok.value : '';
       form.parentNode.insertBefore(cp, form);
       var keep = function (e) { return e.name && e.type !== 'hidden' && e.type !== 'file' && e.name !== 'csrf_token' && e.name !== 'smb_m' && e.name !== 'smb_p'; };
+      var keepTyped = function (code) { try { var v = {}; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return; if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked) v[e.name + '\u0001' + e.value] = 1; } else v[e.name] = e.value; });
+        sessionStorage.setItem('smbAddr', JSON.stringify({ m: sel, w: payWith, v: v, t: Date.now(), c: code || '' })); } catch (e) {} };
       var cmsg = function (cls, t) { var m = document.getElementById('smbCouponMsg'); m.className = cls; m.textContent = t; };
       /* The code is sent in the background (Odoo's own redirect breaks on this page's address). Refused: say so, nothing
          reloads. Accepted: the page reloads to show the new totals, and what was chosen and typed is put back. */
@@ -189,9 +221,7 @@
         tryCode(code, cp.querySelector('[name="csrf_token"]').value)
           .then(function (ok) {
             if (!ok) { btn.disabled = false; cmsg('smb-missing', 'This code is not valid for this order.'); return; }
-            try { var v = {}; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return; if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked) v[e.name + '\u0001' + e.value] = 1; } else v[e.name] = e.value; });
-              sessionStorage.setItem('smbAddr', JSON.stringify({ m: sel, w: payWith, v: v, t: Date.now(), c: ok })); } catch (e) {}
-            location.reload(); })
+            keepTyped(ok); location.reload(); })
           .catch(function () { btn.disabled = false; cmsg('smb-missing', 'Could not check the code. Please try again.'); }); });
       var putBack = function () { if (!stash || !stash.v) return; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return;
         if (e.type === 'checkbox' || e.type === 'radio') { e.checked = !!stash.v[e.name + '\u0001' + e.value]; } else if (stash.v[e.name] !== undefined && e.value !== stash.v[e.name]) { e.value = stash.v[e.name]; e.dispatchEvent(new Event('change', { bubbles: true })); } }); };
@@ -253,12 +283,13 @@
           id('smbDiscRow').style.display = !hasRows && lastDisc > 0 && shown > 0 ? '' : 'none'; id('smbDisc').textContent = '\u2212' + money(shown); }).catch(function () {});
       };
       appliedOnOrder().then(function (list) { var html = '', sum = 0, code = null;
-        list.forEach(function (c) { var a = Math.abs(+c.amount || 0); sum += a; if (c.kind === 'code' && !code) code = { n: c.code || c.name, a: a };
+        list.forEach(function (c) { var a = Math.abs(+c.amount || 0); sum += a; if (c.kind === 'code' && !code) code = { n: c.code || c.name, a: a, c: c };
           html += '<div class="r"><span>' + (c.kind === 'points' ? 'Rewards points' : 'Coupon ' + escT(c.code || c.name)) + '</span><span>\u2212' + money(a) + '</span></div>'; });
         if (!list.length) return;
         appliedSum = Math.round(sum * 100) / 100; hasRows = true; id('smbDiscRows').innerHTML = html; id('smbDiscRow').style.display = 'none'; refresh();
         /* one coupon per order: the box names the code instead of asking for another */
-        if (code) { cp.innerHTML = '<div class="smb-h">Coupon code</div><div class="ok">' + escT(code.n) + ' applied: \u2212' + money(code.a) + '</div>'; } }).catch(function () {});
+        if (code) { cp.innerHTML = '<div class="smb-h">Coupon code</div><div class="ok">' + escT(code.n) + ' applied: \u2212' + money(code.a) + (code.c.line ? ' <button type="button" class="smb-rm" id="smbCouponRm">Remove</button>' : '') + '</div>';
+          var rmb = document.getElementById('smbCouponRm'); if (rmb) rmb.addEventListener('click', function () { rmb.disabled = true; keepTyped(''); removeLine(code.c).then(function () { location.reload(); }, function () { location.reload(); }); }); } }).catch(function () {});
       var choose = function (m) {
         sel = m; var pick = m === PICKUP;
         ship.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === m; l.classList.toggle('on', i.value === m); });
