@@ -245,6 +245,8 @@ footer a{color:var(--band-fg)}
 .drawer-bar .grand{display:flex;justify-content:space-between;font-size:18px;font-weight:600}
 .drawer-bar .btn{justify-content:center;width:100%}
 .drawer-foot .fee .crm{margin-left:8px;font-size:12px;font-weight:400;color:var(--muted)}
+.drawer-foot .fee{gap:12px}
+.drawer-foot .fee>span:last-child{white-space:nowrap}
 .line{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
 .line img{width:56px;height:56px;object-fit:contain;background:var(--photo-bg);border-radius:8px}
 .line .nm{font-weight:600;font-size:13.5px;line-height:1.3}
