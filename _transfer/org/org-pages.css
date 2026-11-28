@@ -45,7 +45,11 @@
 #wrapwrap>header .navbar-brand img{max-height:48px}
 #wrapwrap>footer #footer,#wrapwrap>footer .o_footer{display:none}
 #wrapwrap>footer .o_footer_copyright{background:#033649;color:#F6E9D6}
-#wrapwrap .coupon_form,#wrapwrap form[name="coupon_code"],#wrapwrap .o_cart_coupon,#wrapwrap #o_wsale_coupon_form,#wrapwrap a[href="/shop/cart?reorder"],#wrapwrap .o_wsale_quick_reorder{display:none!important}
+#wrapwrap a[href="/shop/cart?reorder"],#wrapwrap .o_wsale_quick_reorder{display:none!important}
 #wrapwrap .o_wsale_my_wish,#wrapwrap .o_add_wishlist,#wrapwrap .o_add_wishlist_dyn,#wrapwrap .o_comparelist_button,#wrapwrap .o_add_compare,#wrapwrap .o_add_compare_dyn{display:none!important}
-#wrapwrap .o_wsale_coupon_toggle,#wrapwrap button.btn-link[data-bs-target*="coupon"],#wrapwrap .o_cart_coupon_toggle,#wrapwrap .coupon_form,#wrapwrap #o_wsale_offcanvas .btn-link{display:none!important}
+#wrapwrap #o_wsale_offcanvas .btn-link{display:none!important}
+/* 28 Nov 2026: coupon box shown on the cart page (was hidden while coupons lived only in the store basket); on phones the
+   totals card had no inner padding, so its text touched the border */
+#wrapwrap .o_total_card .coupon_form form{margin-top:14px}
+@media (max-width:991.98px){#wrapwrap .o_total_card>.card-body{padding:16px!important}}
 #wrapwrap>footer .o_footer_copyright{display:none}
