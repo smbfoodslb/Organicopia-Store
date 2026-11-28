@@ -4,11 +4,12 @@
        x_location_pin through Odoo's public website form and auto_location_pin.py checks it and writes the pin on the
        order's delivery address. Map: Leaflet with OpenStreetMap tiles, so no Google key is shown to the public.
        Referrer is cut to the origin so the token never reaches the map servers.
-       28 Nov 2026: Google search above the map. The search box lives in a small frame, this same page with ?s=1 and no
-       order or token in its address, so Google never sees the customer's link; it loads Google only when the customer
-       taps the box, uses the browser key from the system parameter smb_delivery.maps_browser_key (locked by Google to our
-       sites, Places API (New) + Maps JavaScript API) and hands the chosen place's position to the map. The customer
-       still fine-tunes the pin and saves. No key, or Google refuses it: the box is simply not shown. -->
+       28 Nov 2026: when the system parameter smb_delivery.maps_browser_key holds a Google browser key (locked by Google
+       to our sites; Places API (New) + Maps JavaScript API), the map is a Google map with an address search, as Google's
+       terms want Places results shown on a Google map. Map and search live in a frame, this same page with ?s=1 and no
+       order or token in its address, so Google never sees the customer's link; the frame only tells this page where the
+       map's centre is. The customer still places the pin and saves, and saving is unchanged. No key, Google refuses it
+       or does not answer in 12 seconds: the page falls back to the free Leaflet / OpenStreetMap map without search. -->
   <html lang="en">
     <head>
       <meta charset="utf-8"/>
@@ -30,8 +31,9 @@
         .msg.good{background:#e2f3e7;color:#14532d;font-weight:700}.msg.bad{background:#fde8e8;color:#9b1c1c}
         .msg[hidden]{display:none}
         .hint{color:#4a5f5a;font-size:14px;margin-top:8px;text-align:center}
-        .sw{position:relative;height:50px;margin-bottom:8px}.sw[hidden]{display:none}
-        .sw iframe{position:absolute;left:0;top:0;width:100%;height:50px;border:0;z-index:1100;background:transparent}
+        #map[hidden],.gw[hidden]{display:none}
+        .gw{height:56vh;min-height:320px;border-radius:12px;border:1px solid #d5e0dd;background:#e8eeec;overflow:hidden}
+        .gw iframe{display:block;width:100%;height:100%;border:0}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
@@ -43,44 +45,54 @@
       <t t-set="gkey" t-value="request.env['ir.config_parameter'].sudo().get_param('smb_delivery.maps_browser_key') or ''"/>
       <t t-if="request.params.get('s') == '1'">
         <style>
-          html,body{background:transparent}
-          #q{display:block;width:100%;box-sizing:border-box;height:48px;border:1px solid #123d36;border-radius:10px;padding:0 14px;font-size:16px;background:#fff;color:#1c2b28;outline:0;-webkit-appearance:none}
+          html,body{height:100%;margin:0;background:#e8eeec;overflow:hidden}
+          #g{position:absolute;left:0;top:0;right:0;bottom:0}
+          #pin{position:absolute;left:50%;top:50%;width:30px;height:42px;margin:-42px 0 0 -15px;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+          #s{position:absolute;left:8px;right:8px;top:8px;z-index:10}
+          #q{display:block;width:100%;box-sizing:border-box;height:46px;border:1px solid #123d36;border-radius:10px;padding:0 14px;font-size:16px;background:#fff;color:#1c2b28;outline:0;-webkit-appearance:none;box-shadow:0 2px 8px rgba(0,0,0,.18)}
           #box{margin-top:4px;background:#fff;border:1px solid #d5e0dd;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.18);overflow:hidden}
           #box[hidden]{display:none}
-          .r{display:block;width:100%;box-sizing:border-box;text-align:left;border:0;border-bottom:1px solid #e8eeec;background:#fff;padding:11px 14px;font-size:15px;color:#1c2b28;cursor:pointer}
+          .r{display:block;width:100%;box-sizing:border-box;text-align:left;border:0;border-bottom:1px solid #e8eeec;background:#fff;padding:10px 14px;font-size:15px;color:#1c2b28;cursor:pointer}
           .r small{display:block;color:#4a5f5a;font-size:13px}
           .n{padding:11px 14px;color:#4a5f5a;font-size:14px}
-          .pg{padding:6px 14px;color:#4a5f5a;font-size:12px;text-align:right}
         </style>
+        <div id="g"/>
+        <svg id="pin" viewBox="0 0 30 42"><path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 27 15 27s15-16.500 15-27C30 6.700 23.300 0 15 0z" fill="#123d36"/><circle cx="15" cy="15" r="6" fill="#fff"/></svg>
         <div id="s" t-att-data-k="gkey">
           <input id="q" type="search" placeholder="Search for a street, building or place" autocomplete="off" enterkeyhint="search"/>
-          <div id="box" hidden="hidden"><div id="res"/><div class="pg">Powered by Google</div></div>
+          <div id="box" hidden="hidden"/>
         </div>
         <script>
           (function () {
-            var root = document.getElementById('s'), key = root.getAttribute('data-k'), q = document.getElementById('q'), box = document.getElementById('box'), res = document.getElementById('res');
-            var up = window.parent, here = location.origin, state = 0, tok = null, timer = null, seq = 0;
+            var root = document.getElementById('s'), key = root.getAttribute('data-k'), q = document.getElementById('q'), box = document.getElementById('box');
+            var up = window.parent, here = location.origin, map = null, live = false, tok = null, timer = null, seq = 0;
             function say(m) { m.smb = 1; if (up !== window) { up.postMessage(m, here); } }
-            function size() { say({ h: Math.ceil(root.getBoundingClientRect().height) + 2 }); }
-            function shut() { box.hidden = true; res.textContent = ''; size(); }
-            if (!key) { say({ off: 1 }); return; }
+            function shut() { box.hidden = true; box.textContent = ''; }
+            function tell() { var c = map.getCenter(); if (c) { say({ c: [c.lat(), c.lng()], z: map.getZoom() }); } }
+            if (!key || up === window) { say({ off: 1 }); return; }
             window.gm_authFailure = function () { say({ off: 1 }); };
-            window.smbG = function () { google.maps.importLibrary('places').then(function () { state = 2; ask(); }, function () { say({ off: 1 }); }); };
-            function load() {
-              if (state) { return; } state = 1;
-              var sc = document.createElement('script');
-              sc.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&amp;loading=async&amp;libraries=places&amp;region=LB&amp;callback=smbG';
-              sc.onerror = function () { say({ off: 1 }); };
-              document.head.appendChild(sc);
-            }
+            window.smbG = function () {
+              Promise.all([google.maps.importLibrary('maps'), google.maps.importLibrary('places')]).then(function () { say({ ready: 1 }); }, function () { say({ off: 1 }); });
+            };
+            window.addEventListener('message', function (e) {
+              var m = e.data; if (e.origin !== here || e.source !== up || !m || m.smb !== 2 || !window.google) { return; }
+              if (m.init &amp;&amp; !map) {
+                map = new google.maps.Map(document.getElementById('g'), { center: { lat: m.lat, lng: m.lng }, zoom: m.z, disableDefaultUI: true, zoomControl: true, gestureHandling: 'greedy', clickableIcons: false });
+                map.addListener('center_changed', tell);
+                map.addListener('zoom_changed', function () { tell(); if (live) { say({ t: 1 }); } });
+                map.addListener('dragstart', function () { q.blur(); shut(); say({ t: 1 }); });
+                map.addListener('click', function (ev) { shut(); say({ t: 1 }); map.panTo(ev.latLng); });
+                map.addListener('idle', function () { live = true; tell(); });
+              } else if (m.go &amp;&amp; map) { live = false; map.setCenter({ lat: m.lat, lng: m.lng }); map.setZoom(m.z); }
+            });
             function ask() {
               var v = q.value.trim(), mine = ++seq;
-              if (state !== 2 || v.length &lt; 3) { if (v.length &lt; 3) { shut(); } return; }
+              if (!map || v.length &lt; 3) { if (v.length &lt; 3) { shut(); } return; }
               var P = google.maps.places;
               if (!tok) { tok = new P.AutocompleteSessionToken(); }
               P.AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: v, sessionToken: tok, includedRegionCodes: ['lb'] }).then(function (r) {
                 if (mine !== seq) { return; }
-                res.textContent = '';
+                box.textContent = '';
                 var list = (r.suggestions || []).filter(function (s) { return s.placePrediction; }).slice(0, 5);
                 list.forEach(function (s) {
                   var p = s.placePrediction, b = document.createElement('button'), sm = document.createElement('small');
@@ -91,19 +103,21 @@
                     q.value = p.text.text; q.blur(); shut();
                     p.toPlace().fetchFields({ fields: ['location'] }).then(function (d) {
                       tok = null;
-                      var l = d.place.location; if (l) { say({ lat: l.lat(), lng: l.lng() }); }
+                      var l = d.place.location; if (l) { live = false; map.setCenter(l); map.setZoom(17); say({ t: 1, picked: 1 }); }
                     }, function () { tok = null; });
                   });
-                  res.appendChild(b);
+                  box.appendChild(b);
                 });
-                if (!list.length) { var n = document.createElement('div'); n.className = 'n'; n.textContent = 'No match. Try another name, or move the map to your door.'; res.appendChild(n); }
-                box.hidden = false; size();
+                if (!list.length) { var n = document.createElement('div'); n.className = 'n'; n.textContent = 'No match. Try another name, or move the map to your door.'; box.appendChild(n); }
+                box.hidden = false;
               }, function () { if (mine === seq) { shut(); } });
             }
-            q.addEventListener('focus', load);
-            q.addEventListener('input', function () { load(); clearTimeout(timer); timer = setTimeout(ask, 350); });
-            q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); var f = res.querySelector('.r'); if (f) { f.click(); } } });
-            size();
+            q.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(ask, 350); });
+            q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); var f = box.querySelector('.r'); if (f) { f.click(); } } });
+            var sc = document.createElement('script');
+            sc.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&amp;loading=async&amp;region=LB&amp;callback=smbG';
+            sc.onerror = function () { say({ off: 1 }); };
+            document.head.appendChild(sc);
           })();
         </script>
       </t>
@@ -117,8 +131,8 @@
           <t t-set="has" t-value="bool(ship.partner_latitude or ship.partner_longitude)"/>
           <h1>Where should we deliver?</h1>
           <div class="sub">Order <t t-out="order.name"/> · <t t-out="'Organicopia' if order.website_id.id == 1 else 'SMB Foods'"/>. Move the map so the pin sits on your door, then save.</div>
-          <div class="sw" id="sw" t-if="gkey"><iframe id="sf" src="/delivery-location?s=1" title="Search for your address" referrerpolicy="origin"/></div>
-          <div id="map" t-att-data-o="order.id" t-att-data-t="tok" t-att-data-c="request.csrf_token()" t-att-data-lat="ship.partner_latitude if has else ''" t-att-data-lng="ship.partner_longitude if has else ''"/>
+          <div class="gw" id="gw" t-if="gkey"><iframe id="sf" src="/delivery-location?s=1" title="Map" referrerpolicy="origin"/></div>
+          <div id="map" t-att-hidden="'hidden' if gkey else None" t-att-data-o="order.id" t-att-data-t="tok" t-att-data-c="request.csrf_token()" t-att-data-lat="ship.partner_latitude if has else ''" t-att-data-lng="ship.partner_longitude if has else ''"/>
           <button type="button" class="b me" id="me">Use my current location</button>
           <button type="button" class="b ok" id="save">Save location</button>
           <div class="msg good" id="good" t-att-hidden="None if has else 'hidden'">Location saved. Thank you! You can change it until we deliver.</div>
@@ -129,29 +143,43 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"/>
       <script>
         (function () {
-          var el = document.getElementById('map'); if (!el || !window.L) { return; }
+          var el = document.getElementById('map'); if (!el) { return; }
           var lat = parseFloat(el.getAttribute('data-lat')), lng = parseFloat(el.getAttribute('data-lng')), has = !isNaN(lat) &amp;&amp; !isNaN(lng);
-          var map = L.map(el, { zoomControl: true }).setView(has ? [lat, lng] : [33.89, 35.55], has ? 17 : 9);
-          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&amp;copy; OpenStreetMap contributors' }).addTo(map);
-          var pin = L.marker(map.getCenter(), { draggable: true }).addTo(map), moved = has;
-          var good = document.getElementById('good'), bad = document.getElementById('bad'), save = document.getElementById('save'), me = document.getElementById('me');
+          var start = has ? [lat, lng, 17] : [33.89, 35.55, 9], moved = has, api = null;
+          var good = document.getElementById('good'), bad = document.getElementById('bad'), save = document.getElementById('save'), me = document.getElementById('me'), hint = document.querySelector('.hint');
+          var wait = 'The map is still loading. Please try again in a moment.';
           function fail(t) { bad.textContent = t; bad.hidden = false; }
           function touched() { moved = true; good.hidden = true; bad.hidden = true; }
-          map.on('move', function () { pin.setLatLng(map.getCenter()); });
-          map.on('dragstart zoomstart', touched);
-          pin.on('dragend', function () { touched(); map.panTo(pin.getLatLng()); });
-          map.on('click', function (e) { touched(); map.panTo(e.latlng); });
-          /* 28 Nov 2026: the Google search frame above the map tells us its height, a chosen place, or that it cannot work */
-          var sw = document.getElementById('sw'), sf = document.getElementById('sf'), hint = document.querySelector('.hint');
-          if (sf) {
+          /* the free Leaflet / OpenStreetMap map: used when there is no Google key or Google does not answer */
+          function leaf() {
+            if (!window.L) { return; }
+            el.hidden = false;
+            var map = L.map(el, { zoomControl: true }).setView([start[0], start[1]], start[2]);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&amp;copy; OpenStreetMap contributors' }).addTo(map);
+            var pin = L.marker(map.getCenter(), { draggable: true }).addTo(map);
+            map.on('move', function () { pin.setLatLng(map.getCenter()); });
+            map.on('dragstart zoomstart', touched);
+            pin.on('dragend', function () { touched(); map.panTo(pin.getLatLng()); });
+            map.on('click', function (e) { touched(); map.panTo(e.latlng); });
+            api = { center: function () { var c = map.getCenter(); return [c.lat, c.lng]; }, zoom: function () { return map.getZoom(); }, go: function (a, b, z) { map.setView([a, b], z); } };
+          }
+          /* 28 Nov 2026: the Google map and search run in the frame; it reports the map's centre and zoom to this page */
+          var sf = document.getElementById('sf'), gw = document.getElementById('gw');
+          if (!sf) { leaf(); } else {
+            var gc = [start[0], start[1]], gz = start[2], ready = false, dead = false;
+            var back = function () { if (dead) { return; } dead = true; api = null; gw.hidden = true; leaf(); };
+            var late = setTimeout(function () { if (!ready) { back(); } }, 12000);
             window.addEventListener('message', function (e) {
-              var m = e.data; if (e.origin !== location.origin || e.source !== sf.contentWindow || !m || m.smb !== 1) { return; }
-              if (m.off) { sw.hidden = true; return; }
-              if (m.h) { sf.style.height = Math.max(50, Math.min(420, m.h)) + 'px'; }
-              if (typeof m.lat === 'number' &amp;&amp; typeof m.lng === 'number') {
-                touched(); map.setView([m.lat, m.lng], 17);
-                if (hint) { hint.textContent = 'Now move the map so the pin sits exactly on your door, then save.'; }
+              var m = e.data; if (dead || e.origin !== location.origin || e.source !== sf.contentWindow || !m || m.smb !== 1) { return; }
+              if (m.off) { clearTimeout(late); back(); return; }
+              if (m.ready &amp;&amp; !ready) {
+                ready = true; clearTimeout(late);
+                sf.contentWindow.postMessage({ smb: 2, init: 1, lat: start[0], lng: start[1], z: start[2] }, location.origin);
+                api = { center: function () { return gc; }, zoom: function () { return gz; }, go: function (a, b, z) { gc = [a, b]; gz = z; sf.contentWindow.postMessage({ smb: 2, go: 1, lat: a, lng: b, z: z }, location.origin); } };
               }
+              if (m.c) { gc = m.c; gz = m.z; }
+              if (m.t) { touched(); }
+              if (m.picked &amp;&amp; hint) { hint.textContent = 'Now move the map so the pin sits exactly on your door, then save.'; }
             });
           }
           /* 26 Nov 2026: say why the phone gave no position (blocked for the site, switched off, or too slow) and, when the
@@ -160,21 +188,23 @@
                       2: 'Your phone could not find its position. Turn on Location (GPS) and try again, or drag the map to your door.',
                       3: 'Finding your position took too long. Try again, or drag the map to your door.' };
           function locate(precise) {
-            navigator.geolocation.getCurrentPosition(function (p) { me.disabled = false; me.textContent = 'Use my current location'; touched(); map.setView([p.coords.latitude, p.coords.longitude], 18); },
+            navigator.geolocation.getCurrentPosition(function (p) { me.disabled = false; me.textContent = 'Use my current location'; touched(); if (api) { api.go(p.coords.latitude, p.coords.longitude, 18); } },
               function (e) { if (precise &amp;&amp; e.code !== 1) { locate(false); return; } me.disabled = false; me.textContent = 'Use my current location'; fail(why[e.code] || why[2]); },
               precise ? { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 } : { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
           }
           me.addEventListener('click', function () {
+            if (!api) { fail(wait); return; }
             if (!navigator.geolocation) { fail(why[2]); return; }
             me.disabled = true; me.textContent = 'Finding your location…'; bad.hidden = true; locate(true);
           });
           save.addEventListener('click', function () {
-            var c = map.getCenter();
-            if (!moved || map.getZoom() &lt; 15) { fail('Please zoom in and place the pin on your door first.'); return; }
-            if (c.lat &lt; 33.0 || c.lat &gt; 34.75 || c.lng &lt; 35.0 || c.lng &gt; 36.7) { fail('We deliver in Lebanon only. Please place the pin in Lebanon.'); return; }
+            if (!api) { fail(wait); return; }
+            var c = api.center();
+            if (!moved || api.zoom() &lt; 15) { fail('Please zoom in and place the pin on your door first.'); return; }
+            if (c[0] &lt; 33.0 || c[0] &gt; 34.75 || c[1] &lt; 35.0 || c[1] &gt; 36.7) { fail('We deliver in Lebanon only. Please place the pin in Lebanon.'); return; }
             var fd = new FormData();
             fd.append('csrf_token', el.getAttribute('data-c')); fd.append('x_name', 'pin'); fd.append('x_order', el.getAttribute('data-o')); fd.append('x_token', el.getAttribute('data-t'));
-            fd.append('x_lat', c.lat.toFixed(7)); fd.append('x_lng', c.lng.toFixed(7));
+            fd.append('x_lat', c[0].toFixed(7)); fd.append('x_lng', c[1].toFixed(7));
             save.disabled = true; bad.hidden = true;
             fetch('/website/form/x_location_pin', { method: 'POST', body: fd })
               .then(function (r) { return r.json(); })
