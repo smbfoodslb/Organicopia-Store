@@ -5,7 +5,8 @@
 #  B. A Google Maps link pasted as text (case of 27 Nov 2026: maps.app.goo.gl/...): the link is written into the
 #     contact's "Map location" (x_map_link). Automation 1393 on the contact reads the coordinates when the link carries
 #     them. A short link carries none and Odoo cannot open it, so the order gets a to-do for the owner with the link:
-#     the pin is then placed once (delivery planner, or coordinates pasted into "Map location").
+#     the pin is then placed once (delivery planner, or coordinates pasted into "Map location"). An older pin on that
+#     address is cleared, so the order shows under "Waiting for location".
 # In both cases: when the sender is a known contact, the target is the delivery address of that contact's latest
 # confirmed, undelivered order of the last 60 days (with a note on the order); with no such order, the contact itself.
 # Points outside Lebanon and messages we sent are ignored.
@@ -50,9 +51,13 @@ for wm in records.sudo():
     before = (target.partner_latitude, target.partner_longitude)
     target.write({'x_map_link': link})
     read = (target.partner_latitude, target.partner_longitude) != before and bool(target.partner_latitude)
+    if not read and before[0]:
+        # a new location was sent and cannot be read: the old pin would send the driver to the wrong place, so it is
+        # cleared and the order shows under "Waiting for location" until the pin is placed
+        target.write({'partner_latitude': 0, 'partner_longitude': 0})
     if order:
         if read:
             order.message_post(body='The customer sent a Google Maps link on WhatsApp (%s). Location read from it: %.7f, %.7f' % (target.display_name, target.partner_latitude, target.partner_longitude))
         else:
-            order.message_post(body='The customer sent a Google Maps link on WhatsApp (%s): %s - a short link has no coordinates, the pin still has to be placed.' % (target.display_name, link))
+            order.message_post(body='The customer sent a Google Maps link on WhatsApp (%s): %s - a short link has no coordinates, the pin still has to be placed.%s' % (target.display_name, link, (' Previous pin removed: %.7f, %.7f.' % before) if before[0] else ''))
             order.activity_schedule('mail.mail_activity_data_todo', user_id=OWNER, summary='Location link received: place the pin', note='%s sent this Google Maps link on WhatsApp: %s' % (target.display_name, link))
