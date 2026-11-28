@@ -140,19 +140,27 @@
       form.parentNode.insertBefore(payBox, form);
       /* ---- Coupon code on the checkout page (28 Nov 2026): Odoo's own coupon form sits in the totals card this page hides */
       var cp = document.createElement('form'); cp.id = 'smbCoupon'; cp.method = 'post'; cp.action = '/shop/pricelist';
-      cp.innerHTML = '<div class="smb-h">Have a coupon code?</div><div class="rowc"><input name="promo" class="form-control" type="text" placeholder="Enter your code" autocomplete="off"/><button type="submit" class="btn btn-light border">Apply</button></div><input type="hidden" name="csrf_token"/><input type="hidden" name="r"/><div id="smbCouponMsg"></div>';
+      cp.innerHTML = '<div class="smb-h">Have a coupon code?</div><div class="rowc"><input name="promo" class="form-control" type="text" placeholder="Enter your code" autocomplete="off"/><button type="submit" class="btn btn-light border">Apply</button></div><input type="hidden" name="csrf_token"/><div id="smbCouponMsg"></div>';
       var tok = form.querySelector('input[name="csrf_token"]'); cp.querySelector('[name="csrf_token"]').value = tok ? tok.value : '';
-      cp.querySelector('[name="r"]').value = location.pathname + location.search;
       form.parentNode.insertBefore(cp, form);
       var keep = function (e) { return e.name && e.type !== 'hidden' && e.type !== 'file' && e.name !== 'csrf_token' && e.name !== 'smb_m' && e.name !== 'smb_p'; };
-      cp.addEventListener('submit', function () { try { var v = {}; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return; if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked) v[e.name + '\u0001' + e.value] = 1; } else v[e.name] = e.value; });
-        sessionStorage.setItem('smbAddr', JSON.stringify({ m: sel, w: payWith, v: v, t: Date.now() })); } catch (e) {} });
+      var cmsg = function (cls, t) { var m = document.getElementById('smbCouponMsg'); m.className = cls; m.textContent = t; };
+      /* The code is sent in the background (Odoo's own redirect breaks on this page's address). Refused: say so, nothing
+         reloads. Accepted: the page reloads to show the new totals, and what was chosen and typed is put back. */
+      cp.addEventListener('submit', function (ev) { ev.preventDefault(); var code = cp.querySelector('[name="promo"]').value.trim(), btn = cp.querySelector('button'); if (!code || btn.disabled) return;
+        btn.disabled = true; cmsg('', '');
+        var b = new URLSearchParams(); b.append('csrf_token', cp.querySelector('[name="csrf_token"]').value); b.append('promo', code);
+        fetch('/shop/pricelist', { method: 'POST', body: b, credentials: 'same-origin', redirect: 'manual' })
+          .then(function () { return fetch('/shop/cart', { credentials: 'same-origin' }); }).then(function (r) { return r.text(); })
+          .then(function (h) { var ok = new DOMParser().parseFromString(h, 'text/html').querySelector('.o_total_card .alert-success');
+            if (!ok) { btn.disabled = false; cmsg('smb-missing', 'This code is not valid for this order.'); return; }
+            try { var v = {}; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return; if (e.type === 'checkbox' || e.type === 'radio') { if (e.checked) v[e.name + '\u0001' + e.value] = 1; } else v[e.name] = e.value; });
+              sessionStorage.setItem('smbAddr', JSON.stringify({ m: sel, w: payWith, v: v, t: Date.now(), c: code })); } catch (e) {}
+            location.reload(); })
+          .catch(function () { btn.disabled = false; cmsg('smb-missing', 'Could not check the code. Please try again.'); }); });
       var putBack = function () { if (!stash || !stash.v) return; form.querySelectorAll('input,select,textarea').forEach(function (e) { if (!keep(e)) return;
         if (e.type === 'checkbox' || e.type === 'radio') { e.checked = !!stash.v[e.name + '\u0001' + e.value]; } else if (stash.v[e.name] !== undefined && e.value !== stash.v[e.name]) { e.value = stash.v[e.name]; e.dispatchEvent(new Event('change', { bubbles: true })); } }); };
-      putBack(); if (stash) { setTimeout(putBack, 900); }
-      /* Odoo's answer to the code (refused, or applied) is written in its hidden coupon form: show it under our box */
-      (function () { var m = document.getElementById('smbCouponMsg'), bad = document.querySelector('.coupon_form .alert-danger, .coupon_form .text-danger, .coupon_form .invalid-feedback'), good = document.querySelector('.coupon_form .alert-success, .coupon_form .text-success');
-        if (bad && bad.textContent.trim()) { m.className = 'smb-missing'; m.textContent = bad.textContent.trim(); } else if (good && good.textContent.trim()) { m.className = 'ok'; m.textContent = good.textContent.trim(); } })();
+      putBack(); if (stash) { setTimeout(putBack, 900); if (stash.c) cmsg('ok', 'Code ' + stash.c + ' applied.'); }
       var payPaint = function () { payBox.querySelectorAll('.smb-opt').forEach(function (l) { var i = l.querySelector('input'); i.checked = i.value === payWith; l.classList.toggle('on', i.value === payWith); });
         var pp = document.getElementById('smbPay'); if (pp && payWith === 'whish') { pp.textContent = 'You pay by Whish to 78 879 350 after we confirm your total.'; } };
       payBox.addEventListener('change', function (ev) { if (ev.target.name === 'smb_p') { payWith = ev.target.value; payPaint(); if (payWith !== 'whish') { var pp = document.getElementById('smbPay'); if (pp) { pp.textContent = sel === PICKUP ? 'You pay when you pick up your order.' : 'You pay on delivery.'; } } } });
