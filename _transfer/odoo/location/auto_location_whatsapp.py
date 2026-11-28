@@ -49,7 +49,10 @@ for wm in records.sudo():
             order.message_post(body='The customer sent the delivery location on WhatsApp (%s): %.7f, %.7f' % (target.display_name, lat, lng))
         continue
     before = (target.partner_latitude, target.partner_longitude)
-    target.write({'x_map_link': link})
+    try:
+        target.write({'x_map_link': link})   # a short link is also sent to the map-link helper by the contact's automation
+    except Exception:
+        pass                                  # the helper being unreachable must not lose the customer's message
     read = (target.partner_latitude, target.partner_longitude) != before and bool(target.partner_latitude)
     if not read and before[0]:
         # a new location was sent and cannot be read: the old pin would send the driver to the wrong place, so it is
