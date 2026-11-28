@@ -3,7 +3,12 @@
        portal token>. The customer drags the pin or taps "Use my current location" and saves; the page posts one
        x_location_pin through Odoo's public website form and auto_location_pin.py checks it and writes the pin on the
        order's delivery address. Map: Leaflet with OpenStreetMap tiles, so no Google key is shown to the public.
-       Referrer is cut to the origin so the token never reaches the map servers. -->
+       Referrer is cut to the origin so the token never reaches the map servers.
+       28 Nov 2026: Google search above the map. The search box lives in a small frame, this same page with ?s=1 and no
+       order or token in its address, so Google never sees the customer's link; it loads Google only when the customer
+       taps the box, uses the browser key from the system parameter smb_delivery.maps_browser_key (locked by Google to our
+       sites, Places API (New) + Maps JavaScript API) and hands the chosen place's position to the map. The customer
+       still fine-tunes the pin and saves. No key, or Google refuses it: the box is simply not shown. -->
   <html lang="en">
     <head>
       <meta charset="utf-8"/>
@@ -25,6 +30,8 @@
         .msg.good{background:#e2f3e7;color:#14532d;font-weight:700}.msg.bad{background:#fde8e8;color:#9b1c1c}
         .msg[hidden]{display:none}
         .hint{color:#4a5f5a;font-size:14px;margin-top:8px;text-align:center}
+        .sw{position:relative;height:50px;margin-bottom:8px}.sw[hidden]{display:none}
+        .sw iframe{position:absolute;left:0;top:0;width:100%;height:50px;border:0;z-index:1000;background:transparent}
         .gone{background:#fff;border:1px solid #d5e0dd;border-radius:9px;padding:16px;margin-top:30px;text-align:center}
       </style>
     </head>
@@ -33,6 +40,74 @@
       <t t-set="tok" t-value="request.params.get('t') or ''"/>
       <t t-set="order" t-value="oid.isdigit() and len(tok) &gt;= 20 and request.env['sale.order'].sudo().search([('id', '=', int(oid)), ('access_token', '=', tok), ('state', '!=', 'cancel')], limit=1)"/>
       <t t-set="open" t-value="order and order.delivery_status != 'full' and (datetime.datetime.now() - order.date_order).days &lt;= 60"/>
+      <t t-set="gkey" t-value="request.env['ir.config_parameter'].sudo().get_param('smb_delivery.maps_browser_key') or ''"/>
+      <t t-if="request.params.get('s') == '1'">
+        <style>
+          html,body{background:transparent}
+          #q{display:block;width:100%;box-sizing:border-box;height:48px;border:1px solid #123d36;border-radius:10px;padding:0 14px;font-size:16px;background:#fff;color:#1c2b28;outline:0;-webkit-appearance:none}
+          #box{margin-top:4px;background:#fff;border:1px solid #d5e0dd;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.18);overflow:hidden}
+          #box[hidden]{display:none}
+          .r{display:block;width:100%;box-sizing:border-box;text-align:left;border:0;border-bottom:1px solid #e8eeec;background:#fff;padding:11px 14px;font-size:15px;color:#1c2b28;cursor:pointer}
+          .r small{display:block;color:#4a5f5a;font-size:13px}
+          .n{padding:11px 14px;color:#4a5f5a;font-size:14px}
+          .pg{padding:6px 14px;color:#4a5f5a;font-size:12px;text-align:right}
+        </style>
+        <div id="s" t-att-data-k="gkey">
+          <input id="q" type="search" placeholder="Search for a street, building or place" autocomplete="off" enterkeyhint="search"/>
+          <div id="box" hidden="hidden"><div id="res"/><div class="pg">Powered by Google</div></div>
+        </div>
+        <script>
+          (function () {
+            var root = document.getElementById('s'), key = root.getAttribute('data-k'), q = document.getElementById('q'), box = document.getElementById('box'), res = document.getElementById('res');
+            var up = window.parent, here = location.origin, state = 0, tok = null, timer = null, seq = 0;
+            function say(m) { m.smb = 1; if (up !== window) { up.postMessage(m, here); } }
+            function size() { say({ h: Math.ceil(root.getBoundingClientRect().height) + 2 }); }
+            function shut() { box.hidden = true; res.textContent = ''; size(); }
+            if (!key) { say({ off: 1 }); return; }
+            window.gm_authFailure = function () { say({ off: 1 }); };
+            window.smbG = function () { google.maps.importLibrary('places').then(function () { state = 2; ask(); }, function () { say({ off: 1 }); }); };
+            function load() {
+              if (state) { return; } state = 1;
+              var sc = document.createElement('script');
+              sc.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&amp;loading=async&amp;libraries=places&amp;region=LB&amp;callback=smbG';
+              sc.onerror = function () { say({ off: 1 }); };
+              document.head.appendChild(sc);
+            }
+            function ask() {
+              var v = q.value.trim(), mine = ++seq;
+              if (state !== 2 || v.length &lt; 3) { if (v.length &lt; 3) { shut(); } return; }
+              var P = google.maps.places;
+              if (!tok) { tok = new P.AutocompleteSessionToken(); }
+              P.AutocompleteSuggestion.fetchAutocompleteSuggestions({ input: v, sessionToken: tok, includedRegionCodes: ['lb'] }).then(function (r) {
+                if (mine !== seq) { return; }
+                res.textContent = '';
+                var list = (r.suggestions || []).filter(function (s) { return s.placePrediction; }).slice(0, 5);
+                list.forEach(function (s) {
+                  var p = s.placePrediction, b = document.createElement('button'), sm = document.createElement('small');
+                  b.type = 'button'; b.className = 'r';
+                  b.textContent = p.mainText ? p.mainText.text : p.text.text;
+                  sm.textContent = p.secondaryText ? p.secondaryText.text : ''; b.appendChild(sm);
+                  b.addEventListener('click', function () {
+                    q.value = p.text.text; q.blur(); shut();
+                    p.toPlace().fetchFields({ fields: ['location'] }).then(function (d) {
+                      tok = null;
+                      var l = d.place.location; if (l) { say({ lat: l.lat(), lng: l.lng() }); }
+                    }, function () { tok = null; });
+                  });
+                  res.appendChild(b);
+                });
+                if (!list.length) { var n = document.createElement('div'); n.className = 'n'; n.textContent = 'No match. Try another name, or move the map to your door.'; res.appendChild(n); }
+                box.hidden = false; size();
+              }, function () { if (mine === seq) { shut(); } });
+            }
+            q.addEventListener('focus', load);
+            q.addEventListener('input', function () { load(); clearTimeout(timer); timer = setTimeout(ask, 350); });
+            q.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); var f = res.querySelector('.r'); if (f) { f.click(); } } });
+            size();
+          })();
+        </script>
+      </t>
+      <t t-else="">
       <div class="wrap">
         <t t-if="not open">
           <div class="gone">This link is not valid any more. Please reply to our message and we will help you.</div>
@@ -42,6 +117,7 @@
           <t t-set="has" t-value="bool(ship.partner_latitude or ship.partner_longitude)"/>
           <h1>Where should we deliver?</h1>
           <div class="sub">Order <t t-out="order.name"/> · <t t-out="'Organicopia' if order.website_id.id == 1 else 'SMB Foods'"/>. Move the map so the pin sits on your door, then save.</div>
+          <div class="sw" id="sw" t-if="gkey"><iframe id="sf" src="/delivery-location?s=1" title="Search for your address" referrerpolicy="origin"/></div>
           <div id="map" t-att-data-o="order.id" t-att-data-t="tok" t-att-data-c="request.csrf_token()" t-att-data-lat="ship.partner_latitude if has else ''" t-att-data-lng="ship.partner_longitude if has else ''"/>
           <button type="button" class="b me" id="me">Use my current location</button>
           <button type="button" class="b ok" id="save">Save location</button>
@@ -65,6 +141,19 @@
           map.on('dragstart zoomstart', touched);
           pin.on('dragend', function () { touched(); map.panTo(pin.getLatLng()); });
           map.on('click', function (e) { touched(); map.panTo(e.latlng); });
+          /* 28 Nov 2026: the Google search frame above the map tells us its height, a chosen place, or that it cannot work */
+          var sw = document.getElementById('sw'), sf = document.getElementById('sf'), hint = document.querySelector('.hint');
+          if (sf) {
+            window.addEventListener('message', function (e) {
+              var m = e.data; if (e.origin !== location.origin || e.source !== sf.contentWindow || !m || m.smb !== 1) { return; }
+              if (m.off) { sw.hidden = true; return; }
+              if (m.h) { sf.style.height = Math.max(50, Math.min(420, m.h)) + 'px'; }
+              if (typeof m.lat === 'number' &amp;&amp; typeof m.lng === 'number') {
+                touched(); map.setView([m.lat, m.lng], 17);
+                if (hint) { hint.textContent = 'Now move the map so the pin sits exactly on your door, then save.'; }
+              }
+            });
+          }
           /* 26 Nov 2026: say why the phone gave no position (blocked for the site, switched off, or too slow) and, when the
              precise fix fails, try once more with the quick network position before giving up */
           var why = { 1: 'Location is blocked for this site. Tap the lock icon next to the address bar, allow Location, then try again. Or drag the map to your door.',
@@ -94,6 +183,7 @@
           });
         })();
       </script>
+      </t>
     </body>
   </html>
 </t>
