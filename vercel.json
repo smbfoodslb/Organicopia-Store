@@ -6,6 +6,12 @@
       "destination": "https://www.organicopia-lb.com/$1",
       "permanent": true
     },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "organicopia-lb.com" }],
+      "destination": "https://www.organicopia-lb.com/$1",
+      "permanent": true
+    },
     { "source": "/index.html", "destination": "/", "permanent": true }
   ]
 }
